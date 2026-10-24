@@ -43,7 +43,7 @@ ${declarations(data.lineHeight, 'line-height-')}
 
 if (process.argv.includes('--check')) {
   if (readFileSync(output, 'utf8') !== content) {
-    console.error('Design tokens CSS is stale; run npm run build --workspace=@forge-org/tokens');
+    console.error('Design tokens CSS is stale; run npm run build --workspace=@corefoundry-labs/forge-tokens');
     process.exit(1);
   }
   console.log('Design tokens CSS matches the source JSON');

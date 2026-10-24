@@ -3,4 +3,4 @@ declare module '*.module.css' {
   export default classes;
 }
 
-declare module '@forge-org/tokens/tokens.css';
+declare module '@corefoundry-labs/forge-tokens/tokens.css';

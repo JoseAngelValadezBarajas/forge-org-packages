@@ -1,4 +1,4 @@
-import '@forge-org/tokens/tokens.css';
+import '@corefoundry-labs/forge-tokens/tokens.css';
 
 // Platform appearance utility; preference and persistence remain consumer-owned.
 export { useSystemTheme } from './hooks';

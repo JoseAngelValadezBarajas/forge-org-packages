@@ -14,10 +14,10 @@
     "packages/ui"
   ],
   "scripts": {
-    "build": "npm run build --workspace=@forge-org/tokens && npm run build --workspace=@forge-org/icons && npm run build --workspace=@forge-org/ui",
-    "test": "npm run build && npm test --workspace=@forge-org/tokens && npm test --workspace=@forge-org/icons && npm test --workspace=@forge-org/ui",
+    "build": "npm run build --workspace=@corefoundry-labs/forge-tokens && npm run build --workspace=@corefoundry-labs/forge-icons && npm run build --workspace=@corefoundry-labs/forge-ui",
+    "test": "npm run build && npm test --workspace=@corefoundry-labs/forge-tokens && npm test --workspace=@corefoundry-labs/forge-icons && npm test --workspace=@corefoundry-labs/forge-ui",
     "quality": "npm run test && npm run pack:check",
-    "pack:check": "npm pack --workspace=@forge-org/tokens --dry-run && npm pack --workspace=@forge-org/icons --dry-run && npm pack --workspace=@forge-org/ui --dry-run",
+    "pack:check": "npm pack --workspace=@corefoundry-labs/forge-tokens --dry-run && npm pack --workspace=@corefoundry-labs/forge-icons --dry-run && npm pack --workspace=@corefoundry-labs/forge-ui --dry-run",
     "publish:packages": "node tooling/scripts/publish-packages.mjs"
   },
   "devDependencies": {

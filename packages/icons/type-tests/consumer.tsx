@@ -1,5 +1,5 @@
 import { useRef } from 'react';
-import { AlertTriangle, Plus, Search, type IconProps } from '@forge-org/icons';
+import { AlertTriangle, Plus, Search, type IconProps } from '@corefoundry-labs/forge-icons';
 
 function IconConsumerExample() {
   const svgRef = useRef<SVGSVGElement>(null);

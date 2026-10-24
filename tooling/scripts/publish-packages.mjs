@@ -1,6 +1,6 @@
 import { spawnSync } from 'node:child_process';
 
-const packages = ['@forge-org/tokens', '@forge-org/icons', '@forge-org/ui'];
+const packages = ['@corefoundry-labs/forge-tokens', '@corefoundry-labs/forge-icons', '@corefoundry-labs/forge-ui'];
 if (!process.env.NODE_AUTH_TOKEN) {
   throw new Error('NODE_AUTH_TOKEN is required; no package was published');
 }

@@ -1,4 +1,4 @@
-# @forge-org/tokens
+# @corefoundry-labs/forge-tokens
 
 The versioned Forge design-token contract. `tokens.json` is authoritative; `npm run generate:tokens` generates `src/tokens.css`, and package builds distribute that generated file. Never edit generated CSS directly.
 
@@ -17,7 +17,7 @@ primitive samples are implementation foundations, not a claim that Figma
 defines those palette scales or names.
 
 ```css
-@import '@forge-org/tokens/tokens.css';
+@import '@corefoundry-labs/forge-tokens/tokens.css';
 
 .panel {
   color: var(--forge-text-primary);
@@ -30,7 +30,7 @@ Set `data-theme="light"` on a host element to scope light tokens; omit the
 attribute for the default dark palette.
 
 Build and validate with `npm run generate:tokens`, `npm run check:tokens`,
-`npm run build --workspace=@forge-org/tokens`, and
-`npm test --workspace=@forge-org/tokens`. Package consumers should import
-`@forge-org/tokens/tokens.css`; applications must not depend on the package's
+`npm run build --workspace=@corefoundry-labs/forge-tokens`, and
+`npm test --workspace=@corefoundry-labs/forge-tokens`. Package consumers should import
+`@corefoundry-labs/forge-tokens/tokens.css`; applications must not depend on the package's
 source directory.

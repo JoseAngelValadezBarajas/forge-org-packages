@@ -1,5 +1,5 @@
 {
-  "name": "@forge-org/ui",
+  "name": "@corefoundry-labs/forge-ui",
   "private": false,
   "version": "1.0.0",
   "publishConfig": {
@@ -26,8 +26,8 @@
     "test": "vitest run --config vitest.config.ts && npm run build && node scripts/css-distribution.test.mjs && node scripts/component-architecture.test.mjs && node --test scripts/shared-components.browser.test.mjs"
   },
   "dependencies": {
-    "@forge-org/icons": "1.0.0",
-    "@forge-org/tokens": "1.0.0"
+    "@corefoundry-labs/forge-icons": "1.0.0",
+    "@corefoundry-labs/forge-tokens": "1.0.0"
   },
   "peerDependencies": {
     "react": "^19.0.0"

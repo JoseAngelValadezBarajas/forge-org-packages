@@ -2,9 +2,9 @@
 
 This repository publishes the reusable visual packages used by FORGE:
 
-- `@forge-org/tokens` — semantic design tokens and CSS.
-- `@forge-org/icons` — licensed, reusable SVG icon components.
-- `@forge-org/ui` — accessible, domain-independent React components.
+- `@corefoundry-labs/forge-tokens` — semantic design tokens and CSS.
+- `@corefoundry-labs/forge-icons` — licensed, reusable SVG icon components.
+- `@corefoundry-labs/forge-ui` — accessible, domain-independent React components.
 
 
 ## Local development
@@ -30,5 +30,5 @@ $env:NODE_AUTH_TOKEN = '<classic-token-with-write:packages>'
 npm run publish:packages
 ```
 
-The publish script can publish only `@forge-org/tokens`, `@forge-org/icons`,
-and `@forge-org/ui`; it has no path or manifest for an API client.
+The publish script can publish only `@corefoundry-labs/forge-tokens`, `@corefoundry-labs/forge-icons`,
+and `@corefoundry-labs/forge-ui`; it has no path or manifest for an API client.

@@ -6,7 +6,7 @@ import {
   type ChangeEvent,
   type InputHTMLAttributes,
 } from 'react';
-import { Close, Search } from '@forge-org/icons';
+import { Close, Search } from '@corefoundry-labs/forge-icons';
 import styles from './SearchField.module.css';
 
 export type SearchFieldProps = Omit<InputHTMLAttributes<HTMLInputElement>, 'type'> & {

@@ -10,7 +10,7 @@
     "ignoreDeprecations": "6.0",
     "baseUrl": ".",
     "paths": {
-      "@forge-org/icons": ["dist/index.d.ts"]
+      "@corefoundry-labs/forge-icons": ["dist/index.d.ts"]
     }
   },
   "include": ["type-tests/consumer.tsx"]
