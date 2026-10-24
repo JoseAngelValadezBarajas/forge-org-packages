@@ -1,7 +1,7 @@
 {
   "name": "@corefoundry-labs/forge-ui",
   "private": false,
-  "version": "1.0.0",
+  "version": "1.0.1",
   "repository": {
     "type": "git",
     "url": "https://github.com/JoseAngelValadezBarajas/forge-org-packages.git"
@@ -31,8 +31,8 @@
     "test": "vitest run --config vitest.config.ts && npm run build && node scripts/css-distribution.test.mjs && node scripts/component-architecture.test.mjs && node --test scripts/shared-components.browser.test.mjs"
   },
   "dependencies": {
-    "@corefoundry-labs/forge-icons": "1.0.0",
-    "@corefoundry-labs/forge-tokens": "1.0.0"
+    "@corefoundry-labs/forge-icons": "1.0.1",
+    "@corefoundry-labs/forge-tokens": "1.0.1"
   },
   "peerDependencies": {
     "react": "^19.0.0"
