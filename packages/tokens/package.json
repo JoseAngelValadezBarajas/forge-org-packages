@@ -2,7 +2,7 @@
   "name": "@corefoundry-labs/forge-tokens",
   "private": false,
   "type": "module",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "repository": {
     "type": "git",
     "url": "https://github.com/JoseAngelValadezBarajas/forge-org-packages.git"
