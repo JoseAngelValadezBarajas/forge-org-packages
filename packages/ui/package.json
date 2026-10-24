@@ -2,8 +2,13 @@
   "name": "@corefoundry-labs/forge-ui",
   "private": false,
   "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/corefoundry-labs/forge-org-packages.git"
+  },
   "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
+    "registry": "https://registry.npmjs.org",
+    "access": "public"
   },
   "license": "Apache-2.0",
   "type": "module",
