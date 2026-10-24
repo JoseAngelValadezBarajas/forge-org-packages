@@ -1,0 +1,36 @@
+{
+  "name": "@forge-org/public-packages",
+  "version": "1.0.0",
+  "private": true,
+  "license": "Apache-2.0",
+  "packageManager": "npm@11.6.2",
+  "engines": {
+    "node": ">=24 <25",
+    "npm": ">=11 <12"
+  },
+  "workspaces": [
+    "packages/tokens",
+    "packages/icons",
+    "packages/ui"
+  ],
+  "scripts": {
+    "build": "npm run build --workspace=@forge-org/tokens && npm run build --workspace=@forge-org/icons && npm run build --workspace=@forge-org/ui",
+    "test": "npm run build && npm test --workspace=@forge-org/tokens && npm test --workspace=@forge-org/icons && npm test --workspace=@forge-org/ui",
+    "quality": "npm run test && npm run pack:check",
+    "pack:check": "npm pack --workspace=@forge-org/tokens --dry-run && npm pack --workspace=@forge-org/icons --dry-run && npm pack --workspace=@forge-org/ui --dry-run",
+    "publish:packages": "node tooling/scripts/publish-packages.mjs"
+  },
+  "devDependencies": {
+    "@testing-library/jest-dom": "^7.0.1",
+    "@testing-library/react": "^16.3.3",
+    "@playwright/test": "^1.64.1",
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^6.1.2",
+    "jsdom": "^29.1.1",
+    "react": "^19.3.0",
+    "react-dom": "^19.3.0",
+    "typescript": "^6.0.3",
+    "vitest": "^5.0.5"
+  }
+}

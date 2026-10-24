@@ -1,0 +1,35 @@
+{
+  "name": "@forge-org/ui",
+  "private": false,
+  "version": "1.0.0",
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "license": "Apache-2.0",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js"
+    },
+    "./styles.css": {
+      "types": "./dist/styles.css.d.ts",
+      "default": "./dist/styles.css"
+    },
+    "./package.json": "./package.json"
+  },
+  "scripts": {
+    "build": "node scripts/build.mjs",
+    "test": "vitest run --config vitest.config.ts && npm run build && node scripts/css-distribution.test.mjs && node scripts/component-architecture.test.mjs && node --test scripts/shared-components.browser.test.mjs"
+  },
+  "dependencies": {
+    "@forge-org/icons": "1.0.0",
+    "@forge-org/tokens": "1.0.0"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  }
+}
