@@ -5,7 +5,7 @@
   "version": "1.0.0",
   "repository": {
     "type": "git",
-    "url": "https://github.com/corefoundry-labs/forge-org-packages.git"
+    "url": "https://github.com/JoseAngelValadezBarajas/forge-org-packages.git"
   },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
