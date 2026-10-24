@@ -6,8 +6,6 @@ This repository publishes the reusable visual packages used by FORGE:
 - `@forge-org/icons` — licensed, reusable SVG icon components.
 - `@forge-org/ui` — accessible, domain-independent React components.
 
-`@forge-org/api-client` is intentionally not present here. It remains a local,
-private workspace in the FORGE application repository.
 
 ## Local development
 
