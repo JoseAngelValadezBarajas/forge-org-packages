@@ -21,6 +21,7 @@ jobs:
           scope: '@forge-org'
           cache: npm
       - run: npm ci
+      - run: npx playwright install --with-deps chromium
       - run: npm run quality
       - run: npm run publish:packages
         env:
