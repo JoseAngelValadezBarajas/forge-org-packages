@@ -39,8 +39,9 @@ the policy only; it adds no V2 components.
   existing runtime behavior and do not introduce new required peer dependencies.
 - Existing public aliases are compatibility contracts. Keep their names,
   targets, and types available alongside canonical exports.
-- Peer dependency requirements and package runtime dependencies are checked as
-  consumer-facing installation contracts.
+- Peer dependency requirements remain stable as consumer-facing installation
+  contracts. Existing runtime dependency names remain available; compatible
+  version updates and additive runtime dependencies are allowed.
 
 ## CSS, tokens, and themes
 
@@ -90,9 +91,10 @@ Run `npm run check:compatibility` to:
 5. Check source-level type assignability from the published declarations to the
    candidate declarations, and run browser smoke coverage against each
    installed package set.
-6. Remove the V1 `Input` alias in a temporary installed candidate and require
-   the external consumer check to fail, proving the gate rejects a controlled
-   incompatibility. The probe changes only its disposable temp install.
+6. In disposable candidate installs, remove the V1 `Input` alias, widen a
+   public hook return type, and change a generic type default; require the
+   consumer/type comparisons to reject each controlled incompatibility. These
+   probes change only their temporary installs.
 
 `npm run quality` includes the compatibility gate through the existing test
 chain. The GitHub Quality workflow remains the single CI pipeline. This gate

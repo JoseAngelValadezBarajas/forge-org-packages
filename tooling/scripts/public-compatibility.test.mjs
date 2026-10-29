@@ -45,3 +45,24 @@ test('public surface comparison rejects a newly required peer dependency', () =>
 
   assert.ok(failures.some((failure) => failure.includes('peer dependency contract react-dom was added')));
 });
+
+test('public surface comparison permits additive CSS variables and token keys', () => {
+  const candidate = structuredClone(baseline);
+  candidate.cssVariables[':root --forge-new-token'] = '#fff';
+  candidate.tokenValues['colors.dark.newToken'] = '#fff';
+
+  assert.deepEqual(comparePublicSurface(baseline, candidate), []);
+});
+
+test('public surface comparison allows runtime dependency updates but requires existing dependencies', () => {
+  const before = structuredClone(baseline);
+  before.dependencies = { '@corefoundry-labs/forge-icons': '1.0.2' };
+  const candidate = structuredClone(before);
+  candidate.dependencies['@corefoundry-labs/forge-icons'] = '1.0.3';
+
+  assert.deepEqual(comparePublicSurface(before, candidate), []);
+
+  delete candidate.dependencies['@corefoundry-labs/forge-icons'];
+  const failures = comparePublicSurface(before, candidate);
+  assert.ok(failures.some((failure) => failure.includes('runtime dependency @corefoundry-labs/forge-icons was removed')));
+});

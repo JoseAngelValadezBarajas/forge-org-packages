@@ -29,14 +29,22 @@ function normalizeNames(names) {
   return [...new Set(names)].sort();
 }
 
-function compareRecord(label, baseline, candidate, failures) {
+function compareRecord(label, baseline, candidate, failures, { allowAdditions = false } = {}) {
   baseline ??= {};
   candidate ??= {};
   for (const [key, value] of Object.entries(baseline)) {
     if (candidate[key] !== value) failures.push(`${label} ${key} changed or was removed`);
   }
-  for (const key of Object.keys(candidate)) {
-    if (!(key in baseline)) failures.push(`${label} ${key} was added`);
+  if (!allowAdditions) {
+    for (const key of Object.keys(candidate)) {
+      if (!(key in baseline)) failures.push(`${label} ${key} was added`);
+    }
+  }
+}
+
+function compareDependencyNames(baseline = {}, candidate = {}, failures) {
+  for (const name of Object.keys(baseline)) {
+    if (!(name in candidate)) failures.push(`runtime dependency ${name} was removed`);
   }
 }
 
@@ -70,9 +78,9 @@ export function comparePublicSurface(baseline, candidate) {
   }
 
   compareRecord('peer dependency contract', baseline.peerDependencies, candidate.peerDependencies, failures);
-  compareRecord('runtime dependency contract', baseline.dependencies, candidate.dependencies, failures);
-  compareRecord('public CSS token', baseline.cssVariables, candidate.cssVariables, failures);
-  compareRecord('public token value', baseline.tokenValues, candidate.tokenValues, failures);
+  compareDependencyNames(baseline.dependencies, candidate.dependencies, failures);
+  compareRecord('public CSS token', baseline.cssVariables, candidate.cssVariables, failures, { allowAdditions: true });
+  compareRecord('public token value', baseline.tokenValues, candidate.tokenValues, failures, { allowAdditions: true });
   return failures;
 }
 
@@ -324,6 +332,7 @@ export const buttonContract: ButtonProps = { variant: 'primary', size: 'medium',
 export const aliasContract: InputProps = { value: 'V1 input', onChange: () => undefined };
 export const tokenContract: string = tokens.colors.dark.accent;
 export const packageSubpathContract: string[] = [tokenManifest.version, iconManifest.version, uiManifest.version];
+export const themeContract: SystemTheme = useSystemTheme();
 export const cardContract = <Card as="article" variant="elevated" aria-label="Summary" />;
 export const chipContract = <StatusChip tone="reported">Reported</StatusChip>;
 export const inputContract = <><Input aria-label="Old Input alias" /><TextInput aria-label="TextInput" /></>;
@@ -346,6 +355,15 @@ async function writeConsumerFixture(consumerDirectory, baseline) {
   await writeFile(join(consumerDirectory, 'tsconfig.json'), `${JSON.stringify(allTypeScriptConfig(), null, 2)}\n`);
 }
 
+async function isolateCandidateTypePackageIds(consumerDirectory, baseline) {
+  for (const name of Object.keys(baseline.packages)) {
+    const manifestPath = join(consumerDirectory, 'node_modules', name, 'package.json');
+    const manifest = JSON.parse(await readFile(manifestPath, 'utf8'));
+    manifest.version = `${manifest.version}-compat.0`;
+    await writeFile(manifestPath, `${JSON.stringify(manifest, null, 2)}\n`);
+  }
+}
+
 function findSymbol(checker, moduleSymbol, name) {
   const exported = checker.getExportsOfModule(moduleSymbol).find((symbol) => symbol.name === name);
   if (!exported) return undefined;
@@ -357,6 +375,13 @@ function genericArguments(symbol) {
     (node) => ts.isTypeAliasDeclaration(node) || ts.isInterfaceDeclaration(node),
   );
   return Array.from({ length: declaration?.typeParameters?.length ?? 0 }, () => 'any');
+}
+
+function hasDefaultTypeParameter(symbol) {
+  const declaration = symbol?.declarations?.find(
+    (node) => ts.isTypeAliasDeclaration(node) || ts.isInterfaceDeclaration(node),
+  );
+  return declaration?.typeParameters?.some((parameter) => parameter.default) ?? false;
 }
 
 async function writeTypeCompatibility(candidateDirectory, baselineDirectory, baseline) {
@@ -401,7 +426,9 @@ async function writeTypeCompatibility(candidateDirectory, baselineDirectory, bas
   const lines = [
     source.trimEnd(),
     'type IsCompatible<Old, Current> = [Old] extends [Current] ? true : false;',
+    'type IsExact<Left, Right> = [Left] extends [Right] ? ([Right] extends [Left] ? true : false) : false;',
     'type Assert<T extends true> = T;',
+    'const _compat_systemThemeReturn: LegacyUI.SystemTheme = CurrentUI.useSystemTheme();',
   ];
   const compare = (name, oldModule, currentModule, kind) => {
     const before = findSymbol(checker, oldModule, name);
@@ -410,11 +437,15 @@ async function writeTypeCompatibility(candidateDirectory, baselineDirectory, bas
     if (kind === 'runtime') {
       const oldNamespace = oldModule === legacyIcons ? 'LegacyIcons' : 'LegacyUI';
       const currentNamespace = currentModule === currentIcons ? 'CurrentIcons' : 'CurrentUI';
-      lines.push(`type _compat_${name} = Assert<IsCompatible<typeof ${oldNamespace}.${name}, typeof ${currentNamespace}.${name}>>;`);
+      lines.push(`const _compat_${name}: Assert<IsCompatible<typeof ${oldNamespace}.${name}, typeof ${currentNamespace}.${name}>> = true;`);
+      lines.push(`const _compat_signature_${name}: typeof ${oldNamespace}.${name} = ${currentNamespace}.${name};`);
     } else {
       const oldNs = oldModule === legacyIcons ? 'LegacyIcons' : 'LegacyUI';
       const currentNs = currentModule === currentIcons ? 'CurrentIcons' : 'CurrentUI';
-      lines.push(`type _compat_${name} = Assert<IsCompatible<${oldNs}.${name}${suffix}, ${currentNs}.${name}${suffix}>>;`);
+      lines.push(`const _compat_${name}: Assert<IsCompatible<${oldNs}.${name}${suffix}, ${currentNs}.${name}${suffix}>> = true;`);
+      if (hasDefaultTypeParameter(before)) {
+        lines.push(`const _compat_default_${name}: Assert<IsExact<${oldNs}.${name}, ${currentNs}.${name}>> = true;`);
+      }
     }
   };
   for (const name of baseline.packages['@corefoundry-labs/forge-icons'].runtimeExports) {
@@ -448,6 +479,12 @@ async function writeTypeCompatibility(candidateDirectory, baselineDirectory, bas
 }
 
 async function browserSmoke(consumerDirectory, baseline) {
+  const packageVersions = [];
+  for (const name of Object.keys(baseline.packages)) {
+    const packageManifestPath = join(consumerDirectory, 'node_modules', name, 'package.json');
+    const packageManifest = JSON.parse(await readFile(packageManifestPath, 'utf8'));
+    packageVersions.push(packageManifest.version);
+  }
   const icons = baseline.packages['@corefoundry-labs/forge-icons'].runtimeExports;
   const ui = baseline.packages['@corefoundry-labs/forge-ui'].runtimeExports;
   const uiSymbols = ui.filter((name) => name !== 'useSystemTheme');
@@ -501,7 +538,7 @@ createRoot(document.getElementById('root')).render(<App />);
     await page.getByRole('button', { name: 'Compatibility action' }).waitFor();
     await page.getByRole('textbox', { name: 'V1 Input alias' }).waitFor();
     assert.equal(await page.getByTestId('token-value').textContent(), '#d8874d');
-    assert.equal(await page.getByTestId('package-versions').textContent(), '1.0.2,1.0.2,1.0.2');
+    assert.equal(await page.getByTestId('package-versions').textContent(), packageVersions.join(','));
     assert.equal(await page.getByText('Reported').textContent(), 'Reported');
     assert.equal(await page.locator('html').evaluate((element) => getComputedStyle(element).getPropertyValue('--forge-accent').trim()), '#d8874d');
     assert.deepEqual(errors, []);
@@ -562,12 +599,13 @@ export async function runCompatibilityGate() {
     const candidateTypes = await runTypecheck(candidateConsumer);
     assert.equal(candidateTypes.status, 0, `candidate external consumer did not compile:\n${candidateTypes.output}`);
 
+    await browserSmoke(baselineConsumer, baseline);
+    await browserSmoke(candidateConsumer, baseline);
+
+    await isolateCandidateTypePackageIds(candidateConsumer, baseline);
     await writeTypeCompatibility(candidateConsumer, baselineConsumer, baseline);
     const typeCompatibility = await runTypecheck(candidateConsumer, 'tsconfig.compatibility.json');
     assert.equal(typeCompatibility.status, 0, `candidate types are incompatible with published 1.0.2:\n${typeCompatibility.output}`);
-
-    await browserSmoke(baselineConsumer, baseline);
-    await browserSmoke(candidateConsumer, baseline);
 
     const candidateUiRoot = join(candidateConsumer, 'node_modules', '@corefoundry-labs', 'forge-ui');
     const declarationsPath = join(candidateUiRoot, 'dist', 'index.d.ts');
@@ -583,12 +621,50 @@ export async function runCompatibilityGate() {
       await writeFile(declarationsPath, declarations);
     }
 
+    const hookDeclarationPath = join(candidateUiRoot, 'dist', 'hooks', 'useSystemTheme.d.ts');
+    const hookDeclaration = await readFile(hookDeclarationPath, 'utf8');
+    const widenedHookDeclaration = hookDeclaration.replace(
+      'useSystemTheme(): SystemTheme;',
+      'useSystemTheme(): SystemTheme | undefined;',
+    );
+    assert.notEqual(widenedHookDeclaration, hookDeclaration, 'negative probe could not find useSystemTheme return type');
+    try {
+      await writeFile(hookDeclarationPath, widenedHookDeclaration);
+      const widenedConsumer = await runTypecheck(candidateConsumer);
+      assert.notEqual(widenedConsumer.status, 0, 'compatibility gate accepted a widened V1 hook return type');
+      assert.match(widenedConsumer.output, /SystemTheme/, 'return widening probe failed for an unrelated reason');
+      const widenedCompatibility = await runTypecheck(candidateConsumer, 'tsconfig.compatibility.json');
+      assert.notEqual(
+        widenedCompatibility.status,
+        0,
+        'type comparator accepted a widened V1 hook return type',
+      );
+    } finally {
+      await writeFile(hookDeclarationPath, hookDeclaration);
+    }
+
+    const cardDeclarationPath = join(candidateUiRoot, 'dist', 'components', 'surfaces', 'Card', 'Card.d.ts');
+    const cardDeclaration = await readFile(cardDeclarationPath, 'utf8');
+    const changedCardDefault = cardDeclaration.replace(
+      "CardProps<T extends CardElement = 'div'>",
+      "CardProps<T extends CardElement = 'article'>",
+    );
+    assert.notEqual(changedCardDefault, cardDeclaration, 'negative probe could not find CardProps default type argument');
+    try {
+      await writeFile(cardDeclarationPath, changedCardDefault);
+      const changedDefault = await runTypecheck(candidateConsumer, 'tsconfig.compatibility.json');
+      assert.notEqual(changedDefault.status, 0, 'type comparator accepted a changed CardProps default type argument');
+      assert.match(changedDefault.output, /TS2344/, 'generic default probe failed for an unrelated reason');
+    } finally {
+      await writeFile(cardDeclarationPath, cardDeclaration);
+    }
+
     return {
       baselinePackages: Object.keys(baseline.packages).length,
       runtimeExports: Object.values(baseline.packages).reduce((count, entry) => count + entry.runtimeExports.length, 0),
       typeExports: Object.values(baseline.packages).reduce((count, entry) => count + entry.typeExports.length, 0),
       consumers: 2,
-      negativeProbe: 'removed Input alias rejected',
+      negativeProbes: ['removed Input alias rejected', 'widened V1 return type rejected', 'changed generic type default rejected'],
       result: 'passed',
     };
   } finally {
