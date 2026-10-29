@@ -15,10 +15,11 @@
   ],
   "scripts": {
     "build": "npm run build --workspace=@corefoundry-labs/forge-tokens && npm run build --workspace=@corefoundry-labs/forge-icons && npm run build --workspace=@corefoundry-labs/forge-ui",
-    "test": "npm run build && npm test --workspace=@corefoundry-labs/forge-tokens && npm test --workspace=@corefoundry-labs/forge-icons && npm test --workspace=@corefoundry-labs/forge-ui",
+    "test": "npm run build && npm test --workspace=@corefoundry-labs/forge-tokens && npm test --workspace=@corefoundry-labs/forge-icons && npm test --workspace=@corefoundry-labs/forge-ui && npm run check:compatibility",
     "quality": "npm run test && npm run pack:check",
     "pack:check": "npm pack --workspace=@corefoundry-labs/forge-tokens --dry-run && npm pack --workspace=@corefoundry-labs/forge-icons --dry-run && npm pack --workspace=@corefoundry-labs/forge-ui --dry-run",
-    "publish:packages": "node tooling/scripts/publish-packages.mjs"
+    "publish:packages": "node tooling/scripts/publish-packages.mjs",
+    "check:compatibility": "npm run build && node --test tooling/scripts/public-compatibility.test.mjs && node tooling/scripts/public-compatibility.mjs"
   },
   "devDependencies": {
     "@testing-library/jest-dom": "^7.0.1",

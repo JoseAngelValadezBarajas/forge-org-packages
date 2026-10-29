@@ -55,6 +55,12 @@ npm run pack:check     # inspect publishable tarballs without publishing
 
 Only compiled `dist` artifacts are included in the published packages.
 
+The public V1 contract and compatibility gate are documented in
+[`PUBLIC_COMPATIBILITY.md`](PUBLIC_COMPATIBILITY.md). Run
+`npm run check:compatibility` to compare freshly packed candidate artifacts
+with the integrity-pinned npm 1.0.2 tarballs and compile/run external consumers
+against both.
+
 ## Releases and publishing
 
 Releases are driven from GitHub Actions using npm Trusted Publishing (OIDC);
