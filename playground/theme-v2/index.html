@@ -1,0 +1,22 @@
+<!doctype html>
+<html lang="en">
+  <head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>CoreFoundry Theme Playground</title></head>
+  <body><div id="app">
+    <header><p class="eyebrow">COREFOUNDRY / DESIGN TOOLS</p><h1>Theme playground</h1><p>Explore a color identity and inspect its semantic roles.</p></header>
+    <main><aside class="panel controls"><h2>Theme settings</h2>
+      <label>Preset <select id="preset"><option value="forge">Forge</option><option value="formiai">FormiAI · demo</option><option value="autofund">AutoFund · demo</option><option value="neutral">Neutral</option></select></label>
+      <label>Appearance <select id="mode"><option value="light">Light</option><option value="dark">Dark</option><option value="high-contrast">High contrast · dark</option></select></label>
+      <label>Primary seed <input id="primary" type="color"></label><label>Secondary seed <input id="secondary" type="color"></label><label>Neutral seed <input id="neutral" type="color"></label>
+      <label>Neutral variant seed <input id="neutralVariant" type="color"></label><label>Tertiary seed <input id="tertiary" type="color"></label>
+      <label>Error seed <input id="errorSeed" type="color"></label><label>Warning seed <input id="warning" type="color"></label><label>Success seed <input id="success" type="color"></label><label>Info seed <input id="info" type="color"></label>
+      <div class="actions"><button id="export-json" type="button">Export JSON</button><button id="export-css" type="button">Export CSS</button></div>
+      <p id="error" role="alert"></p><p class="muted">FormiAI and AutoFund colors are provisional demonstrations.</p>
+    </aside><section class="content">
+      <div id="preview" class="preview"><p class="eyebrow">LIVE PREVIEW</p><h2>Make space for good work.</h2><p>These examples consume semantic V2 roles in this container.</p><div class="preview-card"><strong>Project overview</strong><p>Review the next milestone with your team.</p><button class="sample-button" type="button">Continue</button> <button class="sample-button" type="button" disabled>Unavailable</button></div><p class="feedback"><span style="color:var(--cf-v2-success)">● Success</span> &nbsp; <span style="color:var(--cf-v2-warning)">▲ Warning</span> &nbsp; <span style="color:var(--cf-v2-error)">■ Error</span> &nbsp; <span style="color:var(--cf-v2-info)">ℹ Info</span></p><div id="v1-button"></div></div>
+      <div id="comparison" class="comparison"><strong>Independent neutral scope</strong><p>Changing the preview does not change this container.</p></div>
+      <section class="panel"><h2>Tonal palettes</h2><div id="palettes" class="palettes"></div></section>
+      <section class="panel"><h2>Semantic tokens</h2><div id="roles" class="role-grid"></div></section>
+      <section class="panel"><h2>Contrast checks</h2><p class="muted">Ratios are mathematical checks; a complete accessibility review also needs real interfaces and assistive technology.</p><div id="contrast" class="contrast-grid"></div></section>
+    </section></main>
+  </div><script type="module" src="/main.js"></script></body>
+</html>
