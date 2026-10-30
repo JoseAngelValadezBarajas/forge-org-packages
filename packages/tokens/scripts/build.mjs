@@ -17,3 +17,7 @@ await writeFile(
   'declare const stylesheet: string;\nexport default stylesheet;\n',
 );
 await cp(join(packageRoot, 'tokens.json'), join(dist, 'tokens.json'));
+execFileSync(process.execPath, [resolve(packageRoot, '../../node_modules/typescript/bin/tsc'), '--project', join(packageRoot, 'tsconfig.theme-v2.json')], {
+  cwd: packageRoot,
+  stdio: 'inherit',
+});
