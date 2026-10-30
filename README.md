@@ -61,6 +61,10 @@ The public V1 contract and compatibility gate are documented in
 with the integrity-pinned npm 1.0.2 tarballs and compile/run external consumers
 against both.
 
+The [dynamic theme engine V2](docs/design-system/theme-engine-v2.md) generates
+scoped color tokens without changing the existing V1 theme. Run
+`npm run playground:theme-v2` after building to explore the engine.
+
 ## Releases and publishing
 
 Releases are driven from GitHub Actions using npm Trusted Publishing (OIDC);

@@ -21,10 +21,17 @@
       "default": "./dist/tokens.css"
     },
     "./tokens.json": "./dist/tokens.json",
+    "./theme-v2": {
+      "types": "./dist/theme-v2/index.d.ts",
+      "import": "./dist/theme-v2/index.js"
+    },
     "./package.json": "./package.json"
   },
   "scripts": {
     "build": "node scripts/build.mjs",
     "test": "node --test scripts/*.test.mjs"
+  },
+  "dependencies": {
+    "@material/material-color-utilities": "0.3.0"
   }
 }
