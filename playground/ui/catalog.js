@@ -59,6 +59,10 @@ const groups = {
     ['Table', 'Structured data with native table semantics.', '<Table caption="Projects" columns={[{key:"name",label:"Name"},{key:"status",label:"Status"}]} rows={[{name:"Atlas",status:"Ready"},{name:"Orbit",status:"Draft"}]} />'],
   ],
   Overlays: [
+    ['DialogV2', 'A modal surface with focus containment and scroll lock.', '<><ButtonV2 onClick={() => setOpen(true)}>Open dialog</ButtonV2><DialogV2 open={open} onOpenChange={setOpen} title="Confirm action" description="Review the details before continuing." footer={<ButtonV2 onClick={() => setOpen(false)}>Continue</ButtonV2>} /></>', 'const [open, setOpen] = useState(false);', ['ButtonV2']],
+    ['TooltipV2', 'Short plain text on hover or keyboard focus.', '<TooltipV2 content="Additional information"><ButtonV2 variant="secondary">Focus or hover</ButtonV2></TooltipV2>', '', ['ButtonV2']],
+    ['PopoverV2', 'A nonmodal surface anchored to a trigger.', '<PopoverV2 trigger={<ButtonV2 variant="secondary">More options</ButtonV2>} title="Preferences" description="Choose how information is presented." />', '', ['ButtonV2']],
+    ['DropdownMenuV2', 'A semantic menu of contextual actions.', '<DropdownMenuV2 trigger={<ButtonV2 variant="secondary">More actions</ButtonV2>} items={[{id:"edit",label:"Edit"},{id:"delete",label:"Delete",destructive:true}]} />', '', ['ButtonV2']],
     ['Dialog', 'A focused decision with native modal behavior.', '<><button onClick={() => setOpen(true)}>Open dialog</button><Dialog open={open} onClose={() => setOpen(false)} title="Review draft" actions={<button onClick={() => setOpen(false)}>Done</button>} /></>', 'const [open, setOpen] = useState(false);'],
     ['Popover', 'Disclosure for useful secondary information.', '<Popover trigger="Workspace details"><p>Atlas · Development</p></Popover>'],
   ],

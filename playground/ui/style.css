@@ -520,3 +520,47 @@ body {
     grid-template-columns: minmax(0, 1fr);
   }
 }
+
+.overlay-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: flex-start;
+}
+
+.overlay-placements {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  justify-content: space-around;
+  width: 100%;
+  max-width: 640px;
+  margin-inline: auto;
+  padding-block: 56px;
+}
+
+.overlay-option {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.overlay-note {
+  margin: 0;
+  font-size: 11px;
+  opacity: 0.75;
+}
+
+.overlay-terms {
+  display: grid;
+  gap: 12px;
+  margin: 0;
+}
+
+.overlay-clip {
+  overflow: hidden;
+  max-width: 220px;
+  padding: 12px;
+  border: 1px dashed var(--cf-v2-outline);
+  border-radius: 8px;
+}

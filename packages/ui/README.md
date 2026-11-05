@@ -63,6 +63,17 @@ import { AlertV2, BadgeV2, CardV2, TabsV2 } from '@corefoundry-labs/forge-ui';
 <AlertV2 tone="error" title="Could not save" description="Try again." onDismiss={close} />;
 ```
 
+`DialogV2`, `TooltipV2`, `PopoverV2`, and `DropdownMenuV2` are the V2 overlays. They render in place and rise into the browser top layer, so they inherit their `ThemeScope` and no ancestor can clip them. They need the Popover API: Chrome and Edge 114, Safari 17, or Firefox 125.
+
+```tsx
+import { ButtonV2, DialogV2, DropdownMenuV2, PopoverV2, TooltipV2 } from '@corefoundry-labs/forge-ui';
+
+<DialogV2 open={open} onOpenChange={setOpen} title="Confirm action" footer={<ButtonV2 onClick={confirm}>Continue</ButtonV2>} />;
+<TooltipV2 content="Copy the link"><ButtonV2 aria-label="Copy" iconStart={<Copy />} /></TooltipV2>;
+<PopoverV2 trigger={<ButtonV2>More options</ButtonV2>} title="Preferences">{content}</PopoverV2>;
+<DropdownMenuV2 trigger={<ButtonV2>More actions</ButtonV2>} items={[{ id: 'edit', label: 'Edit', onSelect: edit }]} />;
+```
+
 Preview the V2 components, the V1 components, and `FeedbackStateV2` locally with `npm run playground:ui` from the repository root. The host lets you change the preset, mode, and primary seed within the preview. The preview documents package rendering; it is not a human Figma certification.
 
 Build and test this package independently from the repository root with `npm run build --workspace=@corefoundry-labs/forge-ui` and `npm test --workspace=@corefoundry-labs/forge-ui`.

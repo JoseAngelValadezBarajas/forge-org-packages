@@ -283,6 +283,103 @@ test('V2 display components render every state in the component host', async () 
   }
 });
 
+test('V2 overlays open, follow the theme and stay in the viewport in the component host', async () => {
+  const server = await createServer({
+    configFile: false,
+    root: join(root, 'playground/ui'),
+    server: { host: '127.0.0.1', port: 0, strictPort: true },
+  });
+  let browser;
+  try {
+    await server.listen();
+    browser = await chromium.launch({ headless: true });
+    const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
+    const errors = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    page.on('console', (message) => {
+      if (message.type() === 'error') errors.push(message.text());
+    });
+    const open = async (name, testId) => {
+      await page.goto(`${server.resolvedUrls.local[0]}#/${name}`);
+      await page.getByRole('heading', { level: 1, name, exact: true }).waitFor();
+      await page.getByTestId(testId).waitFor();
+    };
+    const role = (name) => page.locator('.theme-preview').evaluate((element, token) => getComputedStyle(element).getPropertyValue(token).trim(), `--cf-v2-${name}`);
+    const style = (id, property) => page.getByTestId(id).evaluate((element, key) => getComputedStyle(element)[key], property);
+    const active = (id) => page.getByTestId(id).evaluate((element) => document.activeElement === element);
+
+    await open('DialogV2', 'dialog-sm-open');
+    for (const [size, width] of [['sm', '350px'], ['md', '445px'], ['lg', '560px']]) {
+      await page.getByTestId(`dialog-${size}-open`).click();
+      await page.getByTestId(`dialog-${size}`).waitFor();
+      assert.equal(await style(`dialog-${size}`, 'width'), width);
+      assert.equal(await style(`dialog-${size}`, 'backgroundColor'), rgb(await role('surface-container')));
+      await page.keyboard.press('Escape');
+      await page.getByTestId(`dialog-${size}`).waitFor({ state: 'hidden' });
+      assert.equal(await active(`dialog-${size}-open`), true);
+    }
+    await page.getByTestId('dialog-destructive-open').click();
+    assert.equal(await page.getByTestId('dialog-destructive').getByRole('button', { name: 'Delete' }).getAttribute('data-variant'), 'danger');
+    await page.keyboard.press('Escape');
+    await page.getByTestId('dialog-locked-open').click();
+    await page.keyboard.press('Escape');
+    assert.equal(await page.getByTestId('dialog-locked').isVisible(), true);
+    await page.getByTestId('dialog-locked').getByRole('button', { name: 'Cancel' }).click();
+    await page.getByTestId('dialog-locked').waitFor({ state: 'hidden' });
+
+    await open('TooltipV2', 'tooltip-top-trigger');
+    for (const placement of ['top', 'bottom', 'left', 'right']) {
+      await page.getByTestId(`tooltip-${placement}-trigger`).hover();
+      await page.getByTestId(`tooltip-${placement}`).waitFor();
+      assert.equal(await page.getByTestId(`tooltip-${placement}`).getAttribute('data-placement'), placement);
+      await page.mouse.move(0, 0);
+      await page.getByTestId(`tooltip-${placement}`).waitFor({ state: 'hidden' });
+    }
+    await page.getByTestId('tooltip-clip-trigger').hover();
+    await page.getByTestId('tooltip-clip').waitFor();
+    assert.equal(await page.getByTestId('tooltip-clip').evaluate((element) => {
+      const { left, top, width, height } = element.getBoundingClientRect();
+      return element.contains(document.elementFromPoint(left + width / 2, top + height / 2));
+    }), true);
+    await page.mouse.move(0, 0);
+
+    await open('PopoverV2', 'popover-compact-trigger');
+    await page.getByTestId('popover-compact-trigger').click();
+    await page.getByTestId('popover-compact').waitFor();
+    assert.equal(await style('popover-compact', 'width'), '250px');
+    assert.equal(await page.getByTestId('popover-compact').getByRole('checkbox', { name: 'Show descriptions' }).isChecked(), true);
+    await page.keyboard.press('Escape');
+    await page.getByTestId('popover-compact').waitFor({ state: 'hidden' });
+    assert.equal(await active('popover-compact-trigger'), true);
+    await page.getByTestId('popover-anchored-open').click();
+    await page.getByTestId('popover-anchored').waitFor();
+    await page.mouse.click(2, 2);
+    await page.getByTestId('popover-anchored').waitFor({ state: 'hidden' });
+
+    await open('DropdownMenuV2', 'menu-compact-trigger');
+    await page.getByTestId('menu-compact-trigger').click();
+    await page.getByTestId('menu-compact').getByRole('menuitem', { name: 'Duplicate' }).click();
+    assert.equal(await page.getByTestId('menu-result').textContent(), 'Last action: Duplicate');
+    await page.getByTestId('menu-dialog-trigger').focus();
+    await page.keyboard.press('ArrowDown');
+    await page.keyboard.press('Enter');
+    await page.getByTestId('menu-dialog-confirm').waitFor();
+    await page.keyboard.press('Escape');
+    await page.getByTestId('menu-dialog-confirm').waitFor({ state: 'hidden' });
+    assert.equal(await active('menu-dialog-trigger'), true);
+
+    await page.setViewportSize({ width: 375, height: 800 });
+    for (const [name, testId] of [['DialogV2', 'dialog-sm-open'], ['TooltipV2', 'tooltip-top-trigger'], ['PopoverV2', 'popover-compact-trigger'], ['DropdownMenuV2', 'menu-compact-trigger']]) {
+      await open(name, testId);
+      assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), true, name);
+    }
+    assert.deepEqual(errors, []);
+  } finally {
+    await browser?.close();
+    await server.close();
+  }
+});
+
 test('ButtonV2 follows the Theme Engine across geometry, states and presets', async () => {
   const server = await createServer({
     configFile: false,

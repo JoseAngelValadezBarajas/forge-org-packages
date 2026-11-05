@@ -117,6 +117,20 @@ export { Table } from './components/data-display/Table';
 export type { TableProps, TableColumn } from './components/data-display/Table';
 
 // Overlays
+export { DialogV2 } from './componentsV2/overlays/DialogV2';
+export type { DialogV2Props, DialogV2Size } from './componentsV2/overlays/DialogV2';
+export { TooltipV2 } from './componentsV2/overlays/TooltipV2';
+export type { TooltipV2Placement, TooltipV2Props } from './componentsV2/overlays/TooltipV2';
+export { PopoverV2 } from './componentsV2/overlays/PopoverV2';
+export type { PopoverV2Align, PopoverV2Placement, PopoverV2Props, PopoverV2Width } from './componentsV2/overlays/PopoverV2';
+export { DropdownMenuV2 } from './componentsV2/overlays/DropdownMenuV2';
+export type {
+  DropdownMenuV2Action,
+  DropdownMenuV2Density,
+  DropdownMenuV2Item,
+  DropdownMenuV2Props,
+  DropdownMenuV2Separator,
+} from './componentsV2/overlays/DropdownMenuV2';
 export { Dialog } from './components/overlays/Dialog';
 export type { DialogProps } from './components/overlays/Dialog';
 export { Popover } from './components/overlays/Popover';

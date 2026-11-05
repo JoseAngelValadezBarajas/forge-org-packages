@@ -145,6 +145,8 @@ Disabled and focus treatments are not part of these roles. Focus keeps using
 
 ## Component geometry
 
+The `overlay`, `dialog`, `tooltip`, `popover`, and `menu` groups serve the [V2 overlays](overlays-v2.md).
+
 Geometry is theme-independent, so it is not a theme role. It belongs to V2 and
 stays out of the V1 `tokens.css` and `tokens.json`. The `geometry` export of
 `@corefoundry-labs/forge-tokens/theme-v2` is its source of truth, and

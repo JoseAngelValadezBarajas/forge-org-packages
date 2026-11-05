@@ -31,6 +31,8 @@ export const contrastPairs: [SemanticRole, SemanticRole, number][] = [
   ['actionPrimary', 'surfaceContainer', 4.5], ['actionPrimary', 'surfaceContainerHover', 4.5],
   ['error', 'surfaceContainer', 4.5], ['warning', 'surfaceContainer', 4.5],
   ['success', 'surfaceContainer', 4.5], ['info', 'surfaceContainer', 4.5],
+  ['error', 'surfaceContainerHover', 4.5], ['focusRing', 'surfaceContainer', 3],
+  ['focusRing', 'surfaceContainerHover', 3],
 ];
 
 export function normalizeColor(value: unknown, label: string): string {

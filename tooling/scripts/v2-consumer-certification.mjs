@@ -120,7 +120,7 @@ async function writeConsumer(directory) {
     extends: './tsconfig.json',
     include: ['src/negative.tsx'],
   }, null, 2)}\n`);
-  await writeFile(join(directory, 'src', 'negative.tsx'), `import { AlertV2, BadgeV2, ButtonV2, CardV2, CheckboxV2, SelectV2, SwitchV2, TabsV2, TextInputV2 } from '@corefoundry-labs/forge-ui';
+  await writeFile(join(directory, 'src', 'negative.tsx'), `import { AlertV2, BadgeV2, ButtonV2, CardV2, CheckboxV2, DialogV2, DropdownMenuV2, PopoverV2, SelectV2, SwitchV2, TabsV2, TextInputV2, TooltipV2 } from '@corefoundry-labs/forge-ui';
 export const missingName = <ButtonV2 iconStart={<svg />} />;
 export const unnamedCheckbox = <CheckboxV2 />;
 export const unnamedSwitch = <SwitchV2 />;
@@ -133,10 +133,17 @@ export const unnamedTabs = <TabsV2 items={[]} />;
 export const unknownBadgeTone = <BadgeV2 tone="danger">Label</BadgeV2>;
 export const disabledStaticCard = <CardV2 disabled>Body</CardV2>;
 export const linkedStaticCard = <CardV2 href="#card">Body</CardV2>;
+export const untitledDialog = <DialogV2 open onOpenChange={() => undefined} />;
+export const inescapableDialog = <DialogV2 open onOpenChange={() => undefined} title="Stuck" closeOnEscape={false} />;
+export const interactiveTooltip = <TooltipV2 content={<button />}><button /></TooltipV2>;
+export const unnamedPopover = <PopoverV2 trigger={<button />} />;
+export const unanchoredPopover = <PopoverV2 title="Floating" />;
+export const unlabeledMenuItem = <DropdownMenuV2 trigger={<button />} items={[{ id: 'edit' }]} />;
+export const menuWithoutTrigger = <DropdownMenuV2 items={[]} />;
 `);
-  await writeFile(join(directory, 'src', 'main.tsx'), `import { useState, type ReactNode } from 'react';
+  await writeFile(join(directory, 'src', 'main.tsx'), `import { useRef, useState, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { AlertV2, BadgeV2, Button, ButtonV2, CardV2, CheckboxV2, FeedbackStateV2, SelectV2, SwitchV2, TabsV2, TextInputV2, ThemeScope, type AlertV2Props, type AlertV2Tone, type AlertV2Variant, type BadgeV2Props, type BadgeV2Tone, type BadgeV2Variant, type CardV2Props, type TabsV2Item, type TabsV2Props, type ButtonV2Props, type ButtonV2Size, type ButtonV2Variant, type CheckboxV2Props, type SelectV2Props, type SwitchV2Props, type TextInputV2Props } from '@corefoundry-labs/forge-ui';
+import { AlertV2, BadgeV2, Button, ButtonV2, CardV2, CheckboxV2, DialogV2, DropdownMenuV2, FeedbackStateV2, PopoverV2, SelectV2, SwitchV2, TabsV2, TextInputV2, ThemeScope, TooltipV2, type DialogV2Props, type DialogV2Size, type DropdownMenuV2Density, type DropdownMenuV2Item, type DropdownMenuV2Props, type PopoverV2Props, type PopoverV2Width, type TooltipV2Placement, type TooltipV2Props, type AlertV2Props, type AlertV2Tone, type AlertV2Variant, type BadgeV2Props, type BadgeV2Tone, type BadgeV2Variant, type CardV2Props, type TabsV2Item, type TabsV2Props, type ButtonV2Props, type ButtonV2Size, type ButtonV2Variant, type CheckboxV2Props, type SelectV2Props, type SwitchV2Props, type TextInputV2Props } from '@corefoundry-labs/forge-ui';
 import { Search } from '@corefoundry-labs/forge-icons';
 import { createTheme, presets, type ThemeMode } from '@corefoundry-labs/forge-tokens/theme-v2';
 
@@ -214,6 +221,61 @@ function Display({ id }: { id: string }) {
   </div>;
 }
 
+const placements: TooltipV2Placement[] = ['top', 'bottom', 'left', 'right'];
+const dialogSizes: DialogV2Size[] = ['sm', 'md', 'lg'];
+const widths: PopoverV2Width[] = ['compact', 'regular'];
+const densities: DropdownMenuV2Density[] = ['compact', 'comfortable'];
+
+function ModalDemo({ id, label, ...props }: { id: string; label: string } & Partial<DialogV2Props>) {
+  const [open, setOpen] = useState(false);
+  const rest = props as DialogV2Props;
+  return <>
+    <ButtonV2 variant="secondary" size="sm" data-testid={id + '-open'} onClick={() => setOpen(true)}>{label}</ButtonV2>
+    <DialogV2 {...rest} title={'Dialog ' + id} open={open} onOpenChange={setOpen} data-testid={id} />
+  </>;
+}
+
+function Overlays({ id }: { id: string }) {
+  const [selected, setSelected] = useState('none');
+  const [confirm, setConfirm] = useState(false);
+  const [anchored, setAnchored] = useState(false);
+  const anchor = useRef<HTMLButtonElement>(null);
+  const items: DropdownMenuV2Item[] = [
+    { id: 'edit', label: 'Edit', onSelect: () => setSelected('edit') },
+    { id: 'duplicate', label: 'Duplicate', onSelect: () => setSelected('duplicate') },
+    { type: 'separator', id: 'split' },
+    { id: 'archive', label: 'Archive unavailable', disabled: true, onSelect: () => setSelected('archive') },
+    { id: 'delete', label: 'Delete', destructive: true, onSelect: () => setSelected('delete') },
+  ];
+  const actions = <>
+    <ButtonV2 variant="secondary" size="sm" data-testid={id + '-cancel'}>Cancel</ButtonV2>
+    <ButtonV2 size="sm" data-testid={id + '-continue'}>Continue</ButtonV2>
+  </>;
+  return <div data-testid={id + '-overlays'} style={{ display: 'flex', flexWrap: 'wrap', gap: 8, alignItems: 'center' }}>
+    <ModalDemo id={id + '-dialog'} label="Dialog" size="md" description="Review the details." footer={actions}>Body</ModalDemo>
+    <ModalDemo id={id + '-dialog-plain'} label="Plain" />
+    <ModalDemo id={id + '-dialog-locked'} label="Locked" closeOnEscape={false} footer={<ButtonV2 size="sm" data-testid={id + '-locked-ok'}>Ok</ButtonV2>} />
+    <ModalDemo id={id + '-dialog-scroll'} label="Scroll" footer={<ButtonV2 size="sm">Done</ButtonV2>}><div style={{ height: 3000 }}>Long</div></ModalDemo>
+    <ModalDemo id={id + '-dialog-nested'} label="Nested">
+      <PopoverV2 trigger={<ButtonV2 size="sm" data-testid={id + '-nested-trigger'}>Nested popover</ButtonV2>} title="Inner" data-testid={id + '-nested'} />
+    </ModalDemo>
+    <div style={{ overflow: 'hidden', height: 34, display: 'flex', gap: 8, alignItems: 'center' }} data-testid={id + '-clip'}>
+      {placements.map((placement) => <TooltipV2 key={placement} content={'Tip ' + placement} placement={placement} delay={0} data-testid={id + '-tip-' + placement}>
+        <ButtonV2 variant="secondary" size="sm" data-testid={id + '-tip-' + placement + '-trigger'}>{placement}</ButtonV2>
+      </TooltipV2>)}
+      <PopoverV2 trigger={<ButtonV2 variant="secondary" size="sm" data-testid={id + '-popover-trigger'}>Popover</ButtonV2>} title={'Popover ' + id} description="Choose how it looks." data-testid={id + '-popover'}>
+        <TextInputV2 aria-label={'Popover field ' + id} data-testid={id + '-popover-field'} />
+      </PopoverV2>
+      <DropdownMenuV2 trigger={<ButtonV2 variant="secondary" size="sm" data-testid={id + '-menu-trigger'}>Menu</ButtonV2>} items={items} data-testid={id + '-menu'} />
+    </div>
+    <span data-testid={id + '-menu-result'}>{selected}</span>
+    <ButtonV2 ref={anchor} variant="secondary" size="sm" data-testid={id + '-anchored-open'} onClick={() => setAnchored(true)}>Anchored</ButtonV2>
+    <PopoverV2 anchorRef={anchor} open={anchored} onOpenChange={setAnchored} aria-label={'Anchored ' + id} data-testid={id + '-anchored'} />
+    <DialogV2 open={confirm} onOpenChange={setConfirm} title={'Flow ' + id} data-testid={id + '-flow-dialog'} />
+    <DropdownMenuV2 trigger={<ButtonV2 variant="secondary" size="sm" data-testid={id + '-flow-trigger'}>Flow</ButtonV2>} items={[{ id: 'confirm', label: 'Confirm', onSelect: () => setConfirm(true) }]} data-testid={id + '-flow'} />
+  </div>;
+}
+
 function Scope({ id }: { id: string }) {
   return <>
     {variants.map((variant) => <Counter key={variant} id={id + '-' + variant} variant={variant}>{variant + ' action'}</Counter>)}
@@ -225,8 +287,13 @@ function Scope({ id }: { id: string }) {
     <FeedbackStateV2 data-testid={id + '-readonly-state'} state="readOnly" title={id + ' read only'} description="View only." headingLevel={2} />
     <Controls id={id} />
     <Display id={id} />
+    <Overlays id={id} />
   </>;
 }
+
+const tooltipProps: TooltipV2Props = { content: 'Typed', children: <ButtonV2 size="sm" data-testid="typed-tooltip-trigger">Tooltip</ButtonV2>, delay: 0, 'data-testid': 'typed-tooltip' } as TooltipV2Props;
+const popoverProps = { title: 'Typed' } satisfies Partial<PopoverV2Props>;
+const menuProps = { items: [{ id: 'one', label: 'One' }] } satisfies Partial<DropdownMenuV2Props>;
 
 function App() {
   return <main>
@@ -247,6 +314,12 @@ function App() {
       <BadgeV2 size="sm" data-testid="badge-sm">Small</BadgeV2>
       <BadgeV2 size="md" data-testid="badge-md">Medium</BadgeV2>
       <span style={{ display: 'inline-flex', width: 80 }}><BadgeV2 data-testid="badge-long">A very long status label that truncates</BadgeV2></span>
+      <div data-testid="typed-overlays">
+      {dialogSizes.map((size) => <ModalDemo key={size} id={'size-dialog-' + size} label={'Dialog ' + size} size={size} />)}
+      <TooltipV2 {...tooltipProps} />
+      {widths.map((width) => <PopoverV2 key={width} {...popoverProps} width={width} trigger={<ButtonV2 size="sm" data-testid={'width-' + width + '-trigger'}>{width}</ButtonV2>} data-testid={'width-' + width} />)}
+      {densities.map((density) => <DropdownMenuV2 key={density} {...menuProps} density={density} trigger={<ButtonV2 size="sm" data-testid={'density-' + density + '-trigger'}>{density}</ButtonV2>} data-testid={'density-' + density} />)}
+      </div>
       <Scope id="default" />
     </section>
     {Object.entries(presets).flatMap(([key, preset]) => modes.map((mode) => (
@@ -254,6 +327,7 @@ function App() {
         <Scope id={key + '-' + mode} />
       </ThemeScope>
     )))}
+    <div style={{ height: 900 }} />
   </main>;
 }
 
@@ -372,7 +446,7 @@ async function certifyScope(page, id, roles, report) {
   report.minimumFocus = Math.min(report.minimumFocus, ring);
   assert.ok(ring >= 3, `${id} focus ring ${ring.toFixed(2)}`);
 
-  const order = await page.getByTestId(id).evaluate((element) => [...element.querySelectorAll('button[data-size]')].filter((node) => node.tabIndex >= 0 && !node.disabled).length);
+  const order = await page.getByTestId(id).evaluate((element) => [...element.querySelectorAll('button[data-size]:not([data-testid$="-overlays"] *)')].filter((node) => node.tabIndex >= 0 && !node.disabled).length);
   assert.equal(order, 8, `${id} focusable buttons`);
 
   for (const [state, role] of [['loading-state', 'status'], ['empty-state', 'region'], ['error-state', 'alert'], ['readonly-state', 'region']]) {
@@ -804,11 +878,352 @@ async function certifyDisplay(page, id, roles, geometry, report) {
   report.display += 1;
 }
 
+async function certifyOverlays(page, id, roles, geometry, report) {
+  const part = (name) => page.getByTestId(`${id}-${name}`);
+  const style = (locator, property, pseudo) => locator.evaluate((element, [key, target]) => getComputedStyle(element, target)[key], [property, pseudo]);
+  const box = (locator) => locator.evaluate((element) => {
+    const { left, top, right, bottom, width, height } = element.getBoundingClientRect();
+    return { left, top, right, bottom, width, height };
+  });
+  const isActive = (locator) => locator.evaluate((element) => document.activeElement === element);
+  const onTop = (locator) => locator.evaluate((element) => {
+    const { left, top, width, height } = element.getBoundingClientRect();
+    const hit = document.elementFromPoint(left + width / 2, top + height / 2);
+    return element === hit || element.contains(hit);
+  });
+  const topLayer = (locator) => locator.evaluate((element) => element.matches(':modal, :popover-open'));
+  const rootOverflow = () => page.evaluate(() => document.documentElement.style.overflow);
+  const fill = rgb(roles.surfaceContainer);
+  const ratio = (key, minimum, foreground, background, label) => {
+    const value = contrast(foreground, background);
+    report[key] = Math.min(report[key], value);
+    assert.ok(value >= minimum, `${id} ${label} ${value.toFixed(2)}`);
+    report.checks += 1;
+  };
+  const leave = async () => {
+    await page.mouse.up();
+    await page.mouse.move(0, 0);
+  };
+  const press = async (locator, key = 'Enter') => {
+    await locator.focus();
+    await page.keyboard.press(key);
+  };
+  const surface = async (locator, label, radius) => {
+    assert.equal(await style(locator, 'backgroundColor'), fill, `${id} ${label} fill`);
+    assert.equal(await style(locator, 'color'), rgb(roles.onSurface), `${id} ${label} text`);
+    assert.equal(await style(locator, 'borderTopColor'), rgb(roles.outline), `${id} ${label} border`);
+    assert.equal(await style(locator, 'borderTopWidth'), '1px', `${id} ${label} border width`);
+    assert.equal(await style(locator, 'borderTopLeftRadius'), radius, `${id} ${label} radius`);
+    assert.equal(await topLayer(locator), true, `${id} ${label} top layer`);
+  };
+  const ring = async (locator, label) => {
+    assert.equal(await style(locator, 'outlineStyle'), 'solid', `${id} ${label} focus style`);
+    assert.equal(await style(locator, 'outlineWidth'), '2px', `${id} ${label} focus width`);
+    assert.equal(await style(locator, 'outlineColor'), rgb(roles.focusRing), `${id} ${label} focus color`);
+  };
+
+  ratio('minimumText', 4.5, rgb(roles.onSurface), fill, 'overlay text');
+  ratio('minimumBoundary', 3, rgb(roles.outline), fill, 'overlay border');
+  ratio('minimumFocus', 3, rgb(roles.focusRing), fill, 'overlay focus');
+
+  const opener = part('dialog-open');
+  const dialog = part('dialog');
+  assert.equal(await dialog.isVisible(), false, `${id} dialog starts closed`);
+  await press(opener);
+  await dialog.waitFor();
+  await surface(dialog, 'dialog', '12px');
+  assert.equal(await page.getByTestId(id).getByRole('dialog', { name: `Dialog ${id}-dialog` }).count(), 1, `${id} dialog name`);
+  assert.equal(await dialog.getAttribute('aria-modal'), 'true');
+  assert.equal(await style(dialog, 'width'), '445px', `${id} dialog width`);
+  assert.equal(await style(dialog, 'paddingTop'), '19px');
+  assert.equal(await style(dialog, 'paddingLeft'), '20px');
+  assert.equal(await style(dialog, 'paddingBottom'), '15px');
+  assert.equal(await style(dialog, 'rowGap'), '12px');
+  assert.equal(await style(dialog, 'backgroundColor', '::backdrop'), geometry.dialog.backdrop.replaceAll(/\s+/g, '').replaceAll(',', ', '), `${id} backdrop`);
+  const heading = dialog.getByRole('heading', { level: 2 });
+  assert.equal(await style(heading, 'fontSize'), '18px', `${id} dialog title`);
+  assert.equal(await style(heading, 'fontWeight'), '700');
+  const opacity = Number(geometry.dialog.descriptionOpacity);
+  ratio('minimumText', 4.5, blend(rgb(roles.onSurface), fill, opacity), fill, 'dialog description');
+  assert.equal(await rootOverflow(), 'hidden', `${id} scroll lock`);
+  const cancel = part('cancel');
+  const proceed = part('continue');
+  assert.equal(await isActive(cancel), true, `${id} dialog initial focus`);
+  assert.equal(await style(dialog.locator('> div').last(), 'columnGap'), '9px', `${id} dialog footer gap`);
+  await page.keyboard.press('Tab');
+  assert.equal(await isActive(proceed), true, `${id} dialog tab`);
+  await page.keyboard.press('Tab');
+  assert.equal(await isActive(cancel), true, `${id} dialog tab wraps`);
+  await page.keyboard.press('Shift+Tab');
+  assert.equal(await isActive(proceed), true, `${id} dialog shift tab wraps`);
+  assert.equal(await opener.evaluate((element) => element.closest('[inert]') !== null || !element.checkVisibility() || document.elementFromPoint(element.getBoundingClientRect().left + 1, element.getBoundingClientRect().top + 1) !== element), true, `${id} page behind the modal is unreachable`);
+  await page.keyboard.press('Escape');
+  await dialog.waitFor({ state: 'hidden' });
+  assert.equal(await isActive(opener), true, `${id} dialog restores focus`);
+  assert.equal(await rootOverflow(), '', `${id} scroll unlock`);
+  report.overlays += 4;
+
+  const plain = part('dialog-plain');
+  await press(part('dialog-plain-open'));
+  await plain.waitFor();
+  assert.equal(await isActive(plain), true, `${id} dialog without controls takes focus`);
+  await ring(plain, 'dialog');
+  await page.keyboard.press('Tab');
+  assert.equal(await isActive(plain), true, `${id} dialog without controls keeps focus`);
+  await page.keyboard.press('Escape');
+  await plain.waitFor({ state: 'hidden' });
+
+  const locked = part('dialog-locked');
+  await press(part('dialog-locked-open'));
+  await locked.waitFor();
+  await page.keyboard.press('Escape');
+  await page.keyboard.press('Escape');
+  assert.equal(await locked.isVisible(), true, `${id} locked dialog ignores Escape`);
+  assert.equal(await topLayer(locked), true, `${id} locked dialog stays modal`);
+  await locked.evaluate((element) => element.close());
+  await locked.waitFor({ state: 'hidden' });
+
+  const scroller = part('dialog-scroll');
+  await press(part('dialog-scroll-open'));
+  await scroller.waitFor();
+  const scrollBox = await box(scroller);
+  const viewport = page.viewportSize();
+  assert.ok(scrollBox.bottom <= viewport.height - 16 && scrollBox.top >= 16, `${id} long dialog stays inside the viewport`);
+  const body = scroller.locator('> div').first();
+  assert.equal(await body.evaluate((element) => element.scrollHeight > element.clientHeight), true, `${id} dialog body scrolls`);
+  assert.equal(await body.getAttribute('tabindex'), '0', `${id} scrollable body is keyboard reachable`);
+  const done = scroller.getByRole('button', { name: 'Done' });
+  assert.equal(await onTop(done), true, `${id} footer stays operable`);
+  await page.keyboard.press('Escape');
+  await scroller.waitFor({ state: 'hidden' });
+
+  const nested = part('dialog-nested');
+  const inner = part('nested');
+  await press(part('dialog-nested-open'));
+  await nested.waitFor();
+  await press(part('nested-trigger'));
+  await inner.waitFor();
+  assert.equal(await onTop(inner), true, `${id} popover above its dialog`);
+  await page.keyboard.press('Escape');
+  await inner.waitFor({ state: 'hidden' });
+  assert.equal(await nested.isVisible(), true, `${id} Escape closes only the top layer`);
+  assert.equal(await isActive(part('nested-trigger')), true, `${id} nested focus`);
+  await page.keyboard.press('Escape');
+  await nested.waitFor({ state: 'hidden' });
+  report.overlays += 4;
+
+  for (const placement of ['top', 'bottom', 'left', 'right']) {
+    const trigger = part(`tip-${placement}-trigger`);
+    const tip = part(`tip-${placement}`);
+    assert.equal(await trigger.getAttribute('aria-describedby'), await tip.getAttribute('id'), `${id} tooltip description`);
+    await trigger.evaluate((element) => window.scrollBy(0, element.getBoundingClientRect().top - window.innerHeight / 2));
+    await trigger.hover();
+    await tip.waitFor();
+    await surface(tip, `tooltip ${placement}`, '8px');
+    assert.equal(await tip.getAttribute('role'), 'tooltip');
+    assert.equal(await tip.getAttribute('data-placement'), placement, `${id} tooltip side`);
+    assert.equal(await style(tip, 'fontSize'), '12px');
+    assert.equal(await style(tip, 'fontWeight'), '500');
+    assert.equal(await style(tip, 'paddingLeft'), '12px');
+    assert.equal(await style(tip, 'paddingTop'), '11px');
+    assert.equal(await tip.locator('a, button, input, select, textarea').count(), 0, `${id} tooltip stays non-interactive`);
+    assert.equal(await onTop(tip), true, `${id} tooltip ${placement} escapes overflow hidden`);
+    const anchorBox = await box(trigger);
+    const tipBox = await box(tip);
+    const gaps = { top: anchorBox.top - tipBox.bottom, bottom: tipBox.top - anchorBox.bottom, left: anchorBox.left - tipBox.right, right: tipBox.left - anchorBox.right };
+    assert.ok(Math.abs(gaps[placement] - 14) < 1, `${id} tooltip ${placement} offset ${gaps[placement]}`);
+    const arrow = tip.locator('svg');
+    assert.equal(await style(arrow, 'fill'), fill, `${id} tooltip arrow fill`);
+    assert.equal(await style(arrow, 'stroke'), rgb(roles.outline), `${id} tooltip arrow stroke`);
+    const arrowBox = await box(arrow);
+    const center = (value) => (['top', 'bottom'].includes(placement) ? (value.left + value.right) / 2 : (value.top + value.bottom) / 2);
+    assert.ok(Math.abs(center(arrowBox) - center(anchorBox)) < 2, `${id} tooltip ${placement} arrow points at the anchor`);
+    const edge = { top: arrowBox.top - tipBox.bottom, bottom: tipBox.top - arrowBox.bottom, left: arrowBox.left - tipBox.right, right: tipBox.left - arrowBox.right };
+    assert.ok(Math.abs(edge[placement]) <= 2, `${id} tooltip ${placement} arrow touches the surface ${edge[placement]}`);
+    await page.keyboard.press('Escape');
+    await tip.waitFor({ state: 'hidden' });
+    await leave();
+    report.overlays += 1;
+  }
+
+  const tipTrigger = part('tip-top-trigger');
+  const tip = part('tip-top');
+  await press(part('tip-bottom-trigger'), 'Tab');
+  await page.keyboard.press('Shift+Tab');
+  await page.keyboard.press('Shift+Tab');
+  assert.equal(await isActive(tipTrigger), true, `${id} tooltip tab target`);
+  await tip.waitFor();
+  await page.keyboard.press('Escape');
+  await tip.waitFor({ state: 'hidden' });
+  assert.equal(await isActive(tipTrigger), true, `${id} tooltip Escape keeps focus`);
+  await page.keyboard.press('Tab');
+  await part('tip-bottom').waitFor();
+  await page.keyboard.press('Tab');
+  await part('tip-bottom').waitFor({ state: 'hidden' });
+  await tipTrigger.evaluate((element) => window.scrollBy(0, element.getBoundingClientRect().top - 4));
+  await tipTrigger.hover();
+  await tip.waitFor();
+  assert.equal(await tip.getAttribute('data-placement'), 'bottom', `${id} tooltip flips at the viewport edge`);
+  await leave();
+  await tip.waitFor({ state: 'hidden' });
+  report.overlays += 2;
+
+  const popTrigger = part('popover-trigger');
+  const popover = part('popover');
+  const field = part('popover-field');
+  await popTrigger.evaluate((element) => window.scrollBy(0, element.getBoundingClientRect().top - 120));
+  assert.equal(await popTrigger.getAttribute('aria-expanded'), 'false');
+  assert.equal(await popTrigger.getAttribute('aria-haspopup'), 'dialog');
+  await press(popTrigger);
+  await popover.waitFor();
+  await surface(popover, 'popover', '12px');
+  assert.equal(await popTrigger.getAttribute('aria-expanded'), 'true');
+  assert.equal(await popover.getAttribute('aria-modal'), null, `${id} popover is nonmodal`);
+  assert.equal(await page.getByTestId(id).getByRole('dialog', { name: `Popover ${id}` }).count(), 1, `${id} popover name`);
+  assert.equal(await style(popover, 'width'), '250px');
+  assert.equal(await style(popover, 'paddingTop'), '15px');
+  assert.equal(await style(popover, 'paddingLeft'), '16px');
+  assert.equal(await style(popover, 'rowGap'), '12px');
+  assert.equal(await style(popover.locator('> div').first(), 'fontSize'), '15px');
+  assert.equal(await style(popover.locator('> div').nth(1), 'opacity'), geometry.popover.separatorOpacity);
+  ratio('minimumText', 4.5, blend(rgb(roles.onSurface), fill, Number(geometry.popover.descriptionOpacity)), fill, 'popover description');
+  assert.equal(await isActive(field), true, `${id} popover moves focus to its control`);
+  assert.equal(await onTop(popover), true, `${id} popover escapes overflow hidden`);
+  const triggerBox = await box(popTrigger);
+  const popBox = await box(popover);
+  assert.ok(Math.abs(popBox.top - triggerBox.bottom - 10) < 1, `${id} popover offset`);
+  assert.ok(Math.abs(popBox.left - triggerBox.left) < 1, `${id} popover start alignment`);
+  assert.equal(await rootOverflow(), '', `${id} popover keeps page scroll`);
+  await page.keyboard.press('Escape');
+  await popover.waitFor({ state: 'hidden' });
+  assert.equal(await isActive(popTrigger), true, `${id} popover restores focus`);
+  await press(popTrigger);
+  await popover.waitFor();
+  await press(popTrigger, 'Enter');
+  await popover.waitFor({ state: 'hidden' });
+  await press(popTrigger);
+  await popover.waitFor();
+  await page.mouse.click(2, 2);
+  await popover.waitFor({ state: 'hidden' });
+  await press(popTrigger);
+  await popover.waitFor();
+  await page.keyboard.press('Tab');
+  await popover.waitFor({ state: 'hidden' });
+  await popTrigger.evaluate((element) => window.scrollBy(0, element.getBoundingClientRect().bottom - window.innerHeight + 4));
+  await press(popTrigger);
+  await popover.waitFor();
+  assert.equal(await popover.getAttribute('data-placement'), 'top', `${id} popover flips at the viewport edge`);
+  await page.keyboard.press('Escape');
+  await popover.waitFor({ state: 'hidden' });
+  const anchored = part('anchored');
+  await press(part('anchored-open'));
+  await anchored.waitFor();
+  assert.ok(Math.abs((await box(anchored)).left - (await box(part('anchored-open'))).left) < 1 || (await anchored.getAttribute('data-placement')) !== 'bottom', `${id} anchorRef positions the popover`);
+  await page.keyboard.press('Escape');
+  await anchored.waitFor({ state: 'hidden' });
+  report.overlays += 5;
+
+  const menuTrigger = part('menu-trigger');
+  const menu = part('menu');
+  const item = (name) => menu.getByRole('menuitem', { name, exact: true });
+  const result = part('menu-result');
+  await menuTrigger.evaluate((element) => window.scrollBy(0, element.getBoundingClientRect().top - 120));
+  assert.equal(await menuTrigger.getAttribute('aria-haspopup'), 'menu');
+  await press(menuTrigger, 'ArrowDown');
+  await menu.waitFor();
+  await surface(menu, 'menu', '12px');
+  assert.equal(await page.getByTestId(id).getByRole('menu', { name: 'Menu' }).count(), 1, `${id} menu name`);
+  assert.equal(await menuTrigger.getAttribute('aria-expanded'), 'true');
+  assert.equal(await style(menu, 'width'), '232px');
+  assert.equal(await style(menu, 'paddingTop'), '8px');
+  assert.equal(await style(menu, 'paddingLeft'), '7px');
+  assert.equal(await style(menu, 'rowGap'), '4px');
+  assert.equal(await onTop(menu), true, `${id} menu escapes overflow hidden`);
+  const edit = item('Edit');
+  const destroy = item('Delete');
+  assert.equal(await isActive(edit), true, `${id} menu first item`);
+  assert.equal(await style(edit, 'height'), '38px');
+  assert.equal(await style(edit, 'borderTopLeftRadius'), '7px');
+  assert.equal(await style(edit, 'fontSize'), '12px');
+  assert.equal(await style(edit, 'fontWeight'), '500');
+  assert.equal(await style(edit, 'backgroundColor'), rgb(roles.surfaceContainerHover), `${id} highlighted item`);
+  await ring(edit, 'menu item');
+  ratio('minimumText', 4.5, rgb(roles.onSurface), rgb(roles.surfaceContainerHover), 'highlighted item');
+  ratio('minimumFocus', 3, rgb(roles.focusRing), rgb(roles.surfaceContainerHover), 'menu item focus');
+  const separator = menu.getByRole('separator');
+  assert.equal(await separator.evaluate((element) => element.tabIndex), -1, `${id} separator is not focusable`);
+  assert.equal(await style(separator, 'opacity'), geometry.menu.separatorOpacity);
+  assert.equal(await style(destroy, 'color'), rgb(roles.error), `${id} destructive item`);
+  ratio('minimumText', 4.5, rgb(roles.error), fill, 'destructive item');
+  ratio('minimumText', 4.5, rgb(roles.error), rgb(roles.surfaceContainerHover), 'destructive item highlighted');
+  const archive = item('Archive unavailable');
+  assert.equal(await archive.isDisabled(), true);
+  assert.equal(await style(archive, 'opacity'), geometry.menu.disabledOpacity, `${id} disabled item`);
+  await page.keyboard.press('ArrowDown');
+  await page.keyboard.press('ArrowDown');
+  assert.equal(await isActive(destroy), true, `${id} menu skips disabled`);
+  await page.keyboard.press('ArrowDown');
+  assert.equal(await isActive(edit), true, `${id} menu wraps`);
+  await page.keyboard.press('End');
+  assert.equal(await isActive(destroy), true, `${id} menu End`);
+  await page.keyboard.press('Home');
+  assert.equal(await isActive(edit), true, `${id} menu Home`);
+  await page.keyboard.type('du');
+  assert.equal(await isActive(item('Duplicate')), true, `${id} menu typeahead`);
+  await page.waitForTimeout(550);
+  await page.keyboard.press('Enter');
+  await menu.waitFor({ state: 'hidden' });
+  assert.equal(await result.textContent(), 'duplicate', `${id} menu Enter`);
+  assert.equal(await isActive(menuTrigger), true, `${id} menu restores focus`);
+  await page.keyboard.press('ArrowUp');
+  await menu.waitFor();
+  assert.equal(await isActive(destroy), true, `${id} menu opens at the last item`);
+  await page.keyboard.press('Space');
+  await menu.waitFor({ state: 'hidden' });
+  assert.equal(await result.textContent(), 'delete', `${id} menu Space`);
+  await page.keyboard.press('Enter');
+  await menu.waitFor();
+  assert.equal(await isActive(edit), true, `${id} keyboard click opens at the first item`);
+  await page.keyboard.press('Escape');
+  await menu.waitFor({ state: 'hidden' });
+  assert.equal(await isActive(menuTrigger), true, `${id} menu Escape`);
+  await menuTrigger.click();
+  await menu.waitFor();
+  assert.equal(await isActive(menu), true, `${id} pointer open focuses the menu`);
+  await edit.hover();
+  assert.equal(await style(edit, 'backgroundColor'), rgb(roles.surfaceContainerHover), `${id} hover highlights`);
+  assert.equal(await style(edit, 'outlineStyle'), 'none', `${id} hover is not keyboard focus`);
+  await archive.click({ force: true });
+  assert.equal(await menu.isVisible(), true, `${id} disabled item keeps the menu open`);
+  assert.equal(await result.textContent(), 'delete', `${id} disabled item does not activate`);
+  await page.mouse.click(2, 2);
+  await menu.waitFor({ state: 'hidden' });
+  await press(menuTrigger, 'ArrowDown');
+  await menu.waitFor();
+  await page.keyboard.press('Tab');
+  await menu.waitFor({ state: 'hidden' });
+  report.overlays += 6;
+
+  const flowTrigger = part('flow-trigger');
+  const flow = part('flow');
+  const confirm = part('flow-dialog');
+  await press(flowTrigger, 'ArrowDown');
+  await flow.waitFor();
+  await page.keyboard.press('Enter');
+  await confirm.waitFor();
+  assert.equal(await flow.isVisible(), false, `${id} menu closes before the dialog`);
+  await page.keyboard.press('Escape');
+  await confirm.waitFor({ state: 'hidden' });
+  assert.equal(await isActive(flowTrigger), true, `${id} focus returns through dialog and menu`);
+  report.overlays += 1;
+  await page.evaluate(() => window.scrollTo(0, 0));
+}
+
 async function certifyBrowser(url, directory, evidence) {
   const engine = await import(pathToFileURL(join(directory, 'node_modules/@corefoundry-labs/forge-tokens/dist/theme-v2/index.js')).href);
   const axeSource = readFileSync(join(directory, 'node_modules/axe-core/axe.min.js'), 'utf8');
   const browser = await chromium.launch({ headless: true });
-  const report = { scopes: 0, states: 0, feedback: 0, controls: 0, display: 0, checks: 0, minimumText: Infinity, minimumBoundary: Infinity, minimumFocus: Infinity, axeViolations: 0, axeRulesPassed: 0 };
+  const report = { scopes: 0, states: 0, feedback: 0, controls: 0, display: 0, overlays: 0, checks: 0, minimumText: Infinity, minimumBoundary: Infinity, minimumFocus: Infinity, axeViolations: 0, axeRulesPassed: 0 };
   try {
     const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, reducedMotion: 'reduce' });
     const page = await context.newPage();
@@ -844,6 +1259,26 @@ async function certifyBrowser(url, directory, evidence) {
       }
     }
 
+    for (const [size, width] of [['sm', '350px'], ['md', '445px'], ['lg', '560px']]) {
+      await page.getByTestId(`size-dialog-${size}-open`).click();
+      await page.getByTestId(`size-dialog-${size}`).waitFor();
+      assert.equal(await style(`size-dialog-${size}`, 'width'), width, `dialog ${size} width`);
+      await page.keyboard.press('Escape');
+      await page.getByTestId(`size-dialog-${size}`).waitFor({ state: 'hidden' });
+    }
+    for (const [id, width] of [['width-compact', '250px'], ['width-regular', '312px'], ['density-compact', '232px'], ['density-comfortable', '264px']]) {
+      await page.getByTestId(`${id}-trigger`).click();
+      await page.getByTestId(id).waitFor();
+      assert.equal(await style(id, 'width'), width, `${id} width`);
+      await page.keyboard.press('Escape');
+      await page.getByTestId(id).waitFor({ state: 'hidden' });
+    }
+    await page.getByTestId('typed-tooltip-trigger').hover();
+    await page.getByTestId('typed-tooltip').waitFor();
+    assert.equal(await page.getByTestId('typed-tooltip').evaluate((element) => parseFloat(getComputedStyle(element).width) <= 215), true, 'tooltip max width');
+    await page.mouse.move(0, 0);
+    await page.getByTestId('typed-tooltip').waitFor({ state: 'hidden' });
+
     const body = await page.evaluate(() => getComputedStyle(document.body).fontFamily);
     assert.equal(await style('size-md', 'fontFamily'), body, 'ButtonV2 must inherit the consumer font family');
     for (const id of ['text-md', 'select-md', 'typed-card', 'typed-badge', 'typed-alert', 'typed-tabs']) assert.equal(await style(id, 'fontFamily'), body, `${id} must inherit the consumer font family`);
@@ -854,6 +1289,7 @@ async function certifyBrowser(url, directory, evidence) {
     await certifyScope(page, 'default', engine.createTheme(engine.presets.forge).roles, report);
     await certifyControls(page, 'default', engine.createTheme(engine.presets.forge).roles, engine.geometry, report);
     await certifyDisplay(page, 'default', engine.createTheme(engine.presets.forge).roles, engine.geometry, report);
+    await certifyOverlays(page, 'default', engine.createTheme(engine.presets.forge).roles, engine.geometry, report);
     report.scopes += 1;
     for (const preset of presets) {
       for (const mode of modes) {
@@ -861,6 +1297,7 @@ async function certifyBrowser(url, directory, evidence) {
         await certifyScope(page, `${preset}-${mode}`, roles, report);
         await certifyControls(page, `${preset}-${mode}`, roles, engine.geometry, report);
         await certifyDisplay(page, `${preset}-${mode}`, roles, engine.geometry, report);
+        await certifyOverlays(page, `${preset}-${mode}`, roles, engine.geometry, report);
         report.scopes += 1;
       }
     }
@@ -868,6 +1305,23 @@ async function certifyBrowser(url, directory, evidence) {
     assert.equal(await page.getByTestId('default-primary-loading').locator('[data-button-spinner]').evaluate((element) => getComputedStyle(element).animationName), 'none', 'reduced motion must stop the spinner');
 
     await page.addScriptTag({ content: axeSource });
+    const openAxe = async (testId) => page.getByTestId(testId).evaluate(async (element) => {
+      const result = await window.axe.run(element, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'] } });
+      return { violations: result.violations.map((rule) => rule.id), incomplete: result.incomplete.map((rule) => `${rule.id}: ${rule.nodes.map((node) => node.html.slice(0, 80)).join(' | ')}`) };
+    });
+    for (const scope of ['forge-light', 'forge-dark', 'neutral-high-contrast']) {
+      for (const [open, panel] of [['dialog-open', 'dialog'], ['popover-trigger', 'popover'], ['menu-trigger', 'menu']]) {
+        await page.getByTestId(`${scope}-${open}`).focus();
+        await page.keyboard.press('Enter');
+        await page.getByTestId(`${scope}-${panel}`).waitFor();
+        const result = await openAxe(`${scope}-${panel}`);
+        assert.deepEqual(result.violations, [], `axe found violations in the open ${scope} ${panel}`);
+        assert.deepEqual(result.incomplete, [], `axe could not resolve the open ${scope} ${panel}`);
+        await page.keyboard.press('Escape');
+        await page.getByTestId(`${scope}-${panel}`).waitFor({ state: 'hidden' });
+        report.openAxeRuns = (report.openAxeRuns ?? 0) + 1;
+      }
+    }
     const axe = await page.evaluate(async () => {
       const result = await window.axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'] } });
       return {
@@ -888,6 +1342,22 @@ async function certifyBrowser(url, directory, evidence) {
     assert.ok(axe.passes.includes('color-contrast'), 'axe must evaluate color contrast');
 
     await page.setViewportSize({ width: 375, height: 800 });
+    const inside = (id) => page.getByTestId(id).evaluate((element) => {
+      const { left, right, top, bottom } = element.getBoundingClientRect();
+      return left >= 16 && right <= document.documentElement.clientWidth - 16 && top >= 16 && bottom <= window.innerHeight - 16;
+    });
+    await page.getByTestId('size-dialog-lg-open').click();
+    await page.getByTestId('size-dialog-lg').waitFor();
+    assert.equal(await inside('size-dialog-lg'), true, 'a large dialog keeps its gutters at 375px');
+    await page.keyboard.press('Escape');
+    await page.getByTestId('size-dialog-lg').waitFor({ state: 'hidden' });
+    for (const id of ['width-regular', 'density-comfortable']) {
+      await page.getByTestId(`${id}-trigger`).click();
+      await page.getByTestId(id).waitFor();
+      assert.equal(await inside(id), true, `${id} stays in the viewport at 375px`);
+      await page.keyboard.press('Escape');
+      await page.getByTestId(id).waitFor({ state: 'hidden' });
+    }
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), true, 'horizontal overflow at 375px');
     assert.deepEqual(errors, [], 'browser console reported problems');
 
@@ -924,7 +1394,7 @@ export async function runV2ConsumerCertification({ evidence = false } = {}) {
     run(process.execPath, [tsc, '--project', 'tsconfig.json'], consumer);
     const negative = spawnSync(process.execPath, [tsc, '--project', 'tsconfig.negative.json'], { cwd: consumer, encoding: 'utf8' });
     assert.notEqual(negative.status, 0, 'the negative consumer must not compile');
-    for (const line of [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]) {
+    for (const line of [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]) {
       assert.ok(`${negative.stdout}${negative.stderr}`.includes(`negative.tsx(${line},`), `negative.tsx line ${line} must be rejected`);
     }
 
@@ -939,7 +1409,7 @@ export async function runV2ConsumerCertification({ evidence = false } = {}) {
       version,
       installedFrom: 'npm pack tarballs, no workspace links',
       production: 'vite build + vite preview in Chromium',
-      typeChecks: ['strict consumer compiled', 'icon-only ButtonV2 without aria-label rejected', 'unnamed CheckboxV2 and SwitchV2 rejected', 'numeric TextInputV2 size rejected', 'SelectV2 multiple rejected', 'static CardV2 with onClick, disabled, href or as button rejected', 'empty AlertV2 rejected', 'unnamed TabsV2 rejected', 'unknown BadgeV2 tone rejected'],
+      typeChecks: ['strict consumer compiled', 'icon-only ButtonV2 without aria-label rejected', 'unnamed CheckboxV2 and SwitchV2 rejected', 'numeric TextInputV2 size rejected', 'SelectV2 multiple rejected', 'static CardV2 with onClick, disabled, href or as button rejected', 'empty AlertV2 rejected', 'unnamed TabsV2 rejected', 'unknown BadgeV2 tone rejected', 'untitled DialogV2 rejected', 'DialogV2 without Escape or footer rejected', 'interactive TooltipV2 content rejected', 'unnamed or unanchored PopoverV2 rejected', 'unlabeled DropdownMenuV2 item and missing trigger rejected'],
       ...report,
       minimumText: Number(report.minimumText.toFixed(2)),
       minimumBoundary: Number(report.minimumBoundary.toFixed(2)),
