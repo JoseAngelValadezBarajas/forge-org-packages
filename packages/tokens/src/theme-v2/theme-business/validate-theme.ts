@@ -1,8 +1,6 @@
-import type { Theme, ThemeValidation } from '../theme-abstractions/index.js';
+import { paletteNames, semanticRoles, themeModes, tones, type Theme, type ThemeValidation } from '../theme-abstractions/index.js';
 import { contrastRatio } from './contrast.js';
-import { contrastPairs, roles, tones } from './theme.helper.js';
-
-const paletteNames = ['primary', 'secondary', 'neutral', 'neutralVariant', 'tertiary', 'error', 'warning', 'success', 'info'] as const;
+import { contrastPairs, highContrastPairs } from './theme.helper.js';
 
 export function validateTheme(theme: Theme): ThemeValidation {
   const errors: string[] = [];
@@ -10,7 +8,7 @@ export function validateTheme(theme: Theme): ThemeValidation {
     return { valid: false, errors: ['Theme roles are required'], contrasts: [] };
   }
   if (typeof theme.name !== 'string' || !theme.name.trim() || theme.name.length > 80) errors.push('Theme name is invalid');
-  if (!['light', 'dark', 'high-contrast'].includes(theme.mode)) errors.push('Theme mode is invalid');
+  if (!themeModes.includes(theme.mode)) errors.push('Theme mode is invalid');
   if (!theme.colors || typeof theme.colors !== 'object') errors.push('Theme colors are required');
   else {
     for (const key of paletteNames) if (!/^#[\da-f]{6}$/i.test(theme.colors[key] ?? '')) errors.push(`Invalid seed: ${key}`);
@@ -23,9 +21,10 @@ export function validateTheme(theme: Theme): ThemeValidation {
       }
     }
   }
-  for (const role of roles) if (!/^#[\da-f]{6}$/i.test(theme.roles[role] ?? '')) errors.push(`Invalid or missing role: ${role}`);
+  for (const role of semanticRoles) if (!/^#[\da-f]{6}$/i.test(theme.roles[role] ?? '')) errors.push(`Invalid or missing role: ${role}`);
 
-  const contrasts = contrastPairs
+  const pairs = theme.mode === 'high-contrast' ? [...contrastPairs, ...highContrastPairs] : contrastPairs;
+  const contrasts = pairs
     .filter(([foreground, background]) => /^#[\da-f]{6}$/i.test(theme.roles[foreground] ?? '') && /^#[\da-f]{6}$/i.test(theme.roles[background] ?? ''))
     .map(([foreground, background, minimum]) => {
       const ratio = contrastRatio(theme.roles[foreground], theme.roles[background]);
@@ -38,5 +37,5 @@ export function validateTheme(theme: Theme): ThemeValidation {
 export function getThemeRoleDeclarations(theme: Theme) {
   const validation = validateTheme(theme);
   if (!validation.valid) throw new Error(`Theme is invalid: ${validation.errors.join('; ')}`);
-  return roles.map((role) => [role, theme.roles[role]] as const);
+  return semanticRoles.map((role) => [role, theme.roles[role]] as const);
 }

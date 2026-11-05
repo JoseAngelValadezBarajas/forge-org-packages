@@ -160,9 +160,9 @@ is an action menu, not primary navigation.
 | Destructive item | `error` |
 
 The groups `overlay`, `dialog`, `tooltip`, `popover`, and `menu` live in the V2
-geometry. The dialog backdrop is `--cf-v2-dialog-backdrop`, based on the Figma
-`#171b22` sample with an alpha of 0.72. Figma shows a solid sample, so that alpha
-is a proposal.
+geometry. The dialog backdrop uses the `scrim` role with
+`--cf-v2-dialog-backdrop-opacity`, based on the Figma `#171b22` sample with an alpha
+of 0.72. Figma shows a solid sample, so that alpha is a proposal.
 
 The engine requires `error` and `onSurface` to reach 4.5:1 on
 `surfaceContainerHover`, and `focusRing` to reach 3:1 on `surfaceContainer` and

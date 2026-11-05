@@ -32,6 +32,11 @@ redirected to V2.
 A component with no earlier public version uses its canonical name. Do not add a
 `V2` suffix merely to make the inventory look complete.
 
+`DropdownMenuV2`, `SnackbarV2`, `SnackbarStackV2`, `AvatarV2`, and `AvatarGroupV2`
+are accepted exceptions. They have no V1 component with the same name, and they
+keep the suffix to match the V2 design system. Any other new component follows the
+rule above.
+
 ## Public API compatibility
 
 - Existing runtime exports, TypeScript exports, package roots, and documented
@@ -65,10 +70,21 @@ Retirement requires a separate project decision, a documented migration path,
 and an explicitly reviewed release that implements that decision. A version
 number alone is not approval to retire V1.
 
+## V2 token stability
+
+The semantic roles of `--cf-v2-*`, such as `--cf-v2-surface` or
+`--cf-v2-action-primary`, and the `theme-v2` functions are public and follow
+SemVer. A test pins the role names.
+
+Component tokens, such as `--cf-v2-button-height-md` or
+`--cf-v2-dialog-gap`, and the `geometry` export describe how components are built.
+They are internal: a minor release can rename, merge, or remove them, so consumers
+must not depend on them.
+
 ## Independent implementations and voluntary migration
 
-Use the canonical unsuffixed name for a new component. Use a distinct `V2`
-name only when an existing component needs an independent incompatible
+Use the canonical unsuffixed name for a new component, apart from the exceptions
+listed above. Use a distinct `V2` name only when an existing component needs an independent incompatible
 implementation. Consumers can migrate voluntarily by importing V2 next to V1,
 moving one usage at a time, reviewing changed props and visuals, and keeping
 their V1 usages until they choose to replace them. Package releases do not

@@ -1,4 +1,4 @@
-import type { BrandColors, Theme, ThemeConfig, Tone } from '../theme-abstractions/index.js';
+import { themeModes, type BrandColors, type Theme, type ThemeConfig, type Tone } from '../theme-abstractions/index.js';
 import { contrastRatio } from './contrast.js';
 import { generatePalette } from './palette.js';
 import { normalizeColor } from './theme.helper.js';
@@ -14,7 +14,7 @@ export function createTheme(config: ThemeConfig): Theme {
   if (!config || typeof config.name !== 'string' || !config.name.trim() || config.name.length > 80) {
     throw new TypeError('Theme name must be a non-empty string of at most 80 characters');
   }
-  if (!['light', 'dark', 'high-contrast'].includes(config.mode)) {
+  if (!themeModes.includes(config.mode)) {
     throw new TypeError('Theme mode must be light, dark, or high-contrast');
   }
   if (!config.colors || typeof config.colors !== 'object') throw new TypeError('Theme colors are required');
@@ -34,21 +34,22 @@ export function createTheme(config: ThemeConfig): Theme {
   const dark = config.mode !== 'light';
   const high = config.mode === 'high-contrast';
   const surface = palettes.neutral[dark ? (high ? 0 : 10) : 98];
-  const surfaceVariant = palettes.neutralVariant[dark ? 30 : 90];
+  const surfaceVariant = palettes.neutralVariant[high ? 20 : dark ? 30 : 90];
   const actionTones: StateTones = high ? [90, 85, 80] : dark ? [80, 75, 70] : [40, 35, 30];
-  const errorTones: StateTones = dark ? [80, 75, 70] : [40, 35, 30];
-  const containerTones: StateTones = dark ? [20, 25, 30] : [95, 90, 85];
+  const errorTones: StateTones = high ? [90, 85, 80] : dark ? [80, 75, 70] : [40, 35, 30];
+  const containerTones: StateTones = high ? [10, 15, 20] : dark ? [20, 25, 30] : [95, 90, 85];
+  const accentTone: Tone = high ? 90 : dark ? 80 : 40;
   const primary = palettes.primary[actionTones[0]];
   const error = palettes.error[errorTones[0]];
-  const primaryContainer = palettes.primary[dark ? 30 : 90];
-  const secondary = palettes.secondary[dark ? 80 : 40];
-  const warning = palettes.warning[dark ? 80 : 40];
-  const success = palettes.success[dark ? 80 : 40];
-  const info = palettes.info[dark ? 80 : 40];
+  const primaryContainer = palettes.primary[high ? 20 : dark ? 30 : 90];
+  const secondary = palettes.secondary[accentTone];
+  const warning = palettes.warning[accentTone];
+  const success = palettes.success[accentTone];
+  const info = palettes.info[accentTone];
   const roleValues: Theme['roles'] = {
     background: surface,
     surface,
-    surfaceRaised: palettes.neutral[dark ? 15 : 100],
+    surfaceRaised: palettes.neutral[high ? 5 : dark ? 15 : 100],
     surfaceContainer: palettes.neutral[containerTones[0]],
     surfaceContainerHover: palettes.neutral[containerTones[1]],
     surfaceContainerPressed: palettes.neutral[containerTones[2]],
@@ -61,11 +62,13 @@ export function createTheme(config: ThemeConfig): Theme {
     onPrimaryContainer: foreground(primaryContainer),
     secondary,
     onSecondary: foreground(secondary),
-    outline: palettes.neutralVariant[dark ? 70 : 40],
-    outlineVariant: palettes.neutralVariant[dark ? 40 : 80],
+    outline: palettes.neutralVariant[high ? 90 : dark ? 70 : 40],
+    outlineVariant: palettes.neutralVariant[high ? 70 : dark ? 40 : 80],
     focusRing: foreground(surface),
     selection: primaryContainer,
     disabled: palettes.neutral[dark ? 40 : 70],
+    scrim: palettes.neutral[10],
+    shadow: palettes.neutral[0],
     error,
     onError: foreground(error),
     errorHover: palettes.error[errorTones[1]],

@@ -1,6 +1,6 @@
 import { TonalPalette, argbFromHex, hexFromArgb } from '@material/material-color-utilities';
-import type { TonalScale } from '../theme-abstractions/index.js';
-import { normalizeColor, tones } from './theme.helper.js';
+import { tones, type TonalScale } from '../theme-abstractions/index.js';
+import { normalizeColor } from './theme.helper.js';
 
 export function generatePalette(seed: string): TonalScale {
   const palette = TonalPalette.fromInt(argbFromHex(normalizeColor(seed, 'seed')));

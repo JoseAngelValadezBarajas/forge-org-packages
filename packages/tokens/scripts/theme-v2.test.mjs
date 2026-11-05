@@ -197,6 +197,69 @@ test('the V2 stylesheet leaves color-scheme on :root to the V1 stylesheet', asyn
   assert.match(css, /\[data-cf-theme-mode="dark"\], \[data-cf-theme-mode="high-contrast"\] \{\n {2}color-scheme: dark;/);
 });
 
+test('high contrast is a stricter mode, not a darker dark', () => {
+  for (const preset of Object.values(presets)) {
+    const high = createTheme({ ...preset, mode: 'high-contrast' });
+    const dark = createTheme({ ...preset, mode: 'dark' });
+    const changed = Object.keys(high.roles).filter((role) => high.roles[role] !== dark.roles[role]);
+    assert.ok(changed.length >= 18, `${preset.name} changed ${changed.length} roles`);
+    assert.ok(contrastRatio(high.roles.onSurface, high.roles.surfaceContainer) > contrastRatio(dark.roles.onSurface, dark.roles.surfaceContainer));
+    assert.ok(contrastRatio(high.roles.outline, high.roles.surfaceContainer) > contrastRatio(dark.roles.outline, dark.roles.surfaceContainer));
+    assert.ok(validateTheme(high).contrasts.filter((check) => check.minimum === 7).length >= 17);
+    assert.equal(high.roles.outline, high.palettes.neutralVariant[90]);
+    assert.equal(high.roles.outlineVariant, high.palettes.neutralVariant[70]);
+  }
+});
+
+test('the high contrast contract holds for arbitrary seeds', () => {
+  let seed = 7;
+  const random = () => (seed = (seed * 1664525 + 1013904223) % 4294967296) / 4294967296;
+  const color = () => `#${[0, 0, 0].map(() => Math.floor(random() * 256).toString(16).padStart(2, '0')).join('')}`;
+  for (let index = 0; index < 500; index += 1) {
+    assert.doesNotThrow(() => createTheme({ name: 'Seed', colors: { primary: color(), secondary: color(), neutral: color() }, mode: 'high-contrast' }));
+  }
+});
+
+test('the validator enforces the high contrast contract only in that mode', () => {
+  const theme = createTheme({ ...presets.forge, mode: 'high-contrast' });
+  const weak = { ...theme, roles: { ...theme.roles, outline: '#6f6f6f' } };
+  assert.equal(validateTheme(weak).valid, false);
+  assert.equal(validateTheme({ ...theme, mode: 'dark', roles: { ...theme.roles } }).valid, true);
+});
+
+test('V2 follows data-theme unless an explicit mode is set', async () => {
+  const css = await readFile(resolve(packageRoot, 'dist/theme-v2/tokens.css'), 'utf8');
+  for (const mode of ['light', 'dark']) {
+    const selector = `[data-theme="${mode}"]:not([data-cf-theme-mode]) {`;
+    const start = css.indexOf(selector);
+    assert.notEqual(start, -1, selector);
+    const block = css.slice(start, css.indexOf('}', start));
+    assert.match(block, new RegExp(`--cf-v2-surface: ${createTheme({ ...presets.forge, mode }).roles.surface};`));
+    assert.doesNotMatch(block, /color-scheme/);
+  }
+});
+
+test('shadow and scrim are roles, and geometry holds no colors', () => {
+  for (const mode of ['light', 'dark', 'high-contrast']) {
+    const { roles } = createTheme({ ...presets.forge, mode });
+    assert.match(roles.scrim, /^#[\da-f]{6}$/);
+    assert.match(roles.shadow, /^#[\da-f]{6}$/);
+  }
+  for (const [group, values] of Object.entries(geometry)) {
+    for (const [name, value] of Object.entries(values)) assert.doesNotMatch(value, /#|rgb|hsl/, `${group}.${name}`);
+  }
+});
+
+test('the public role names stay stable', () => {
+  assert.deepEqual(Object.keys(createTheme(presets.forge).roles).sort(), [
+    'actionPrimary', 'actionPrimaryHover', 'actionPrimaryPressed', 'background', 'disabled', 'error', 'errorHover',
+    'errorPressed', 'focusRing', 'info', 'onActionPrimary', 'onError', 'onInfo', 'onPrimary', 'onPrimaryContainer',
+    'onSecondary', 'onSuccess', 'onSurface', 'onSurfaceVariant', 'onWarning', 'outline', 'outlineVariant', 'primary',
+    'primaryContainer', 'scrim', 'secondary', 'selection', 'shadow', 'success', 'surface', 'surfaceContainer',
+    'surfaceContainerHover', 'surfaceContainerPressed', 'surfaceRaised', 'surfaceVariant', 'warning',
+  ]);
+});
+
 test('V1 token artifacts stay free of V2 tokens', async () => {
   for (const file of ['src/tokens.css', 'tokens.json', 'dist/tokens.css', 'dist/tokens.json']) {
     assert.doesNotMatch(await readFile(resolve(packageRoot, file), 'utf8'), /cf-v2/, file);

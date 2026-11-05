@@ -5,6 +5,7 @@ import { presets } from './presets.js';
 import { cssDeclarations, cssVariableName } from './theme-css.js';
 
 const modeSelector = (mode: ThemeMode) => `[data-cf-theme-mode="${mode}"]`;
+const inheritedSelector = (mode: ThemeMode) => `[data-theme="${mode}"]:not([data-cf-theme-mode])`;
 
 function block(selector: string, declarations: readonly (readonly [string, string])[]): string {
   return `${selector} {\n${declarations.map(([name, value]) => `  ${name}: ${value};`).join('\n')}\n}\n`;
@@ -20,6 +21,8 @@ export function generateTokensCss(): string {
   );
   return [
     block(`:root, ${modeSelector('dark')}`, roleDeclarations('dark')),
+    block(inheritedSelector('dark'), roleDeclarations('dark')),
+    block(inheritedSelector('light'), roleDeclarations('light')),
     block(modeSelector('light'), [['color-scheme', 'light'], ...roleDeclarations('light')]),
     block(modeSelector('high-contrast'), roleDeclarations('high-contrast')),
     block(`${modeSelector('dark')}, ${modeSelector('high-contrast')}`, [['color-scheme', 'dark']]),

@@ -408,6 +408,8 @@ function App() {
       <BadgeV2 size="md" data-testid="badge-md">Medium</BadgeV2>
       <span style={{ display: 'inline-flex', width: 80 }}><BadgeV2 data-testid="badge-long">A very long status label that truncates</BadgeV2></span>
       <div data-testid="typed-overlays">
+      <div data-cf-theme-mode="dark" data-testid="explicit-mode" style={{ background: 'var(--cf-v2-surface)', height: 4 }} />
+      <div data-theme="dark" data-testid="inherited-mode" style={{ background: 'var(--cf-v2-surface)', height: 4 }} />
       <Regressions />
       {dialogSizes.map((size) => <ModalDemo key={size} id={'size-dialog-' + size} label={'Dialog ' + size} size={size} />)}
       <TooltipV2 {...tooltipProps} />
@@ -1033,7 +1035,8 @@ async function certifyOverlays(page, id, roles, geometry, report) {
   assert.equal(await style(dialog, 'paddingLeft'), '20px');
   assert.equal(await style(dialog, 'paddingBottom'), '15px');
   assert.equal(await style(dialog, 'rowGap'), '12px');
-  assert.equal(await style(dialog, 'backgroundColor', '::backdrop'), geometry.dialog.backdrop.replaceAll(/\s+/g, '').replaceAll(',', ', '), `${id} backdrop`);
+  const backdrop = await style(dialog, 'backgroundColor', '::backdrop');
+  assert.ok(Math.abs(Number(backdrop.match(/[\d.]+(?=\)$)/)?.[0]) - Number(geometry.dialog.backdropOpacity)) < 0.01, `${id} backdrop ${backdrop}`);
   const heading = dialog.getByRole('heading', { level: 2 });
   assert.equal(await style(heading, 'fontSize'), '18px', `${id} dialog title`);
   assert.equal(await style(heading, 'fontWeight'), '700');
@@ -1685,11 +1688,15 @@ async function certifyBrowser(url, directory, evidence) {
     assert.equal(await page.locator('html').evaluate((element) => getComputedStyle(element).colorScheme), 'light', 'V2 stylesheet must not override the V1 color scheme');
     assert.equal(await style('v1-button', 'backgroundColor'), rgb(await page.locator('html').evaluate((element) => getComputedStyle(element).getPropertyValue('--forge-accent').trim())), 'V1 Button color changed');
 
-    await certifyScope(page, 'default', engine.createTheme(engine.presets.forge).roles, report);
-    await certifyControls(page, 'default', engine.createTheme(engine.presets.forge).roles, engine.geometry, report);
-    await certifyDisplay(page, 'default', engine.createTheme(engine.presets.forge).roles, engine.geometry, report);
-    await certifyOverlays(page, 'default', engine.createTheme(engine.presets.forge).roles, engine.geometry, report);
-    await certifyStatus(page, 'default', engine.createTheme(engine.presets.forge).roles, engine.geometry, report);
+    await certifyScope(page, 'default', engine.createTheme({ ...engine.presets.forge, mode: 'light' }).roles, report);
+    await certifyControls(page, 'default', engine.createTheme({ ...engine.presets.forge, mode: 'light' }).roles, engine.geometry, report);
+    await certifyDisplay(page, 'default', engine.createTheme({ ...engine.presets.forge, mode: 'light' }).roles, engine.geometry, report);
+    await certifyOverlays(page, 'default', engine.createTheme({ ...engine.presets.forge, mode: 'light' }).roles, engine.geometry, report);
+    await certifyStatus(page, 'default', engine.createTheme({ ...engine.presets.forge, mode: 'light' }).roles, engine.geometry, report);
+    const darkSurface = rgb(engine.createTheme({ ...engine.presets.forge, mode: 'dark' }).roles.surface);
+    assert.equal(await style('default', 'backgroundColor'), rgb(engine.createTheme({ ...engine.presets.forge, mode: 'light' }).roles.surface), 'V2 follows data-theme on a V1 page');
+    assert.equal(await style('explicit-mode', 'backgroundColor'), darkSurface, 'data-cf-theme-mode wins over data-theme');
+    assert.equal(await style('inherited-mode', 'backgroundColor'), darkSurface, 'a nested data-theme applies to V2');
     await certifyRegressions(page, report);
     if (engineName === 'chromium') await certifyForcedColors(browser, url, report);
     report.scopes += 1;

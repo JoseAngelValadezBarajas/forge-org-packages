@@ -31,16 +31,23 @@ stay as published in 1.0.2. Consumers can adopt V2 one component at a time.
 - `forge-ui`: V2 feedback and identity: `ProgressV2`, `SkeletonV2`, `SnackbarV2`,
   `SnackbarStackV2`, `AvatarV2`, and `AvatarGroupV2`.
 - Forced colors support across V2, for Windows High Contrast.
+- `forge-tokens`: `scrim` and `shadow` roles, and a stricter high contrast mode, with
+  7:1 text and 4.5:1 outlines enforced by `validateTheme`.
+- `forge-tokens`: V2 follows the V1 `data-theme` attribute unless
+  `data-cf-theme-mode` is set.
 - A public compatibility gate against the npm 1.0.2 tarballs, and a certification
   of the V2 packages from packed tarballs in an external project, in Chromium,
   Firefox, and WebKit.
 
 ### Notes
 
+- V2 semantic roles are public API. Component tokens and the `geometry` export are
+  internal and can change in a minor release.
 - V2 overlays and `SnackbarStackV2` need the Popover API: Chrome and Edge 114,
   Safari 17, or Firefox 125.
-- `DropdownMenuV2`, `SnackbarV2`, and `AvatarV2` keep the `V2` suffix of the design
-  system, although they have no V1 component with the same name.
+- `DropdownMenuV2`, `SnackbarV2`, `SnackbarStackV2`, `AvatarV2`, and
+  `AvatarGroupV2` keep the `V2` suffix of the design system, although they have no
+  V1 component with the same name. `PUBLIC_COMPATIBILITY.md` records this exception.
 
 ## [1.0.2] - 2026-10-24
 
