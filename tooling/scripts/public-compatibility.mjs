@@ -478,7 +478,7 @@ async function writeTypeCompatibility(candidateDirectory, baselineDirectory, bas
   }, null, 2)}\n`);
 }
 
-async function browserSmoke(consumerDirectory, baseline) {
+async function browserSmoke(consumerDirectory, baseline, includeV2 = false) {
   const packageVersions = [];
   for (const name of Object.keys(baseline.packages)) {
     const packageManifestPath = join(consumerDirectory, 'node_modules', name, 'package.json');
@@ -499,6 +499,7 @@ import iconManifest from '@corefoundry-labs/forge-icons/package.json';
 import uiManifest from '@corefoundry-labs/forge-ui/package.json';
 import '@corefoundry-labs/forge-tokens/tokens.css';
 import '@corefoundry-labs/forge-ui/styles.css';
+${includeV2 ? "import { createTheme, applyTheme } from '@corefoundry-labs/forge-tokens/theme-v2';" : ''}
 const everyIcon = [${icons.map((name) => `Icons.${name}`).join(', ')}];
 const everyComponent = [${ui.map((name) => `UI.${name}`).join(', ')}];
 function App() {
@@ -514,6 +515,7 @@ function App() {
     <span hidden>{everyIcon.map((Icon, index) => <Icon key={index} aria-hidden="true" />)}</span>
   </main>;
 }
+${includeV2 ? "applyTheme(document.getElementById('root'), createTheme({ name: 'external', colors: { primary: '#008e83', secondary: '#75bba7', neutral: '#253330' }, mode: 'light' }));" : ''}
 createRoot(document.getElementById('root')).render(<App />);
 `;
   await mkdir(join(consumerDirectory, 'src'), { recursive: true });
@@ -540,6 +542,7 @@ createRoot(document.getElementById('root')).render(<App />);
     assert.equal(await page.getByTestId('token-value').textContent(), '#d8874d');
     assert.equal(await page.getByTestId('package-versions').textContent(), packageVersions.join(','));
     assert.equal(await page.getByText('Reported').textContent(), 'Reported');
+    if (includeV2) assert.match(await page.locator('#root').evaluate((element) => getComputedStyle(element).getPropertyValue('--cf-v2-primary').trim()), /^#[0-9a-f]{6}$/i);
     assert.equal(await page.locator('html').evaluate((element) => getComputedStyle(element).getPropertyValue('--forge-accent').trim()), '#d8874d');
     assert.deepEqual(errors, []);
   } finally {
@@ -551,6 +554,17 @@ createRoot(document.getElementById('root')).render(<App />);
 async function runTypecheck(consumerDirectory, config = 'tsconfig.json') {
   const result = tscResult(consumerDirectory, config);
   return { status: result.status, output: `${result.stdout}${result.stderr}` };
+}
+
+async function verifyV2Consumer(consumerDirectory) {
+  await writeFile(join(consumerDirectory, 'src', 'theme-v2-consumer.ts'), `import { createTheme, generatePalette, generateThemeCss, validateTheme, applyTheme, type Theme, type ThemeMode } from '@corefoundry-labs/forge-tokens/theme-v2';\nconst mode: ThemeMode = 'light';\nconst theme: Theme = createTheme({ name: 'external', colors: { primary: '#008e83', secondary: '#75bba7', neutral: '#253330' }, mode });\nexport const css: string = generateThemeCss(theme, '.external');\nexport const valid: boolean = validateTheme(theme).valid;\nexport const tone: string = generatePalette('#008e83')[40];\napplyTheme({ style: { setProperty: (_name: string, _value: string) => {} } }, theme);\n`);
+  const config = allTypeScriptConfig();
+  config.include = ['src/theme-v2-consumer.ts'];
+  await writeFile(join(consumerDirectory, 'tsconfig.theme-v2.json'), `${JSON.stringify(config, null, 2)}\n`);
+  const result = await runTypecheck(consumerDirectory, 'tsconfig.theme-v2.json');
+  assert.equal(result.status, 0, `external V2 consumer did not compile:\n${result.output}`);
+  const runtime = spawnSync(process.execPath, ['--input-type=module', '-e', "import {createTheme,validateTheme} from '@corefoundry-labs/forge-tokens/theme-v2'; if (!validateTheme(createTheme({name:'external',colors:{primary:'#008e83',secondary:'#75bba7',neutral:'#253330'},mode:'dark'})).valid) process.exit(1);"], { cwd: consumerDirectory, encoding: 'utf8' });
+  assert.equal(runtime.status, 0, `external V2 consumer failed in Node:\n${runtime.stdout}${runtime.stderr}`);
 }
 
 async function verifyBaselineSnapshot(baseline, surfaces) {
@@ -600,7 +614,8 @@ export async function runCompatibilityGate() {
     assert.equal(candidateTypes.status, 0, `candidate external consumer did not compile:\n${candidateTypes.output}`);
 
     await browserSmoke(baselineConsumer, baseline);
-    await browserSmoke(candidateConsumer, baseline);
+    await verifyV2Consumer(candidateConsumer);
+    await browserSmoke(candidateConsumer, baseline, true);
 
     await isolateCandidateTypePackageIds(candidateConsumer, baseline);
     await writeTypeCompatibility(candidateConsumer, baselineConsumer, baseline);

@@ -1,0 +1,3 @@
+export type Tone = 0 | 5 | 10 | 15 | 20 | 25 | 30 | 35 | 40 | 45 | 50 | 55 | 60 | 65 | 70 | 75 | 80 | 85 | 90 | 95 | 98 | 99 | 100;
+export type SemanticRole = 'background' | 'surface' | 'surfaceRaised' | 'surfaceContainer' | 'surfaceVariant' | 'onSurface' | 'onSurfaceVariant' | 'primary' | 'onPrimary' | 'primaryContainer' | 'onPrimaryContainer' | 'secondary' | 'onSecondary' | 'outline' | 'outlineVariant' | 'focusRing' | 'selection' | 'disabled' | 'error' | 'warning' | 'success' | 'info' | 'actionPrimary' | 'onActionPrimary' | 'actionPrimaryHover' | 'actionPrimaryPressed' | 'onError' | 'errorHover' | 'errorPressed' | 'surfaceContainerHover' | 'surfaceContainerPressed' | 'onSuccess' | 'onWarning' | 'onInfo';
+export type ThemeMode = 'light' | 'dark' | 'high-contrast';

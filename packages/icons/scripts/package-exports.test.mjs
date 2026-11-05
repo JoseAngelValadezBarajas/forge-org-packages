@@ -21,7 +21,7 @@ test('the package export map and build contain all canonical icon entry points',
     .sort();
   const sourceIndex = readFileSync(join(packageRoot, 'src', 'index.ts'), 'utf8');
 
-  assert.equal(canonicalNames.length, 35);
+  assert.equal(canonicalNames.length, 59);
   assert.deepEqual(Object.keys(manifest.exports), ['.', './package.json']);
   assert.deepEqual(Object.keys(manifest.dependencies ?? {}), []);
   assert.deepEqual(Object.keys(manifest.peerDependencies ?? {}), ['react']);

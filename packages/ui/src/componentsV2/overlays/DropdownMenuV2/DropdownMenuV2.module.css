@@ -1,0 +1,122 @@
+.menu {
+  --overlay-offset: var(--cf-v2-menu-offset);
+  position: fixed;
+  inset: auto;
+  box-sizing: border-box;
+  max-width: calc(100vw - 2 * var(--cf-v2-overlay-viewport-margin));
+  max-height: calc(100dvh - 2 * var(--cf-v2-overlay-viewport-margin));
+  margin: 0;
+  padding: var(--cf-v2-menu-padding-block) var(--cf-v2-menu-padding-inline);
+  overflow: auto;
+  border: var(--cf-v2-menu-border-width) solid var(--cf-v2-outline);
+  border-radius: var(--cf-v2-menu-radius);
+  background: var(--cf-v2-surface-container);
+  color: var(--cf-v2-on-surface);
+  font-family: inherit;
+  font-size: var(--cf-v2-menu-font-size);
+  line-height: normal;
+}
+
+.menu[data-state='open'] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cf-v2-menu-gap);
+}
+
+.menu[data-state='closed'] {
+  display: none;
+}
+
+.menu:focus {
+  outline: none;
+}
+
+.compact {
+  width: var(--cf-v2-menu-width-compact);
+}
+
+.comfortable {
+  width: var(--cf-v2-menu-width-comfortable);
+}
+
+.item {
+  display: flex;
+  flex: none;
+  align-items: center;
+  gap: var(--cf-v2-menu-item-gap);
+  box-sizing: border-box;
+  width: 100%;
+  min-height: var(--cf-v2-menu-item-height);
+  margin: 0;
+  padding: var(--cf-v2-menu-item-padding-block) var(--cf-v2-menu-item-padding-inline);
+  border: 0;
+  border-radius: var(--cf-v2-menu-item-radius);
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-weight: var(--cf-v2-menu-font-weight);
+  text-align: start;
+  cursor: pointer;
+}
+
+.item:focus {
+  outline: none;
+  background: var(--cf-v2-surface-container-hover);
+}
+
+.item:focus-visible {
+  outline: var(--cf-v2-menu-focus-width) solid var(--cf-v2-focus-ring);
+  outline-offset: calc(-1 * var(--cf-v2-menu-focus-width));
+}
+
+.menu[data-input='pointer'] .item:focus-visible {
+  outline: none;
+}
+
+.item:disabled {
+  opacity: var(--cf-v2-menu-disabled-opacity);
+  cursor: not-allowed;
+}
+
+.destructive {
+  color: var(--cf-v2-error);
+}
+
+.icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--cf-v2-menu-item-icon-size);
+}
+
+.icon svg {
+  width: 100%;
+  height: auto;
+}
+
+.label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.separator {
+  flex: none;
+  height: var(--cf-v2-menu-border-width);
+  background: var(--cf-v2-outline);
+  opacity: var(--cf-v2-menu-separator-opacity);
+}
+
+@media (pointer: coarse) {
+  .item {
+    min-height: var(--cf-v2-menu-touch-target);
+  }
+}
+
+@media (forced-colors: active) {
+  .item:focus {
+    background: Highlight;
+    color: HighlightText;
+    forced-color-adjust: none;
+  }
+}

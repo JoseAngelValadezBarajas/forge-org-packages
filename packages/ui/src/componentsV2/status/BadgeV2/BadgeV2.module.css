@@ -1,0 +1,94 @@
+.badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  max-width: 100%;
+  padding-inline: var(--cf-v2-badge-padding);
+  border-radius: var(--cf-v2-badge-radius);
+  font-family: inherit;
+  font-weight: var(--cf-v2-badge-font-weight);
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.sm {
+  height: var(--cf-v2-badge-height-sm);
+  font-size: var(--cf-v2-badge-font-size-sm);
+}
+
+.md {
+  height: var(--cf-v2-badge-height-md);
+  font-size: var(--cf-v2-badge-font-size-md);
+}
+
+.neutral {
+  --badge-fill: var(--cf-v2-surface-container);
+  --badge-on: var(--cf-v2-on-surface);
+  --badge-accent: var(--cf-v2-on-surface);
+  --badge-border: var(--cf-v2-outline);
+}
+
+.primary {
+  --badge-fill: var(--cf-v2-action-primary);
+  --badge-on: var(--cf-v2-on-action-primary);
+  --badge-accent: var(--cf-v2-action-primary);
+  --badge-border: var(--cf-v2-action-primary);
+}
+
+.success {
+  --badge-fill: var(--cf-v2-success);
+  --badge-on: var(--cf-v2-on-success);
+  --badge-accent: var(--cf-v2-success);
+  --badge-border: var(--cf-v2-success);
+}
+
+.warning {
+  --badge-fill: var(--cf-v2-warning);
+  --badge-on: var(--cf-v2-on-warning);
+  --badge-accent: var(--cf-v2-warning);
+  --badge-border: var(--cf-v2-warning);
+}
+
+.error {
+  --badge-fill: var(--cf-v2-error);
+  --badge-on: var(--cf-v2-on-error);
+  --badge-accent: var(--cf-v2-error);
+  --badge-border: var(--cf-v2-error);
+}
+
+.info {
+  --badge-fill: var(--cf-v2-info);
+  --badge-on: var(--cf-v2-on-info);
+  --badge-accent: var(--cf-v2-info);
+  --badge-border: var(--cf-v2-info);
+}
+
+.solid {
+  background: var(--badge-fill);
+  color: var(--badge-on);
+}
+
+.subtle {
+  background: var(--cf-v2-surface-container);
+  color: var(--badge-accent);
+}
+
+.outline {
+  border: var(--cf-v2-badge-border-width) solid var(--badge-border);
+  background: var(--cf-v2-surface-container);
+  color: var(--badge-accent);
+}
+
+@media (forced-colors: active) {
+  .solid,
+  .subtle {
+    border: thin solid CanvasText;
+  }
+}

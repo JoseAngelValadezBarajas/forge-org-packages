@@ -1,0 +1,64 @@
+.input {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  margin: 0;
+  padding-inline: var(--cf-v2-field-padding);
+  border: var(--cf-v2-field-border-width) solid var(--cf-v2-outline);
+  border-radius: var(--cf-v2-field-radius);
+  background: var(--cf-v2-surface-container);
+  color: var(--cf-v2-on-surface);
+  font-family: inherit;
+  line-height: normal;
+  transition: background-color var(--cf-v2-field-transition-duration) ease;
+}
+
+.sm {
+  height: var(--cf-v2-field-height-sm);
+  font-size: var(--cf-v2-field-font-size-sm);
+}
+
+.md {
+  height: var(--cf-v2-field-height-md);
+  font-size: var(--cf-v2-field-font-size-md);
+}
+
+.lg {
+  height: var(--cf-v2-field-height-lg);
+  font-size: var(--cf-v2-field-font-size-lg);
+}
+
+.input::placeholder {
+  color: var(--cf-v2-on-surface-variant);
+  opacity: var(--cf-v2-field-placeholder-opacity);
+}
+
+.input:hover:not(:disabled, [readonly]) {
+  background: var(--cf-v2-surface-container-hover);
+}
+
+.input[aria-invalid='true'] {
+  outline: var(--cf-v2-field-state-border-width) solid var(--cf-v2-error);
+  outline-offset: calc(-1 * var(--cf-v2-field-state-border-width));
+}
+
+.input:focus-visible {
+  outline: var(--cf-v2-field-state-border-width) solid var(--cf-v2-focus-ring);
+  outline-offset: calc(-1 * var(--cf-v2-field-state-border-width));
+}
+
+.input[readonly] {
+  opacity: var(--cf-v2-field-readonly-opacity);
+}
+
+.input:disabled {
+  background: var(--cf-v2-disabled);
+  opacity: var(--cf-v2-field-disabled-opacity);
+  cursor: not-allowed;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .input {
+    transition: none;
+  }
+}

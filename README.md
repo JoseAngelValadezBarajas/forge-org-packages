@@ -61,6 +61,21 @@ The public V1 contract and compatibility gate are documented in
 with the integrity-pinned npm 1.0.2 tarballs and compile/run external consumers
 against both.
 
+The [dynamic theme engine V2](docs/design-system/theme-engine-v2.md) generates
+scoped color tokens without changing the existing V1 theme. Run
+`npm run playground:theme-v2` after building to explore the engine.
+
+[`ButtonV2`](docs/design-system/button-v2.md), the
+[V2 form controls](docs/design-system/form-controls-v2.md), the
+[V2 display components](docs/design-system/display-components-v2.md), the
+[V2 overlays](docs/design-system/overlays-v2.md), and the
+[V2 feedback and identity components](docs/design-system/feedback-identity-v2.md)
+are built on it.
+Run `npm run playground:ui` to review components against the engine, and
+`npm run check:v2-consumer` to certify the V2 packages from their packed
+tarballs in an external React project. Set `V2_BROWSER` to `firefox` or `webkit`
+to use another engine.
+
 ## Releases and publishing
 
 Releases are driven from GitHub Actions using npm Trusted Publishing (OIDC);
@@ -69,9 +84,10 @@ no long-lived npm token is stored in the repository.
 To publish a new version:
 
 1. Update the three package versions and the UI package dependency versions.
-2. Run `npm install`, `npm run quality`, and review the packed artifacts.
-3. Commit the version change.
-4. Create and push a matching tag, for example:
+2. Move the `Unreleased` notes in [`CHANGELOG.md`](CHANGELOG.md) under the new version.
+3. Run `npm install`, `npm run quality`, and review the packed artifacts.
+4. Commit the version change.
+5. Create and push a matching tag, for example:
 
    ```bash
    git tag packages-v1.0.3

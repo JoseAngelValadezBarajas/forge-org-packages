@@ -1,0 +1,144 @@
+.alert {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--cf-v2-alert-gap);
+  box-sizing: border-box;
+  width: 100%;
+  padding: var(--cf-v2-alert-padding);
+  border-radius: var(--cf-v2-alert-radius);
+  font-family: inherit;
+  line-height: normal;
+}
+
+.info {
+  --alert-fill: var(--cf-v2-info);
+  --alert-on: var(--cf-v2-on-info);
+  --alert-border: var(--cf-v2-info);
+}
+
+.success {
+  --alert-fill: var(--cf-v2-success);
+  --alert-on: var(--cf-v2-on-success);
+  --alert-border: var(--cf-v2-success);
+}
+
+.warning {
+  --alert-fill: var(--cf-v2-warning);
+  --alert-on: var(--cf-v2-on-warning);
+  --alert-border: var(--cf-v2-warning);
+}
+
+.error {
+  --alert-fill: var(--cf-v2-error);
+  --alert-on: var(--cf-v2-on-error);
+  --alert-border: var(--cf-v2-error);
+}
+
+.neutral {
+  --alert-fill: var(--cf-v2-surface-container);
+  --alert-on: var(--cf-v2-on-surface);
+  --alert-border: var(--cf-v2-outline);
+}
+
+.soft {
+  background: var(--cf-v2-surface-container);
+  color: var(--cf-v2-on-surface);
+}
+
+.solid {
+  background: var(--alert-fill);
+  color: var(--alert-on);
+}
+
+.outline {
+  border: var(--cf-v2-alert-border-width) solid var(--alert-border);
+  background: var(--cf-v2-surface);
+  color: var(--cf-v2-on-surface);
+}
+
+.icon {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--cf-v2-alert-icon-size);
+  height: var(--cf-v2-alert-icon-size);
+  border-radius: var(--cf-v2-alert-icon-radius);
+  background: var(--alert-fill);
+  color: var(--alert-on);
+  font-size: var(--cf-v2-alert-icon-font-size);
+  font-weight: var(--cf-v2-alert-icon-font-weight);
+}
+
+.icon svg {
+  width: var(--cf-v2-alert-icon-font-size);
+  height: var(--cf-v2-alert-icon-font-size);
+}
+
+.solid .icon {
+  background: var(--alert-on);
+  color: var(--alert-fill);
+}
+
+.content {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--cf-v2-alert-content-gap);
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.title {
+  font-size: var(--cf-v2-alert-title-font-size);
+  font-weight: var(--cf-v2-alert-title-font-weight);
+}
+
+.description {
+  color: color-mix(in srgb, currentColor calc(var(--cf-v2-alert-description-opacity) * 100%), transparent);
+  font-size: var(--cf-v2-alert-description-font-size);
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--cf-v2-alert-actions-gap);
+}
+
+.dismiss {
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--cf-v2-alert-dismiss-size);
+  height: var(--cf-v2-alert-dismiss-size);
+  margin: 0;
+  padding: 0;
+  border: 0;
+  border-radius: var(--cf-v2-alert-dismiss-radius);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+
+.dismiss svg {
+  width: var(--cf-v2-alert-dismiss-icon-size);
+  height: var(--cf-v2-alert-dismiss-icon-size);
+}
+
+.dismiss:hover {
+  background: color-mix(in srgb, currentColor calc(var(--cf-v2-alert-dismiss-hover-opacity) * 100%), transparent);
+}
+
+.dismiss:focus-visible {
+  outline: var(--cf-v2-alert-focus-width) solid currentColor;
+  outline-offset: calc(-1 * var(--cf-v2-alert-focus-width));
+}
+
+@media (forced-colors: active) {
+  .alert,
+  .icon {
+    border: thin solid CanvasText;
+  }
+}

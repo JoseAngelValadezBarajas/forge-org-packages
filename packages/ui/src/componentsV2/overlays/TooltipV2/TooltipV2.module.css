@@ -1,0 +1,69 @@
+.tooltip {
+  --overlay-offset: var(--cf-v2-tooltip-offset);
+  --tooltip-arrow-shift: calc(
+    (var(--cf-v2-tooltip-arrow-height) - var(--cf-v2-tooltip-arrow-width)) / 2 - var(--cf-v2-tooltip-border-width)
+  );
+  position: fixed;
+  inset: auto;
+  box-sizing: border-box;
+  width: max-content;
+  max-width: min(var(--cf-v2-tooltip-max-width), calc(100vw - 2 * var(--cf-v2-overlay-viewport-margin)));
+  margin: 0;
+  padding: var(--cf-v2-tooltip-padding-block) var(--cf-v2-tooltip-padding-inline);
+  overflow: visible;
+  border: var(--cf-v2-tooltip-border-width) solid var(--cf-v2-outline);
+  border-radius: var(--cf-v2-tooltip-radius);
+  background: var(--cf-v2-surface-container);
+  color: var(--cf-v2-on-surface);
+  font-family: inherit;
+  font-size: var(--cf-v2-tooltip-font-size);
+  font-weight: var(--cf-v2-tooltip-font-weight);
+  line-height: normal;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.tooltip[data-state='closed'] {
+  display: none;
+}
+
+.arrow {
+  position: absolute;
+  width: var(--cf-v2-tooltip-arrow-width);
+  height: var(--cf-v2-tooltip-arrow-height);
+  overflow: visible;
+  fill: var(--cf-v2-surface-container);
+  stroke: var(--cf-v2-outline);
+  stroke-width: var(--cf-v2-tooltip-border-width);
+  pointer-events: none;
+}
+
+.tooltip[data-placement='bottom'] .arrow,
+.tooltip[data-placement='top'] .arrow {
+  left: calc(var(--overlay-arrow) - var(--cf-v2-tooltip-border-width));
+}
+
+.tooltip[data-placement='left'] .arrow,
+.tooltip[data-placement='right'] .arrow {
+  top: calc(var(--overlay-arrow) - var(--cf-v2-tooltip-border-width));
+}
+
+.tooltip[data-placement='bottom'] .arrow {
+  bottom: calc(100% - var(--cf-v2-tooltip-border-width));
+  transform: translateX(-50%);
+}
+
+.tooltip[data-placement='top'] .arrow {
+  top: calc(100% - var(--cf-v2-tooltip-border-width));
+  transform: translateX(-50%) rotate(180deg);
+}
+
+.tooltip[data-placement='left'] .arrow {
+  left: calc(100% + var(--tooltip-arrow-shift));
+  transform: translateY(-50%) rotate(90deg);
+}
+
+.tooltip[data-placement='right'] .arrow {
+  right: calc(100% + var(--tooltip-arrow-shift));
+  transform: translateY(-50%) rotate(-90deg);
+}

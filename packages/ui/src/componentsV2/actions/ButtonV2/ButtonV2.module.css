@@ -1,0 +1,158 @@
+.button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--cf-v2-button-gap);
+  box-sizing: border-box;
+  max-width: 100%;
+  margin: 0;
+  border: var(--cf-v2-button-border-width) solid transparent;
+  border-radius: var(--cf-v2-button-radius);
+  font-family: inherit;
+  font-weight: var(--cf-v2-button-font-weight);
+  line-height: normal;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color var(--cf-v2-button-transition-duration) ease,
+    border-color var(--cf-v2-button-transition-duration) ease;
+}
+
+.sm {
+  height: var(--cf-v2-button-height-sm);
+  padding-inline: var(--cf-v2-button-padding-sm);
+  font-size: var(--cf-v2-button-font-size-sm);
+}
+
+.md {
+  height: var(--cf-v2-button-height-md);
+  padding-inline: var(--cf-v2-button-padding-md);
+  font-size: var(--cf-v2-button-font-size-md);
+}
+
+.lg {
+  height: var(--cf-v2-button-height-lg);
+  padding-inline: var(--cf-v2-button-padding-lg);
+  font-size: var(--cf-v2-button-font-size-lg);
+}
+
+.iconOnly {
+  padding-inline: 0;
+  aspect-ratio: 1;
+}
+
+.label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.icon {
+  display: inline-flex;
+  flex: none;
+}
+
+.icon svg {
+  width: var(--cf-v2-button-icon-size);
+  height: var(--cf-v2-button-icon-size);
+}
+
+.spinner {
+  flex: none;
+  box-sizing: border-box;
+  width: var(--cf-v2-button-icon-size);
+  height: var(--cf-v2-button-icon-size);
+  border: var(--cf-v2-button-spinner-width) solid currentColor;
+  border-inline-end-color: transparent;
+  border-radius: 50%;
+  animation: spin var(--cf-v2-button-spinner-duration) linear infinite;
+}
+
+.primary {
+  background: var(--cf-v2-action-primary);
+  color: var(--cf-v2-on-action-primary);
+}
+
+.primary:hover:not(:disabled, [aria-busy='true']) {
+  background: var(--cf-v2-action-primary-hover);
+}
+
+.primary:active:not(:disabled, [aria-busy='true']) {
+  background: var(--cf-v2-action-primary-pressed);
+}
+
+.secondary {
+  border-color: var(--cf-v2-outline);
+  background: var(--cf-v2-surface-container);
+  color: var(--cf-v2-on-surface);
+}
+
+.secondary:hover:not(:disabled, [aria-busy='true']) {
+  background: var(--cf-v2-surface-container-hover);
+}
+
+.secondary:active:not(:disabled, [aria-busy='true']) {
+  background: var(--cf-v2-surface-container-pressed);
+}
+
+.ghost {
+  background: transparent;
+  color: var(--cf-v2-on-surface);
+}
+
+.ghost:hover:not(:disabled, [aria-busy='true']) {
+  background: var(--cf-v2-surface-container-hover);
+}
+
+.ghost:active:not(:disabled, [aria-busy='true']) {
+  background: var(--cf-v2-surface-container-pressed);
+}
+
+.danger {
+  background: var(--cf-v2-error);
+  color: var(--cf-v2-on-error);
+}
+
+.danger:hover:not(:disabled, [aria-busy='true']) {
+  background: var(--cf-v2-error-hover);
+}
+
+.danger:active:not(:disabled, [aria-busy='true']) {
+  background: var(--cf-v2-error-pressed);
+}
+
+.button:focus-visible {
+  outline: var(--cf-v2-button-focus-width) solid var(--cf-v2-focus-ring);
+  outline-offset: var(--cf-v2-button-focus-offset);
+}
+
+.button[aria-busy='true'] {
+  cursor: progress;
+}
+
+.button:disabled {
+  background: var(--cf-v2-disabled);
+  opacity: var(--cf-v2-button-disabled-opacity);
+  cursor: not-allowed;
+}
+
+.button:disabled .label,
+.button:disabled .icon {
+  opacity: var(--cf-v2-button-disabled-content-opacity);
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .button {
+    transition: none;
+  }
+
+  .spinner {
+    animation: none;
+  }
+}

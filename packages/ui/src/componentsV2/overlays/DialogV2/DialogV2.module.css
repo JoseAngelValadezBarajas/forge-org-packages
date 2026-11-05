@@ -1,0 +1,91 @@
+.dialog {
+  box-sizing: border-box;
+  width: 100%;
+  max-width: min(var(--dialog-width), calc(100vw - 2 * var(--cf-v2-overlay-viewport-margin)));
+  max-height: calc(100dvh - 2 * var(--cf-v2-overlay-viewport-margin));
+  margin: auto;
+  padding: var(--cf-v2-dialog-padding-top) var(--cf-v2-dialog-padding-inline) var(--cf-v2-dialog-padding-bottom);
+  border: var(--cf-v2-dialog-border-width) solid var(--cf-v2-outline);
+  border-radius: var(--cf-v2-dialog-radius);
+  background: var(--cf-v2-surface-container);
+  color: var(--cf-v2-on-surface);
+  font-family: inherit;
+  line-height: normal;
+}
+
+.dialog[open] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cf-v2-dialog-gap);
+}
+
+.dialog:focus {
+  outline: none;
+}
+
+.dialog:focus-visible {
+  outline: var(--cf-v2-dialog-focus-width) solid var(--cf-v2-focus-ring);
+  outline-offset: calc(-1 * var(--cf-v2-dialog-focus-width));
+}
+
+.dialog::backdrop {
+  background: var(--cf-v2-dialog-backdrop);
+}
+
+.sm {
+  --dialog-width: var(--cf-v2-dialog-width-sm);
+  --dialog-title-size: var(--cf-v2-dialog-title-font-size-sm);
+}
+
+.md {
+  --dialog-width: var(--cf-v2-dialog-width-md);
+  --dialog-title-size: var(--cf-v2-dialog-title-font-size-md);
+}
+
+.lg {
+  --dialog-width: var(--cf-v2-dialog-width-lg);
+  --dialog-title-size: var(--cf-v2-dialog-title-font-size-md);
+}
+
+.title {
+  flex: none;
+  margin: 0;
+  font: inherit;
+  font-size: var(--dialog-title-size);
+  font-weight: var(--cf-v2-dialog-title-font-weight);
+  overflow-wrap: anywhere;
+}
+
+.description {
+  flex: none;
+  color: color-mix(in srgb, var(--cf-v2-on-surface) calc(var(--cf-v2-dialog-description-opacity) * 100%), transparent);
+  font-size: var(--cf-v2-dialog-description-font-size);
+  overflow-wrap: anywhere;
+}
+
+.body {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow: auto;
+  font-size: var(--cf-v2-dialog-description-font-size);
+}
+
+.body:focus-visible {
+  outline: var(--cf-v2-dialog-focus-width) solid var(--cf-v2-focus-ring);
+  outline-offset: calc(-1 * var(--cf-v2-dialog-focus-width));
+}
+
+.footer {
+  display: flex;
+  flex: none;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--cf-v2-dialog-footer-gap);
+}
+
+@media (pointer: coarse) {
+  .footer > * {
+    min-height: var(--cf-v2-dialog-touch-target);
+  }
+}

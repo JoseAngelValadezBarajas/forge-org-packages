@@ -16,6 +16,11 @@ exports, declarations, peer/runtime dependencies, styles, tokens, and themes.
   changing a V1 component or other V1 public contract. V1 retirement requires
   a separate, explicit project decision and a documented migration plan.
 
+The three packages release together under one version, and
+`@corefoundry-labs/forge-ui` pins that exact version of its token and icon
+dependencies. A release publishes all three, so each one must move even when
+only some of them change.
+
 ## V1 and V2 coexistence
 
 Every published V1 component remains independently available and functional.
@@ -25,8 +30,7 @@ and rendered by the same application. Existing V1 exports are never silently
 redirected to V2.
 
 A component with no earlier public version uses its canonical name. Do not add a
-`V2` suffix merely to make the inventory look complete. This ticket establishes
-the policy only; it adds no V2 components.
+`V2` suffix merely to make the inventory look complete.
 
 ## Public API compatibility
 
