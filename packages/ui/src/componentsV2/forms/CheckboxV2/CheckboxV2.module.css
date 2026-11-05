@@ -1,0 +1,137 @@
+.root {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cf-v2-selection-gap);
+  max-width: 100%;
+  color: var(--cf-v2-on-surface);
+  font-family: inherit;
+  font-size: var(--cf-v2-selection-label-font-size);
+  font-weight: var(--cf-v2-selection-label-font-weight);
+  cursor: pointer;
+}
+
+.root[data-disabled] {
+  color: var(--cf-v2-on-surface-variant);
+  cursor: not-allowed;
+}
+
+.target {
+  position: relative;
+  display: inline-flex;
+  flex: none;
+  align-items: center;
+  justify-content: center;
+  width: var(--cf-v2-selection-target-size);
+  height: var(--cf-v2-selection-target-size);
+}
+
+.input {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  border-radius: var(--cf-v2-checkbox-target-radius);
+  background: transparent;
+  appearance: none;
+  cursor: inherit;
+}
+
+.input:focus-visible {
+  outline: var(--cf-v2-selection-focus-width) solid var(--cf-v2-focus-ring);
+  outline-offset: calc(-1 * var(--cf-v2-selection-focus-width));
+}
+
+.box {
+  position: relative;
+  box-sizing: border-box;
+  width: var(--cf-v2-checkbox-size);
+  height: var(--cf-v2-checkbox-size);
+  border: var(--cf-v2-checkbox-border-width) solid var(--cf-v2-outline);
+  border-radius: var(--cf-v2-checkbox-radius);
+  background: var(--cf-v2-surface-container);
+  color: var(--cf-v2-on-action-primary);
+  pointer-events: none;
+  transition: background-color var(--cf-v2-selection-transition-duration) ease;
+}
+
+.check,
+.mixed {
+  position: absolute;
+  inset: calc(-1 * var(--cf-v2-checkbox-border-width));
+  display: none;
+  width: var(--cf-v2-checkbox-size);
+  height: var(--cf-v2-checkbox-size);
+}
+
+.input:checked:not(:indeterminate) + .box .check,
+.input:indeterminate + .box .mixed {
+  display: block;
+}
+
+.root:hover .input:not(:disabled) + .box {
+  background: var(--cf-v2-surface-container-hover);
+}
+
+.root:active .input:not(:disabled) + .box {
+  background: var(--cf-v2-surface-container-pressed);
+}
+
+.input:checked + .box,
+.input:indeterminate + .box {
+  border-color: var(--cf-v2-action-primary);
+  background: var(--cf-v2-action-primary);
+}
+
+.root:hover .input:checked:not(:disabled) + .box,
+.root:hover .input:indeterminate:not(:disabled) + .box {
+  border-color: var(--cf-v2-action-primary-hover);
+  background: var(--cf-v2-action-primary-hover);
+}
+
+.root:active .input:checked:not(:disabled) + .box,
+.root:active .input:indeterminate:not(:disabled) + .box {
+  border-color: var(--cf-v2-action-primary-pressed);
+  background: var(--cf-v2-action-primary-pressed);
+}
+
+.input[aria-invalid='true'] + .box {
+  border-color: var(--cf-v2-error);
+}
+
+.input[aria-invalid='true']:checked + .box,
+.input[aria-invalid='true']:indeterminate + .box {
+  background: var(--cf-v2-error);
+  color: var(--cf-v2-on-error);
+}
+
+.root:hover .input[aria-invalid='true']:checked:not(:disabled) + .box,
+.root:hover .input[aria-invalid='true']:indeterminate:not(:disabled) + .box {
+  border-color: var(--cf-v2-error-hover);
+  background: var(--cf-v2-error-hover);
+}
+
+.root:active .input[aria-invalid='true']:checked:not(:disabled) + .box,
+.root:active .input[aria-invalid='true']:indeterminate:not(:disabled) + .box {
+  border-color: var(--cf-v2-error-pressed);
+  background: var(--cf-v2-error-pressed);
+}
+
+.input:disabled + .box {
+  opacity: var(--cf-v2-checkbox-disabled-opacity);
+}
+
+.input:disabled:not(:checked, :indeterminate) + .box {
+  background: var(--cf-v2-disabled);
+}
+
+.label {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .box {
+    transition: none;
+  }
+}

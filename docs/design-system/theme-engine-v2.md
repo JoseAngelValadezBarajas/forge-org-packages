@@ -138,8 +138,11 @@ Disabled and focus treatments are not part of these roles. Focus keeps using
 Geometry is theme-independent, so it is not a theme role. It belongs to V2 and
 stays out of the V1 `tokens.css` and `tokens.json`. The `geometry` export of
 `@corefoundry-labs/forge-tokens/theme-v2` is its source of truth, and
-`@corefoundry-labs/forge-tokens/theme-v2/tokens.css` distributes it as
-`--cf-v2-button-*` variables on `:root`.
+`@corefoundry-labs/forge-tokens/theme-v2/tokens.css` distributes it on `:root` as
+`--cf-v2-button-*` variables, plus `--cf-v2-field-*`, `--cf-v2-select-*`,
+`--cf-v2-selection-*`, `--cf-v2-checkbox-*`, and `--cf-v2-switch-*` for the
+[form controls](form-controls-v2.md). The table under Default theme lists the
+button variables.
 
 ## Default theme
 

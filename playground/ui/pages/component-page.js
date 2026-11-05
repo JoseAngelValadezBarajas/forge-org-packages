@@ -2,9 +2,17 @@ import React from 'react';
 import { Demo } from '../demos.js';
 import { ButtonV2Host } from './button-v2.js';
 import { FeedbackComparison } from './feedback-comparison.js';
+import { CheckboxV2Host, SelectV2Host, SwitchV2Host, TextInputV2Host } from './form-controls-v2.js';
 
 const h = React.createElement;
-const customPages = { ButtonV2: ButtonV2Host, FeedbackStateV2: FeedbackComparison };
+const customPages = {
+  ButtonV2: ButtonV2Host,
+  CheckboxV2: CheckboxV2Host,
+  FeedbackStateV2: FeedbackComparison,
+  SelectV2: SelectV2Host,
+  SwitchV2: SwitchV2Host,
+  TextInputV2: TextInputV2Host,
+};
 
 export function ComponentPage({ page, theme, preview, controls }) {
   const Custom = customPages[page.name];

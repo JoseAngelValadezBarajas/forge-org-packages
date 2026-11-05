@@ -8,7 +8,7 @@ const variants = ['primary', 'secondary', 'ghost', 'danger'];
 const sizes = ['sm', 'md', 'lg'];
 const modes = ['light', 'dark', 'high-contrast'];
 
-function Section({ title, note, children }) {
+export function Section({ title, note, children }) {
   return h('section', { className: 'button-section', 'aria-label': title },
     h('h3', null, title),
     note && h('p', { className: 'button-note' }, note),
@@ -68,7 +68,7 @@ function IconCompositions() {
   );
 }
 
-function PresetMatrix() {
+export function PresetMatrix({ cell, className = 'button-matrix-cell' }) {
   return h(Section, { title: 'Theme Engine presets', note: 'Four presets in three modes, each inside its own ThemeScope. These cells ignore the controls above.' },
     h('div', { className: 'button-matrix-scroll' },
       h('div', { className: 'button-matrix' },
@@ -79,9 +79,9 @@ function PresetMatrix() {
           ...modes.map((mode) => h(ThemeScope, {
             key: `${key}-${mode}`,
             theme: createTheme({ ...preset, mode }),
-            className: 'button-matrix-cell',
+            className,
             'data-testid': `matrix-${key}-${mode}`,
-          }, ...variants.map((variant) => h(ButtonV2, { key: variant, variant, size: 'sm' }, 'Continue')))),
+          }, ...cell(`${key}-${mode}`))),
         ]),
       ),
     ),
@@ -93,6 +93,6 @@ export function ButtonV2Host() {
     h(VariantsAndSizes),
     h(InteractionStates),
     h(IconCompositions),
-    h(PresetMatrix),
+    h(PresetMatrix, { cell: () => variants.map((variant) => h(ButtonV2, { key: variant, variant, size: 'sm' }, 'Continue')) }),
   );
 }

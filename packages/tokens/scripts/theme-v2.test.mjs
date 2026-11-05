@@ -146,6 +146,9 @@ test('V2 geometry matches the ButtonV2 contract and ships in its own stylesheet'
   for (const [name, value] of [['height-sm', '32px'], ['height-md', '40px'], ['height-lg', '48px'], ['padding-sm', '12px'], ['padding-md', '16px'], ['padding-lg', '20px'], ['radius', '10px'], ['gap', '8px'], ['font-size-sm', '12px'], ['font-size-md', '14px'], ['font-size-lg', '16px'], ['font-weight', '500'], ['icon-size', '16px'], ['focus-width', '2px'], ['focus-offset', '3px'], ['border-width', '1px'], ['spinner-width', '2px'], ['spinner-duration', '800ms'], ['transition-duration', '120ms'], ['disabled-opacity', '0.7'], ['disabled-content-opacity', '0.68']]) {
     assert.ok(css.includes(`--cf-v2-button-${name}: ${value};`), name);
   }
+  for (const [name, value] of [['field-height-sm', '32px'], ['field-height-md', '40px'], ['field-height-lg', '48px'], ['field-padding', '12px'], ['field-radius', '10px'], ['field-gap', '8px'], ['field-state-border-width', '2px'], ['select-icon-size', '16px'], ['selection-target-size', '44px'], ['checkbox-size', '20px'], ['checkbox-radius', '5px'], ['switch-width', '44px'], ['switch-height', '26px'], ['switch-thumb-size', '18px'], ['switch-thumb-offset-on', '22px']]) {
+    assert.ok(css.includes(`--cf-v2-${name}: ${value};`), name);
+  }
   const manifest = JSON.parse(await readFile(resolve(packageRoot, 'package.json'), 'utf8'));
   assert.equal(manifest.exports['./theme-v2/tokens.css'].default, './dist/theme-v2/tokens.css');
 });

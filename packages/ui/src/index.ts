@@ -19,6 +19,14 @@ export type {
 } from './componentsV2/actions/ButtonV2';
 
 // Forms
+export { TextInputV2 } from './componentsV2/forms/TextInputV2';
+export type { TextInputV2Props, TextInputV2Size } from './componentsV2/forms/TextInputV2';
+export { SelectV2 } from './componentsV2/forms/SelectV2';
+export type { SelectV2Props, SelectV2Size } from './componentsV2/forms/SelectV2';
+export { CheckboxV2 } from './componentsV2/forms/CheckboxV2';
+export type { CheckboxV2Props } from './componentsV2/forms/CheckboxV2';
+export { SwitchV2 } from './componentsV2/forms/SwitchV2';
+export type { SwitchV2Props } from './componentsV2/forms/SwitchV2';
 export { TextInput } from './components/forms/TextInput';
 export type { TextInputProps } from './components/forms/TextInput';
 // Compatibility aliases retained for existing application consumers.

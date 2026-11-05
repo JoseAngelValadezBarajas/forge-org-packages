@@ -37,7 +37,21 @@ import { Plus, Search } from '@corefoundry-labs/forge-icons';
 <ButtonV2 variant="ghost" aria-label="Search" iconStart={<Search />} />;
 ```
 
-Preview `ButtonV2`, the V1 components, and `FeedbackStateV2` locally with `npm run playground:ui` from the repository root. The host lets you change the preset, mode, and primary seed within the preview. The preview documents package rendering; it is not a human Figma certification.
+`TextInputV2`, `SelectV2`, `CheckboxV2`, and `SwitchV2` are the V2 form controls. Each one wraps a native element. `CheckboxV2` and `SwitchV2` take their label as children and require an accessible name without it.
+
+```tsx
+import { CheckboxV2, SelectV2, SwitchV2, TextInputV2 } from '@corefoundry-labs/forge-ui';
+
+<TextInputV2 aria-label="Project name" size="md" value={name} onChange={rename} />;
+<SelectV2 aria-label="Plan" value={plan} onChange={choose}>
+  <option value="">Choose an option</option>
+  <option value="team">Team</option>
+</SelectV2>;
+<CheckboxV2 checked={accepted} onChange={accept}>Accept terms</CheckboxV2>;
+<SwitchV2 checked={enabled} onChange={toggle}>Notifications</SwitchV2>;
+```
+
+Preview the V2 components, the V1 components, and `FeedbackStateV2` locally with `npm run playground:ui` from the repository root. The host lets you change the preset, mode, and primary seed within the preview. The preview documents package rendering; it is not a human Figma certification.
 
 Build and test this package independently from the repository root with `npm run build --workspace=@corefoundry-labs/forge-ui` and `npm test --workspace=@corefoundry-labs/forge-ui`.
 

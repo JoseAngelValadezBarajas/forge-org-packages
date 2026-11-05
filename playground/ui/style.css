@@ -301,6 +301,61 @@ body {
   background: var(--cf-v2-surface);
 }
 
+.control-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 16px;
+  align-items: start;
+}
+
+.control-cell {
+  display: grid;
+  gap: 6px;
+  min-width: 0;
+}
+
+.control-cell label {
+  font-size: 13px;
+  font-weight: 500;
+}
+
+.control-title {
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.control-hint,
+.control-error {
+  font-size: 12px;
+}
+
+.control-hint {
+  color: var(--cf-v2-on-surface-variant);
+}
+
+.control-error {
+  color: var(--cf-v2-error);
+}
+
+.control-matrix-cell,
+.control-matrix-row {
+  gap: 8px;
+  padding: 12px;
+  border-radius: var(--cf-v2-button-radius);
+  background: var(--cf-v2-surface);
+  color: var(--cf-v2-on-surface);
+}
+
+.control-matrix-cell {
+  display: grid;
+}
+
+.control-matrix-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
 .comparison {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));

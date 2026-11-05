@@ -118,6 +118,93 @@ const contrast = (first, second) => {
   return (lighter + 0.05) / (darker + 0.05);
 };
 
+test('V2 form controls render every state in the component host and follow the theme controls', async () => {
+  const server = await createServer({
+    configFile: false,
+    root: join(root, 'playground/ui'),
+    server: { host: '127.0.0.1', port: 0, strictPort: true },
+  });
+  let browser;
+  try {
+    await server.listen();
+    browser = await chromium.launch({ headless: true });
+    const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
+    const errors = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    page.on('console', (message) => {
+      if (message.type() === 'error') errors.push(message.text());
+    });
+    const open = async (name, testId) => {
+      await page.goto(`${server.resolvedUrls.local[0]}#/${name}`);
+      await page.getByRole('heading', { level: 1, name, exact: true }).waitFor();
+      await page.getByTestId(testId).waitFor();
+    };
+    const role = (name) => page.locator('.theme-preview').evaluate((element, token) => getComputedStyle(element).getPropertyValue(token).trim(), `--cf-v2-${name}`);
+    const style = (id, property) => page.getByTestId(id).evaluate((element, key) => getComputedStyle(element)[key], property);
+    const sibling = (id, property) => page.getByTestId(id).locator('xpath=following-sibling::span[1]').evaluate((element, key) => getComputedStyle(element)[key], property);
+
+    await open('TextInputV2', 'text-md');
+    for (const [size, height] of [['sm', '32px'], ['md', '40px'], ['lg', '48px']]) {
+      assert.equal(await style(`text-${size}`, 'height'), height);
+    }
+    assert.equal(await style('text-default', 'backgroundColor'), rgb(await role('surface-container')));
+    assert.equal(await style('text-invalid', 'outlineColor'), rgb(await role('error')));
+    assert.equal(await style('text-disabled', 'backgroundColor'), rgb(await role('disabled')));
+    await page.getByTestId('text-default').fill('hello');
+    assert.equal(await page.getByTestId('text-default').inputValue(), 'hello');
+    await page.getByRole('textbox', { name: 'Email address' }).first().waitFor();
+    assert.equal(await page.getByTestId('matrix-neutral-dark').locator('input').count(), 3);
+
+    const before = await role('surface-container');
+    await page.getByLabel('Theme preset').selectOption('formiai');
+    await page.getByLabel('Theme mode').selectOption('light');
+    await page.waitForFunction(
+      (color) => getComputedStyle(document.querySelector('.theme-preview')).getPropertyValue('--cf-v2-surface-container').trim() !== color,
+      before,
+    );
+    assert.equal(await style('text-default', 'backgroundColor'), rgb(await role('surface-container')));
+
+    await open('SelectV2', 'select-md');
+    for (const [size, height] of [['sm', '32px'], ['md', '40px'], ['lg', '48px']]) {
+      assert.equal(await style(`select-${size}`, 'height'), height);
+    }
+    await page.getByTestId('select-default').selectOption('Option C');
+    assert.equal(await page.getByTestId('select-default').inputValue(), 'Option C');
+    assert.equal(await page.getByTestId('matrix-forge-light').locator('select').count(), 3);
+
+    await open('CheckboxV2', 'checkbox-unchecked');
+    assert.equal(await sibling('checkbox-checked', 'backgroundColor'), rgb(await role('action-primary')));
+    assert.equal(await page.getByTestId('checkbox-mixed').evaluate((element) => element.indeterminate), true);
+    assert.equal(await page.getByTestId('checkbox-all').evaluate((element) => element.indeterminate), true);
+    await page.getByTestId('checkbox-engineering').click();
+    assert.equal(await page.getByTestId('checkbox-all').isChecked(), true);
+    assert.equal(await page.getByTestId('checkbox-all').evaluate((element) => element.indeterminate), false);
+    await page.getByTestId('checkbox-all').click();
+    assert.equal(await page.getByTestId('checkbox-design').isChecked(), false);
+    await page.getByText('Unchecked', { exact: true }).click();
+    assert.equal(await page.getByTestId('checkbox-unchecked').isChecked(), true);
+
+    await open('SwitchV2', 'switch-off');
+    assert.equal(await sibling('switch-on', 'backgroundColor'), rgb(await role('action-primary')));
+    assert.equal(await page.getByTestId('switch-off').getAttribute('role'), 'switch');
+    await page.getByTestId('switch-off').click();
+    assert.equal(await page.getByTestId('switch-off').isChecked(), true);
+    await page.getByTestId('switch-disabled').click({ force: true });
+    assert.equal(await page.getByTestId('switch-disabled').isChecked(), true);
+    assert.equal(await page.getByRole('switch', { name: 'Notifications' }).evaluate((element) => element.getAttribute('aria-describedby')), 'switch-hint');
+
+    await page.setViewportSize({ width: 375, height: 800 });
+    for (const [name, testId] of [['TextInputV2', 'text-md'], ['SelectV2', 'select-md'], ['CheckboxV2', 'checkbox-unchecked'], ['SwitchV2', 'switch-off']]) {
+      await open(name, testId);
+      assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), true, name);
+    }
+    assert.deepEqual(errors, []);
+  } finally {
+    await browser?.close();
+    await server.close();
+  }
+});
+
 test('ButtonV2 follows the Theme Engine across geometry, states and presets', async () => {
   const server = await createServer({
     configFile: false,

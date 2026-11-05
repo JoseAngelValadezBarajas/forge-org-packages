@@ -6,7 +6,11 @@ const groups = {
     ['IconButton', 'Compact actions with an accessible name.', '<IconButton aria-label="Favorite" aria-pressed={favorite} onClick={() => setFavorite(!favorite)}>★</IconButton>', 'const [favorite, setFavorite] = useState(false);'],
   ],
   Forms: [
-    ['TextInput', 'Single-line text. Also exported as Input.', '<TextInput aria-label="Project name" value={name} onChange={e => setName(e.target.value)} />', 'const [name, setName] = useState("Atlas");'],
+    ['TextInputV2', 'A native text primitive driven by Theme Engine roles.', '<TextInputV2 aria-label="Project name" size="md" value={name} onChange={e => setName(e.target.value)} />', 'const [name, setName] = useState("Atlas");'],
+    ['SelectV2', 'A native select trigger driven by Theme Engine roles.', '<SelectV2 aria-label="Environment" value={env} onChange={e => setEnv(e.target.value)}><option value="">Choose an option</option><option>Production</option></SelectV2>', 'const [env, setEnv] = useState("");'],
+    ['CheckboxV2', 'A native checkbox with a 44 px target and mixed state.', '<CheckboxV2 checked={checked} onChange={e => setChecked(e.target.checked)}>Email updates</CheckboxV2>', 'const [checked, setChecked] = useState(true);'],
+    ['SwitchV2', 'A native switch with a 44 px target.', '<SwitchV2 checked={enabled} onChange={e => setEnabled(e.target.checked)}>Notifications</SwitchV2>', 'const [enabled, setEnabled] = useState(true);'],
+    ['TextInput','Single-line text. Also exported as Input.', '<TextInput aria-label="Project name" value={name} onChange={e => setName(e.target.value)} />', 'const [name, setName] = useState("Atlas");'],
     ['Textarea', 'Room for context and longer descriptions.', '<Textarea aria-label="Description" value={text} onChange={e => setText(e.target.value)} />', 'const [text, setText] = useState("A new workspace.");'],
     ['Checkbox', 'An independent, explicit choice.', '<label><Checkbox checked={checked} onChange={e => setChecked(e.target.checked)} /> Email updates</label>', 'const [checked, setChecked] = useState(true);'],
     ['Radio', 'One choice from a related group.', '<label><Radio name="plan" checked={plan === "team"} onChange={() => setPlan("team")} /> Team</label>', 'const [plan, setPlan] = useState("personal");'],

@@ -4,17 +4,21 @@
   "production": "vite build + vite preview in Chromium",
   "typeChecks": [
     "strict consumer compiled",
-    "icon-only without aria-label rejected"
+    "icon-only ButtonV2 without aria-label rejected",
+    "unnamed CheckboxV2 and SwitchV2 rejected",
+    "numeric TextInputV2 size rejected",
+    "SelectV2 multiple rejected"
   ],
   "scopes": 13,
   "states": 312,
   "feedback": 52,
-  "checks": 156,
-  "minimumText": 6.44,
+  "controls": 247,
+  "checks": 520,
+  "minimumText": 6.13,
   "minimumBoundary": 4.07,
   "minimumFocus": 17.08,
   "axeViolations": 0,
-  "axeRulesPassed": 19,
+  "axeRulesPassed": 24,
   "axeIncomplete": [],
   "result": "passed"
 }

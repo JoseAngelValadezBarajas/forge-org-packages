@@ -77,7 +77,7 @@ For the default theme and the four presets in three modes it verifies:
   `color-scheme` alone.
 
 `npm run check:v2-consumer` runs as part of `npm test`, `npm run quality`, and the
-Quality workflow. To refresh the files in `docs/evidence/button-v2`, run
+Quality workflow. To refresh the files in `docs/evidence/v2-consumer`, run
 `node tooling/scripts/v2-consumer-certification.mjs --evidence` after a build.
 
 These checks use Chromium with automated rules. They are not a complete WCAG
