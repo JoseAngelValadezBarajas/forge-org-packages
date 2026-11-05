@@ -1,6 +1,5 @@
 import {
   useCallback,
-  useEffect,
   useLayoutEffect,
   useRef,
   useState,
@@ -88,7 +87,7 @@ function onDocumentKeyDown(event: KeyboardEvent) {
 
 export function useEscapeLayer(active: boolean, nodeRef: NodeRef, onEscape: () => void) {
   const latest = useLatest(onEscape);
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!active) return;
     const layer: Layer = { node: () => nodeRef.current, escape: () => latest.current() };
     if (layers.push(layer) === 1) document.addEventListener('keydown', onDocumentKeyDown);
@@ -101,7 +100,7 @@ export function useEscapeLayer(active: boolean, nodeRef: NodeRef, onEscape: () =
 
 export function useDismiss(active: boolean, panelRef: NodeRef, anchorRef: NodeRef, onDismiss: () => void) {
   const latest = useLatest(onDismiss);
-  useEffect(() => {
+  useLayoutEffect(() => {
     if (!active) return;
     const dismiss = (event: Event) => {
       const target = event.target;

@@ -1046,6 +1046,23 @@ async function certifyOverlays(page, id, roles, geometry, report) {
     report.overlays += 1;
   }
 
+  if (id === 'default') {
+    const early = part('tip-left');
+    await early.evaluate((element) => {
+      const observer = new MutationObserver(() => {
+        if (element.dataset.state !== 'open') return;
+        observer.disconnect();
+        document.dispatchEvent(new KeyboardEvent('keydown', { key: 'Escape', bubbles: true, cancelable: true }));
+      });
+      observer.observe(element, { attributes: true, attributeFilter: ['data-state'] });
+    });
+    await part('tip-left-trigger').hover();
+    await page.waitForTimeout(300);
+    assert.equal(await early.getAttribute('data-state'), 'closed', 'Escape works from the moment an overlay opens');
+    await leave();
+    report.overlays += 1;
+  }
+
   const tipTrigger = part('tip-top-trigger');
   const tip = part('tip-top');
   await press(part('tip-bottom-trigger'), 'Tab');
