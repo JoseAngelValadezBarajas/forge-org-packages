@@ -65,6 +65,11 @@ The [dynamic theme engine V2](docs/design-system/theme-engine-v2.md) generates
 scoped color tokens without changing the existing V1 theme. Run
 `npm run playground:theme-v2` after building to explore the engine.
 
+[`ButtonV2`](docs/design-system/button-v2.md) is the first component built on it.
+Run `npm run playground:ui` to review components against the engine, and
+`npm run check:v2-consumer` to certify the V2 packages from their packed
+tarballs in an external React project.
+
 ## Releases and publishing
 
 Releases are driven from GitHub Actions using npm Trusted Publishing (OIDC);

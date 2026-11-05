@@ -127,10 +127,23 @@ test('V2 geometry matches the ButtonV2 contract and ships in its own stylesheet'
     paddingLg: '20px',
     radius: '10px',
     gap: '8px',
+    fontSizeSm: '12px',
+    fontSizeMd: '14px',
+    fontSizeLg: '16px',
+    fontWeight: '500',
+    iconSize: '16px',
+    focusWidth: '2px',
+    focusOffset: '3px',
+    borderWidth: '1px',
+    spinnerWidth: '2px',
+    spinnerDuration: '800ms',
+    transitionDuration: '120ms',
+    disabledOpacity: '0.7',
+    disabledContentOpacity: '0.68',
   });
   const css = await readFile(resolve(packageRoot, 'dist/theme-v2/tokens.css'), 'utf8');
   assert.equal(css, generateTokensCss());
-  for (const [name, value] of [['height-sm', '32px'], ['height-md', '40px'], ['height-lg', '48px'], ['padding-sm', '12px'], ['padding-md', '16px'], ['padding-lg', '20px'], ['radius', '10px'], ['gap', '8px']]) {
+  for (const [name, value] of [['height-sm', '32px'], ['height-md', '40px'], ['height-lg', '48px'], ['padding-sm', '12px'], ['padding-md', '16px'], ['padding-lg', '20px'], ['radius', '10px'], ['gap', '8px'], ['font-size-sm', '12px'], ['font-size-md', '14px'], ['font-size-lg', '16px'], ['font-weight', '500'], ['icon-size', '16px'], ['focus-width', '2px'], ['focus-offset', '3px'], ['border-width', '1px'], ['spinner-width', '2px'], ['spinner-duration', '800ms'], ['transition-duration', '120ms'], ['disabled-opacity', '0.7'], ['disabled-content-opacity', '0.68']]) {
     assert.ok(css.includes(`--cf-v2-button-${name}: ${value};`), name);
   }
   const manifest = JSON.parse(await readFile(resolve(packageRoot, 'package.json'), 'utf8'));

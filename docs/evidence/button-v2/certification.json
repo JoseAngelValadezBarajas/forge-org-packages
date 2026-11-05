@@ -1,0 +1,20 @@
+{
+  "version": "1.1.0",
+  "installedFrom": "npm pack tarballs, no workspace links",
+  "production": "vite build + vite preview in Chromium",
+  "typeChecks": [
+    "strict consumer compiled",
+    "icon-only without aria-label rejected"
+  ],
+  "scopes": 13,
+  "states": 312,
+  "feedback": 52,
+  "checks": 156,
+  "minimumText": 6.44,
+  "minimumBoundary": 4.07,
+  "minimumFocus": 17.08,
+  "axeViolations": 0,
+  "axeRulesPassed": 19,
+  "axeIncomplete": [],
+  "result": "passed"
+}

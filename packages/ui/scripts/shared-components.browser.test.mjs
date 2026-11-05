@@ -441,7 +441,7 @@ test('FeedbackStateV2 follows scoped dynamic themes while V1 keeps its existing 
   const originalButton = await colors(button);
   const baseline = await feedback.evaluate((element) => ({
     background: getComputedStyle(element).backgroundColor,
-    surface: getComputedStyle(element).getPropertyValue('--forge-surface').trim(),
+    surface: getComputedStyle(element).getPropertyValue('--cf-v2-surface').trim(),
   }));
   const rgb = (hex) => `rgb(${[1, 3, 5].map((index) => parseInt(hex.slice(index, index + 2), 16)).join(', ')})`;
   assert.equal(baseline.background, rgb(baseline.surface));

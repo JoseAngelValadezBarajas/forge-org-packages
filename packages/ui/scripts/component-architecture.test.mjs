@@ -17,6 +17,33 @@ const categories = new Set([
   'surfaces',
 ]);
 
+test('V2 components stay independent from V1 and use emitted V2 tokens', () => {
+  const tokensCss = readFileSync(resolve(source, '../../tokens/dist/theme-v2/tokens.css'), 'utf8');
+  const emitted = new Set(tokensCss.match(/--cf-v2-[a-z0-9-]+(?=:)/g) ?? []);
+  const violations = [];
+  const visit = (directory) => {
+    for (const entry of readdirSync(directory, { withFileTypes: true })) {
+      const path = resolve(directory, entry.name);
+      if (entry.isDirectory()) {
+        visit(path);
+        continue;
+      }
+      const name = path.slice(source.length + 1);
+      const text = readFileSync(path, 'utf8');
+      if (text.includes('--forge-')) violations.push(`${name} references a V1 token`);
+      if (name.endsWith('.css') && /#[0-9a-f]{3,8}\b|rgba?\(/i.test(text)) violations.push(`${name} hardcodes a color`);
+      if (name.endsWith('.css') && /:\s*[^;{}]*\b\d*\.?\d+(px|rem|em|ms|s)\b/.test(text)) violations.push(`${name} hardcodes a dimension or duration`);
+      if (/from '[^']*\/components\//.test(text)) violations.push(`${name} imports a V1 component`);
+      for (const token of text.match(/--cf-v2-[a-z0-9-]+/g) ?? []) {
+        if (!emitted.has(token)) violations.push(`${name} references un-emitted ${token}`);
+      }
+    }
+  };
+  visit(resolve(source, 'componentsV2'));
+
+  assert.deepEqual(violations, []);
+});
+
 test('UI source keeps components in canonical category directories', () => {
   const violations = [];
 

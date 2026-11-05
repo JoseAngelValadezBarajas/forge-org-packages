@@ -4,3 +4,4 @@ declare module '*.module.css' {
 }
 
 declare module '@corefoundry-labs/forge-tokens/tokens.css';
+declare module '@corefoundry-labs/forge-tokens/theme-v2/tokens.css';

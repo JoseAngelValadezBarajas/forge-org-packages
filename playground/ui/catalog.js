@@ -1,6 +1,7 @@
 // Public component inventory. Input is a compatibility alias, not another component.
 const groups = {
   Actions: [
+    ['ButtonV2', 'A reusable action driven by Theme Engine roles.', '<ButtonV2 variant="primary" size="md" onClick={save}>Continue</ButtonV2>', 'const save = () => {};'],
     ['Button', 'Clear actions, from primary to quiet.', '<Button onClick={() => setCount(count + 1)}>Add task</Button>', 'const [count, setCount] = useState(0);'],
     ['IconButton', 'Compact actions with an accessible name.', '<IconButton aria-label="Favorite" aria-pressed={favorite} onClick={() => setFavorite(!favorite)}>★</IconButton>', 'const [favorite, setFavorite] = useState(false);'],
   ],
@@ -65,7 +66,7 @@ const groups = {
 
 export const catalog = Object.entries(groups).flatMap(([category, items]) => items.map(([name, description, jsx, setup = '', imports = []]) => ({
   name, category, description,
-  version: name === 'ThemeScope' ? 'V2 theming' : name === 'FeedbackStateV2' ? 'V2' : 'V1',
+  version: name === 'ThemeScope' ? 'V2 theming' : name.endsWith('V2') ? 'V2' : 'V1',
   code: `${setup.includes('useState') ? 'import { useState } from "react";\n' : ''}import { ${[name, ...imports].join(', ')} } from "@corefoundry-labs/forge-ui";\n${name === 'ThemeScope' ? 'import { createTheme, presets } from "@corefoundry-labs/forge-tokens/theme-v2";\n' : ''}\nexport function Example() {\n${setup ? `  ${setup}\n` : ''}  return (\n    ${jsx}\n  );\n}`,
 })));
 export const categories = Object.keys(groups);

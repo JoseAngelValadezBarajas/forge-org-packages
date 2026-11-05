@@ -10,6 +10,14 @@ export type { ButtonProps, ButtonSize } from './components/actions/Button';
 export { IconButton } from './components/actions/IconButton';
 export type { IconButtonProps } from './components/actions/IconButton';
 
+// Actions V2
+export { ButtonV2 } from './componentsV2/actions/ButtonV2';
+export type {
+  ButtonV2Props,
+  ButtonV2Size,
+  ButtonV2Variant,
+} from './componentsV2/actions/ButtonV2';
+
 // Forms
 export { TextInput } from './components/forms/TextInput';
 export type { TextInputProps } from './components/forms/TextInput';

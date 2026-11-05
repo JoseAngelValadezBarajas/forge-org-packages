@@ -160,6 +160,13 @@ stylesheets load.
 | `padding-sm`, `padding-md`, `padding-lg` | 12px, 16px, 20px |
 | `radius` | 10px |
 | `gap` | 8px |
+| `font-size-sm`, `font-size-md`, `font-size-lg` | 12px, 14px, 16px |
+| `font-weight` | 500 |
+| `icon-size` | 16px |
+| `focus-width`, `focus-offset` | 2px, 3px |
+| `border-width`, `spinner-width` | 1px, 2px |
+| `transition-duration`, `spinner-duration` | 120ms, 800ms |
+| `disabled-opacity`, `disabled-content-opacity` | 0.7, 0.68 |
 
 ## Contrast and limitations
 
@@ -177,7 +184,7 @@ review actual adjacent colors, focus visibility and size, text sizes, keyboard
 use, and assistive technology. Disabled controls need a disabled semantic state
 and a cue beyond color. Custom feedback seeds can change conventional color
 meaning; consumers must validate their communication. No offline persistence,
-automatic system mode, typography, or component V2 implementations are included.
+automatic system mode, or general typography are included.
 
 ## Playground and verification
 
