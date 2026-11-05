@@ -92,6 +92,28 @@ describe('TooltipV2', () => {
     expect(state()).toBe('closed');
   });
 
+  it('shows one tooltip at a time, so Escape never closes the wrong one', () => {
+    render(
+      <>
+        <TooltipV2 content="First tip" delay={0} data-testid="first">
+          <button type="button">First</button>
+        </TooltipV2>
+        <TooltipV2 content="Second tip" delay={0} data-testid="second">
+          <button type="button">Second</button>
+        </TooltipV2>
+      </>,
+    );
+    pointer('pointerover', screen.getByRole('button', { name: 'First' }));
+    elapse(0);
+    pointer('pointerout', screen.getByRole('button', { name: 'First' }));
+    pointer('pointerover', screen.getByRole('button', { name: 'Second' }));
+    elapse(0);
+    expect(screen.getByTestId('first')).toHaveAttribute('data-state', 'closed');
+    expect(screen.getByTestId('second')).toHaveAttribute('data-state', 'open');
+    fireEvent.keyDown(document.body, { key: 'Escape' });
+    expect(screen.getByTestId('second')).toHaveAttribute('data-state', 'closed');
+  });
+
   it('dismisses with Escape while focus stays on the trigger', () => {
     const trigger = setup();
     act(() => trigger.focus());

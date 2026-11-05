@@ -121,11 +121,11 @@ export { LoadingState } from './components/feedback/LoadingState';
 export type { LoadingStateProps } from './components/feedback/LoadingState';
 export { ErrorState } from './components/feedback/ErrorState';
 export type { ErrorStateProps } from './components/feedback/ErrorState';
-export { FeedbackStateV2 } from './components/feedback/FeedbackStateV2';
+export { FeedbackStateV2 } from './componentsV2/feedback/FeedbackStateV2';
 export type {
   FeedbackStateV2Kind,
   FeedbackStateV2Props,
-} from './components/feedback/FeedbackStateV2';
+} from './componentsV2/feedback/FeedbackStateV2';
 
 // Data display
 export { RecordRow } from './components/data-display/RecordRow';

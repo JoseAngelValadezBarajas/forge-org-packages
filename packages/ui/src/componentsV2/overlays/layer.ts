@@ -34,9 +34,21 @@ export function focusableIn(root: HTMLElement) {
   );
 }
 
-export function assignRef<T>(ref: Ref<T> | undefined, node: T | null) {
-  if (typeof ref === 'function') ref(node);
-  else if (ref) ref.current = node;
+export function useTriggerRef(target: RefObject<HTMLElement | null>, external: Ref<HTMLElement> | undefined) {
+  return useCallback(
+    (node: HTMLElement | null) => {
+      target.current = node;
+      const cleanup = typeof external === 'function' ? external(node) : undefined;
+      if (external && typeof external !== 'function') external.current = node;
+      return () => {
+        target.current = null;
+        if (typeof cleanup === 'function') cleanup();
+        else if (typeof external === 'function') external(null);
+        else if (external) external.current = null;
+      };
+    },
+    [target, external],
+  );
 }
 
 export function chain<E>(...handlers: (((event: E) => void) | undefined)[]) {
@@ -67,6 +79,18 @@ export function useOpenLifecycle(open: boolean, onOpen: () => () => void) {
   }, [open, opener, finish]);
 
   useLayoutEffect(() => finish, [finish]);
+}
+
+const anchors = new WeakMap<Element, () => HTMLElement | null>();
+
+export function returnFocus(element: Element | null) {
+  let target = element;
+  while (target instanceof HTMLElement) {
+    target.focus({ preventScroll: true });
+    if (document.activeElement === target) return;
+    const panel = target.closest('[popover]');
+    target = panel ? (anchors.get(panel)?.() ?? null) : null;
+  }
 }
 
 const layers: Layer[] = [];
@@ -156,10 +180,12 @@ export function useAnchoredPanel({
   onShown,
 }: AnchoredPanel) {
   const shown = useLatest(onShown);
+  const [attempt, retry] = useState(0);
 
   useOpenLifecycle(open, () => {
     const panel = panelRef.current;
     const previous = document.activeElement;
+    if (panel) anchors.set(panel, () => anchorRef.current);
     panel?.showPopover?.();
     return () => {
       const active = document.activeElement;
@@ -167,14 +193,18 @@ export function useAnchoredPanel({
       panel?.hidePopover?.();
       if (!restoreFocus || !lost) return;
       const target = previous instanceof HTMLElement && previous !== document.body ? previous : anchorRef.current;
-      target?.focus({ preventScroll: true });
+      returnFocus(target);
     };
   });
 
   useLayoutEffect(() => {
     const panel = panelRef.current;
     const anchor = anchorRef.current;
-    if (!open || !panel || !anchor) return;
+    if (!open || !panel) return;
+    if (!anchor) {
+      if (attempt === 0) retry(1);
+      return;
+    }
     const update = () => {
       const styles = getComputedStyle(panel);
       const { width, height } = panel.getBoundingClientRect();
@@ -204,7 +234,7 @@ export function useAnchoredPanel({
       window.removeEventListener('scroll', update, true);
       observer?.disconnect();
     };
-  }, [open, panelRef, anchorRef, placement, align]);
+  }, [open, panelRef, anchorRef, placement, align, attempt]);
 
   useLayoutEffect(() => {
     if (open) shown.current?.();

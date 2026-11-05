@@ -113,3 +113,16 @@
     transition: none;
   }
 }
+
+@media (forced-colors: active) {
+  .tab[aria-selected='true'] .indicator {
+    background: Highlight;
+    forced-color-adjust: none;
+  }
+
+  .pill[aria-selected='true'] {
+    background: Highlight;
+    color: HighlightText;
+    forced-color-adjust: none;
+  }
+}

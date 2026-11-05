@@ -65,7 +65,7 @@ export const TabsV2 = forwardRef<HTMLDivElement, TabsV2Props>(function TabsV2(
   const tabStop = focused ?? selected?.id;
 
   const select = (id: string) => {
-    if (id === selected?.id) return;
+    if (id === selected?.id && (requested === undefined || requested === id)) return;
     if (value === undefined) setInternal(id);
     onValueChange?.(id);
   };

@@ -153,3 +153,10 @@
     animation: none;
   }
 }
+
+@media (forced-colors: active) {
+  .indicator {
+    background: CanvasText;
+    forced-color-adjust: none;
+  }
+}

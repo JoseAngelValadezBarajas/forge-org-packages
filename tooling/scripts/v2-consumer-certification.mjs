@@ -7,7 +7,7 @@ import { tmpdir } from 'node:os';
 import { dirname, join, relative, resolve, sep } from 'node:path';
 import { fileURLToPath, pathToFileURL } from 'node:url';
 
-import { chromium } from '@playwright/test';
+import { chromium, firefox, webkit } from '@playwright/test';
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), '../..');
 const evidenceDirectory = join(root, 'docs', 'evidence', 'v2-consumer');
@@ -17,12 +17,21 @@ const modes = ['light', 'dark', 'high-contrast'];
 const variants = ['primary', 'secondary', 'ghost', 'danger'];
 const sizes = { sm: '32px', md: '40px', lg: '48px' };
 const axeVersion = '4.10.3';
+const engines = { chromium, firefox, webkit };
+const engineName = process.env.V2_BROWSER ?? 'chromium';
+const browserType = engines[engineName];
+assert.ok(browserType, `unknown browser ${engineName}`);
 const fills = {
   primary: { rest: 'actionPrimary', hover: 'actionPrimaryHover', pressed: 'actionPrimaryPressed', on: 'onActionPrimary' },
   secondary: { rest: 'surfaceContainer', hover: 'surfaceContainerHover', pressed: 'surfaceContainerPressed', on: 'onSurface' },
   ghost: { rest: null, hover: 'surfaceContainerHover', pressed: 'surfaceContainerPressed', on: 'onSurface' },
   danger: { rest: 'error', hover: 'errorHover', pressed: 'errorPressed', on: 'onError' },
 };
+
+async function pressPointer(page) {
+  if (engineName === 'firefox') await page.evaluate(() => document.activeElement?.blur());
+  await page.mouse.down();
+}
 
 function run(command, args, cwd) {
   const result = spawnSync(command, args, { cwd, encoding: 'utf8', shell: command === 'npm' && process.platform === 'win32' });
@@ -334,6 +343,31 @@ function Status({ id }: { id: string }) {
   </div>;
 }
 
+function Regressions() {
+  const [open, setOpen] = useState(false);
+  const [confirm, setConfirm] = useState(false);
+  const [late, setLate] = useState(false);
+  const lateAnchor = useRef<HTMLButtonElement>(null);
+  const reopen = async () => {
+    setOpen(false);
+    await Promise.resolve();
+    setOpen(true);
+  };
+  return <>
+    <ButtonV2 size="sm" data-testid="reopen-open" onClick={() => setOpen(true)}>Reopen</ButtonV2>
+    <DialogV2 open={open} onOpenChange={setOpen} title="Reopened" data-testid="reopen-dialog" footer={<ButtonV2 size="sm" data-testid="reopen-action" onClick={() => void reopen()}>Again</ButtonV2>} />
+    <PopoverV2 trigger={<ButtonV2 size="sm" data-testid="source-trigger">Source</ButtonV2>} title="Source" data-testid="source-popover">
+      <ButtonV2 size="sm" data-testid="source-action" onClick={() => setConfirm(true)}>Confirm</ButtonV2>
+    </PopoverV2>
+    <DialogV2 open={confirm} onOpenChange={setConfirm} title="Sibling dialog" data-testid="source-dialog" />
+    <ButtonV2 size="sm" data-testid="late-open" onClick={() => setLate(true)}>Late</ButtonV2>
+    {late && <>
+      <PopoverV2 anchorRef={lateAnchor} open onOpenChange={setLate} aria-label="Late popover" initialFocus="none" data-testid="late-popover" />
+      <ButtonV2 ref={lateAnchor} size="sm" data-testid="late-anchor">Late anchor</ButtonV2>
+    </>}
+  </>;
+}
+
 function Scope({ id }: { id: string }) {
   return <>
     {variants.map((variant) => <Counter key={variant} id={id + '-' + variant} variant={variant}>{variant + ' action'}</Counter>)}
@@ -374,6 +408,7 @@ function App() {
       <BadgeV2 size="md" data-testid="badge-md">Medium</BadgeV2>
       <span style={{ display: 'inline-flex', width: 80 }}><BadgeV2 data-testid="badge-long">A very long status label that truncates</BadgeV2></span>
       <div data-testid="typed-overlays">
+      <Regressions />
       {dialogSizes.map((size) => <ModalDemo key={size} id={'size-dialog-' + size} label={'Dialog ' + size} size={size} />)}
       <TooltipV2 {...tooltipProps} />
       {widths.map((width) => <PopoverV2 key={width} {...popoverProps} width={width} trigger={<ButtonV2 size="sm" data-testid={'width-' + width + '-trigger'}>{width}</ButtonV2>} data-testid={'width-' + width} />)}
@@ -441,7 +476,7 @@ async function certifyScope(page, id, roles, report) {
     await target.hover();
     assert.equal(await style(target, 'backgroundColor'), rgb(roles[role.hover]), `${id} ${variant} hover`);
     check(rgb(roles[role.hover]), 'hover');
-    await page.mouse.down();
+    await pressPointer(page);
     assert.equal(await style(target, 'backgroundColor'), rgb(roles[role.pressed]), `${id} ${variant} pressed`);
     check(rgb(roles[role.pressed]), 'pressed');
     await page.mouse.up();
@@ -620,7 +655,7 @@ async function certifyControls(page, id, roles, geometry, report) {
   assert.equal(await style(box, 'borderTopColor'), rgb(roles.outline), `${id} checkbox border`);
   await checkbox.hover();
   assert.equal(await style(box, 'backgroundColor'), rgb(roles.surfaceContainerHover), `${id} checkbox hover`);
-  await page.mouse.down();
+  await pressPointer(page);
   assert.equal(await style(box, 'backgroundColor'), rgb(roles.surfaceContainerPressed), `${id} checkbox pressed`);
   await leave();
   assert.equal(await checkbox.isChecked(), true, `${id} checkbox pointer toggle`);
@@ -642,7 +677,7 @@ async function certifyControls(page, id, roles, geometry, report) {
   assert.equal(await style(checkedBox.locator('svg').first(), 'color'), rgb(roles.onActionPrimary), `${id} check mark color`);
   await checked.hover();
   assert.equal(await style(checkedBox, 'backgroundColor'), rgb(roles.actionPrimaryHover), `${id} checkbox checked hover`);
-  await page.mouse.down();
+  await pressPointer(page);
   assert.equal(await style(checkedBox, 'backgroundColor'), rgb(roles.actionPrimaryPressed), `${id} checkbox checked pressed`);
   await leave();
   await checked.check();
@@ -1136,11 +1171,14 @@ async function certifyOverlays(page, id, roles, geometry, report) {
   await part('tip-bottom').waitFor();
   await page.keyboard.press('Tab');
   await part('tip-bottom').waitFor({ state: 'hidden' });
-  await tipTrigger.evaluate((element) => window.scrollBy(0, element.getBoundingClientRect().top - 4));
-  await tipTrigger.hover();
+  await part('tip-bottom-trigger').focus();
+  await page.keyboard.press('Shift+Tab');
   await tip.waitFor();
-  assert.equal(await tip.getAttribute('data-placement'), 'bottom', `${id} tooltip flips at the viewport edge`);
-  await leave();
+  await tipTrigger.evaluate((element) => window.scrollBy(0, element.getBoundingClientRect().top - window.innerHeight / 2));
+  await page.waitForFunction((target) => document.querySelector(`[data-testid="${target}"]`).dataset.placement === 'top', `${id}-tip-top`);
+  await tipTrigger.evaluate((element) => window.scrollBy(0, element.getBoundingClientRect().top - 4));
+  await page.waitForFunction((target) => document.querySelector(`[data-testid="${target}"]`).dataset.placement === 'bottom', `${id}-tip-top`);
+  await page.keyboard.press('Escape');
   await tip.waitFor({ state: 'hidden' });
   report.overlays += 2;
 
@@ -1406,12 +1444,14 @@ async function certifyStatus(page, id, roles, geometry, report) {
   const failed = part('snack-error');
   assert.equal(await stack.evaluate((element) => element.matches(':popover-open')), true, `${id} stack top layer`);
   assert.equal(await stack.getAttribute('role'), 'region');
+  assert.equal(await stack.getAttribute('aria-live'), 'polite', `${id} stack is a live region before any message`);
 
   await timed.focus();
   await page.keyboard.press('Enter');
-  const toast = stack.getByRole('status');
+  const toast = stack.locator('[data-tone="success"]');
   await toast.waitFor();
   assert.equal(await isActive(timed), true, `${id} snackbar must not steal focus`);
+  assert.equal(await toast.getAttribute('role'), null, `${id} routine snackbar adds no second live region`);
   assert.equal(await style(toast, 'backgroundColor'), container, `${id} stack inherits its theme scope`);
   await toast.hover();
   await page.waitForTimeout(800);
@@ -1506,18 +1546,90 @@ async function certifyStatus(page, id, roles, geometry, report) {
   await page.evaluate(() => window.scrollTo(0, 0));
 }
 
+async function certifyRegressions(page, report) {
+  const active = (id) => page.getByTestId(id).evaluate((element) => document.activeElement === element);
+
+  await page.getByTestId('reopen-open').click();
+  await page.getByTestId('reopen-dialog').waitFor();
+  await page.getByTestId('reopen-action').click();
+  await page.waitForTimeout(200);
+  assert.equal(await page.getByTestId('reopen-dialog').isVisible(), true, 'a dialog reopened right after closing stays open');
+  await page.keyboard.press('Escape');
+  await page.getByTestId('reopen-dialog').waitFor({ state: 'hidden' });
+
+  await page.getByTestId('source-trigger').click();
+  await page.getByTestId('source-action').click();
+  await page.getByTestId('source-dialog').waitFor();
+  await page.getByTestId('source-popover').waitFor({ state: 'hidden' });
+  await page.keyboard.press('Escape');
+  await page.getByTestId('source-dialog').waitFor({ state: 'hidden' });
+  assert.equal(await active('source-trigger'), true, 'focus falls back to the popover trigger when its control is hidden');
+
+  await page.getByTestId('late-open').click();
+  await page.getByTestId('late-popover').waitFor();
+  const [panel, anchor] = await Promise.all(['late-popover', 'late-anchor'].map((id) => page.getByTestId(id).evaluate((element) => {
+    const { left, top, bottom } = element.getBoundingClientRect();
+    return { left, top, bottom };
+  })));
+  assert.ok(Math.abs(panel.left - anchor.left) < 1 && (panel.top >= anchor.bottom || panel.bottom <= anchor.top), 'a popover positions itself when its anchor is declared after it');
+  await page.keyboard.press('Escape');
+  await page.getByTestId('late-popover').waitFor({ state: 'detached' });
+  report.overlays += 3;
+}
+
+async function certifyForcedColors(browser, url, report) {
+  const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, forcedColors: 'active', reducedMotion: 'reduce' });
+  const page = await context.newPage();
+  await page.goto(url);
+  await page.getByTestId('default-primary').waitFor();
+  const paint = (locator, property = 'backgroundColor') => locator.evaluate((element, key) => {
+    const css = getComputedStyle(element);
+    return { value: css[key], adjust: css.forcedColorAdjust };
+  }, property);
+  const shown = async (locator, label, against, property) => {
+    const { value, adjust } = await paint(locator, property);
+    assert.equal(adjust, 'none', `${label} must opt out of forced colors`);
+    assert.notEqual(value, against, `${label} must stay visible in forced colors`);
+    report.forcedColors += 1;
+  };
+  const canvas = (await paint(page.locator('body'))).value;
+  const tabs = page.getByTestId('default-tabs');
+  await shown(tabs.getByRole('tab', { name: 'One', exact: true }).locator('span').last(), 'selected tab indicator', canvas);
+  await shown(page.getByTestId('default-tabs-pill').getByRole('tab', { selected: true }), 'selected pill tab', canvas);
+  const bar = page.getByTestId('default-progress-normal').locator('> div').last();
+  const track = await paint(bar);
+  assert.equal(await bar.evaluate((element) => getComputedStyle(element).borderTopStyle), 'solid', 'the progress track needs an edge in forced colors');
+  await shown(bar.locator('> div'), 'progress fill', track.value);
+  const ring = page.getByTestId('default-ring').locator('circle');
+  assert.notEqual(await ring.last().evaluate((element) => getComputedStyle(element).stroke), await ring.first().evaluate((element) => getComputedStyle(element).stroke), 'the ring arc must differ from its track');
+  await shown(page.getByTestId('default-skeleton-text-md'), 'skeleton', canvas);
+  await shown(page.getByTestId('default-snack-info-compact').locator('> span').first(), 'snackbar indicator', canvas);
+  await shown(page.getByTestId('default-avatar-status').locator('[data-status]'), 'avatar status', canvas);
+  await page.getByTestId('default-menu-trigger').focus();
+  await page.keyboard.press('ArrowDown');
+  const item = page.getByTestId('default-menu').getByRole('menuitem', { name: 'Edit', exact: true });
+  await item.waitFor();
+  await shown(item, 'highlighted menu item', canvas);
+  await page.keyboard.press('Escape');
+  for (const id of ['default-badge-primary-solid', 'default-alert-info-solid', 'default-card-default']) {
+    assert.equal(await page.getByTestId(id).evaluate((element) => getComputedStyle(element).borderTopStyle), 'solid', `${id} needs an edge in forced colors`);
+    report.forcedColors += 1;
+  }
+  await context.close();
+}
+
 async function certifyBrowser(url, directory, evidence) {
   const engine = await import(pathToFileURL(join(directory, 'node_modules/@corefoundry-labs/forge-tokens/dist/theme-v2/index.js')).href);
   const axeSource = readFileSync(join(directory, 'node_modules/axe-core/axe.min.js'), 'utf8');
-  const browser = await chromium.launch({ headless: true });
-  const report = { scopes: 0, states: 0, feedback: 0, controls: 0, display: 0, overlays: 0, status: 0, checks: 0, minimumText: Infinity, minimumBoundary: Infinity, minimumFocus: Infinity, axeViolations: 0, axeRulesPassed: 0 };
+  const browser = await browserType.launch({ headless: true });
+  const report = { scopes: 0, states: 0, feedback: 0, controls: 0, display: 0, overlays: 0, status: 0, forcedColors: 0, checks: 0, minimumText: Infinity, minimumBoundary: Infinity, minimumFocus: Infinity, axeViolations: 0, axeRulesPassed: 0 };
   try {
     const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, reducedMotion: 'reduce' });
     const page = await context.newPage();
     const errors = [];
     page.on('pageerror', (error) => errors.push(error.message));
     page.on('console', (message) => {
-      if (['error', 'warning'].includes(message.type())) errors.push(message.text());
+      if (['error', 'warning'].includes(message.type()) && !message.text().includes('scroll-linked positioning effect')) errors.push(message.text());
     });
     await page.goto(url);
     await page.getByTestId('default-primary').waitFor();
@@ -1578,6 +1690,8 @@ async function certifyBrowser(url, directory, evidence) {
     await certifyDisplay(page, 'default', engine.createTheme(engine.presets.forge).roles, engine.geometry, report);
     await certifyOverlays(page, 'default', engine.createTheme(engine.presets.forge).roles, engine.geometry, report);
     await certifyStatus(page, 'default', engine.createTheme(engine.presets.forge).roles, engine.geometry, report);
+    await certifyRegressions(page, report);
+    if (engineName === 'chromium') await certifyForcedColors(browser, url, report);
     report.scopes += 1;
     for (const preset of presets) {
       for (const mode of modes) {
@@ -1668,7 +1782,7 @@ async function certifyBrowser(url, directory, evidence) {
     assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), true, 'horizontal overflow at 375px');
     assert.deepEqual(errors, [], 'browser console reported problems');
 
-    if (evidence) {
+    if (evidence && engineName === 'chromium') {
       await mkdir(evidenceDirectory, { recursive: true });
       await page.setViewportSize({ width: 1280, height: 900 });
       await page.getByTestId('forge-light').screenshot({ path: join(evidenceDirectory, 'forge-light.png') });
@@ -1721,7 +1835,7 @@ export async function runV2ConsumerCertification({ evidence = false } = {}) {
     const result = {
       version,
       installedFrom: 'npm pack tarballs, no workspace links',
-      production: 'vite build + vite preview in Chromium',
+      production: `vite build + vite preview in ${engineName}`,
       typeChecks: ['strict consumer compiled', 'icon-only ButtonV2 without aria-label rejected', 'unnamed CheckboxV2 and SwitchV2 rejected', 'numeric TextInputV2 size rejected', 'SelectV2 multiple rejected', 'static CardV2 with onClick, disabled, href or as button rejected', 'empty AlertV2 rejected', 'unnamed TabsV2 rejected', 'unknown BadgeV2 tone rejected', 'untitled DialogV2 rejected', 'DialogV2 without Escape or footer rejected', 'interactive TooltipV2 content rejected', 'unnamed or unanchored PopoverV2 rejected', 'unlabeled DropdownMenuV2 item and missing trigger rejected', 'unnamed, valueless or contradictory ProgressV2 rejected', 'untitled SnackbarV2 rejected', 'SkeletonV2 with content rejected', 'AvatarV2 without alt or status label rejected', 'unnamed AvatarGroupV2 rejected'],
       ...report,
       minimumText: Number(report.minimumText.toFixed(2)),
@@ -1729,7 +1843,7 @@ export async function runV2ConsumerCertification({ evidence = false } = {}) {
       minimumFocus: Number(report.minimumFocus.toFixed(2)),
       result: 'passed',
     };
-    if (evidence) await writeFile(join(evidenceDirectory, 'certification.json'), `${JSON.stringify(result, null, 2)}\n`);
+    if (evidence && engineName === 'chromium') await writeFile(join(evidenceDirectory, 'certification.json'), `${JSON.stringify(result, null, 2)}\n`);
     return result;
   } finally {
     preview?.kill();

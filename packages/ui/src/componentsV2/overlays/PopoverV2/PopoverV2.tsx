@@ -12,13 +12,13 @@ import {
   type RefObject,
 } from 'react';
 import {
-  assignRef,
   chain,
   focusableIn,
   useAnchoredPanel,
   useDismiss,
   useEscapeLayer,
   useOpenState,
+  useTriggerRef,
   type OverlayTrigger,
 } from '../layer';
 import type { OverlayAlign, OverlayPlacement } from '../position';
@@ -93,6 +93,7 @@ export const PopoverV2 = forwardRef<HTMLDivElement, PopoverV2Props>(function Pop
   const panelRef = useRef<HTMLDivElement>(null);
   const triggerRef = useRef<HTMLElement | null>(null);
   const anchorRef = externalAnchor ?? triggerRef;
+  const attachTrigger = useTriggerRef(triggerRef, trigger?.props.ref);
   useImperativeHandle(ref, () => panelRef.current as HTMLDivElement);
 
   const close = () => setOpen(false);
@@ -118,10 +119,7 @@ export const PopoverV2 = forwardRef<HTMLDivElement, PopoverV2Props>(function Pop
     <>
       {trigger &&
         cloneElement(trigger, {
-          ref: (node: HTMLElement | null) => {
-            triggerRef.current = node;
-            assignRef(trigger.props.ref, node);
-          },
+          ref: attachTrigger,
           'aria-haspopup': role === 'dialog' ? 'dialog' : undefined,
           'aria-expanded': open,
           'aria-controls': role === 'dialog' ? undefined : panelId,

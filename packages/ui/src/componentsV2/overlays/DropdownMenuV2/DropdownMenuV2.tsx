@@ -13,12 +13,12 @@ import {
   type ReactNode,
 } from 'react';
 import {
-  assignRef,
   chain,
   useAnchoredPanel,
   useDismiss,
   useEscapeLayer,
   useOpenState,
+  useTriggerRef,
   type OverlayTrigger,
 } from '../layer';
 import type { OverlayAlign, OverlayPlacement } from '../position';
@@ -79,6 +79,7 @@ export const DropdownMenuV2 = forwardRef<HTMLDivElement, DropdownMenuV2Props>(fu
   const [open, setOpen] = useOpenState(openProp, defaultOpen, onOpenChange);
   const panelRef = useRef<HTMLDivElement>(null);
   const anchorRef = useRef<HTMLElement | null>(null);
+  const attachTrigger = useTriggerRef(anchorRef, trigger.props.ref);
   const entry = useRef<Entry>('menu');
   const query = useRef('');
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -177,10 +178,7 @@ export const DropdownMenuV2 = forwardRef<HTMLDivElement, DropdownMenuV2Props>(fu
   return (
     <>
       {cloneElement(trigger, {
-        ref: (node: HTMLElement | null) => {
-          anchorRef.current = node;
-          assignRef(trigger.props.ref, node);
-        },
+        ref: attachTrigger,
         id: triggerId,
         'aria-haspopup': 'menu',
         'aria-expanded': open,

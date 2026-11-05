@@ -12,7 +12,7 @@ import {
   type RefObject,
   type SyntheticEvent,
 } from 'react';
-import { focusableIn, lockScroll, useEscapeLayer, useOpenLifecycle } from '../layer';
+import { focusableIn, lockScroll, returnFocus, useEscapeLayer, useOpenLifecycle } from '../layer';
 import styles from './DialogV2.module.css';
 
 export type DialogV2Size = 'sm' | 'md' | 'lg';
@@ -72,7 +72,7 @@ export const DialogV2 = forwardRef<HTMLDialogElement, DialogV2Props>(function Di
     return () => {
       unlock();
       dialog?.close?.();
-      if (previous instanceof HTMLElement) previous.focus({ preventScroll: true });
+      returnFocus(previous);
     };
   });
 
@@ -117,7 +117,7 @@ export const DialogV2 = forwardRef<HTMLDialogElement, DialogV2Props>(function Di
 
   const close = (event: SyntheticEvent<HTMLDialogElement>) => {
     onClose?.(event);
-    if (event.target === event.currentTarget && open) onOpenChange(false);
+    if (event.target === event.currentTarget && open && !event.currentTarget.open) onOpenChange(false);
   };
 
   return (

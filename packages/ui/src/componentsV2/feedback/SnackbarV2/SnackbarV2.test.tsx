@@ -155,6 +155,19 @@ describe('SnackbarV2', () => {
     hidden.mockRestore();
   });
 
+  it('holds its timer when it appears in a hidden page', () => {
+    const onDismiss = vi.fn();
+    const hidden = vi.spyOn(document, 'hidden', 'get').mockReturnValue(true);
+    render(<SnackbarV2 title="Saved" duration={1000} onDismiss={onDismiss} />);
+    elapse(10000);
+    expect(onDismiss).not.toHaveBeenCalled();
+    hidden.mockReturnValue(false);
+    fireEvent(document, new Event('visibilitychange'));
+    elapse(1000);
+    expect(onDismiss).toHaveBeenCalledOnce();
+    hidden.mockRestore();
+  });
+
   it('does not restart the timer on a rerender with a new handler', () => {
     const first = vi.fn();
     const second = vi.fn();
@@ -207,8 +220,22 @@ describe('SnackbarStackV2', () => {
     const stack = screen.getByTestId('stack');
     expect(stack).toHaveAttribute('role', 'region');
     expect(stack).toHaveAttribute('aria-label', 'Notifications');
+    expect(stack).toHaveAttribute('aria-live', 'polite');
     expect(stack).toHaveAttribute('data-placement', 'bottom-center');
     expect(HTMLElement.prototype.showPopover).toHaveBeenCalled();
+  });
+
+  it('announces through the stack, so routine items add no second live region', () => {
+    render(
+      <SnackbarStackV2>
+        <SnackbarV2 title="Saved" tone="success" data-testid="routine" />
+        <SnackbarV2 title="Failed" tone="error" data-testid="urgent" />
+        <SnackbarV2 title="Note" role="note" data-testid="custom" />
+      </SnackbarStackV2>,
+    );
+    expect(screen.getByTestId('routine')).not.toHaveAttribute('role');
+    expect(screen.getByTestId('urgent')).toHaveAttribute('role', 'alert');
+    expect(screen.getByTestId('custom')).toHaveAttribute('role', 'note');
   });
 
   it('accepts bottom-end, a label and children', () => {

@@ -139,6 +139,22 @@ describe('PopoverV2', () => {
     expect(screen.getByRole('dialog', { hidden: true })).toHaveAttribute('data-state', 'closed');
   });
 
+  it('positions itself when the anchor is declared after it', () => {
+    function Host() {
+      const anchor = useRef<HTMLButtonElement>(null);
+      return (
+        <>
+          <PopoverV2 anchorRef={anchor} open onOpenChange={() => {}} aria-label="Details" />
+          <button ref={anchor} type="button">
+            Anchor
+          </button>
+        </>
+      );
+    }
+    render(<Host />);
+    expect(panel()).toHaveAttribute('data-placement', 'bottom');
+  });
+
   it('closes only the inner layer on Escape', () => {
     render(
       <PopoverV2 trigger={trigger} title="Outer" defaultOpen data-testid="outer">
@@ -148,6 +164,32 @@ describe('PopoverV2', () => {
     fireEvent.keyDown(document.body, { key: 'Escape' });
     expect(screen.getByTestId('inner')).toHaveAttribute('data-state', 'closed');
     expect(screen.getByTestId('outer')).toHaveAttribute('data-state', 'open');
+  });
+
+  it('keeps a trigger ref attached across renders and honors its cleanup', () => {
+    const attached = vi.fn();
+    const detached = vi.fn();
+    const ref = (node: HTMLButtonElement | null) => {
+      attached(node);
+      return detached;
+    };
+    const view = (title: string) => (
+      <PopoverV2
+        trigger={
+          <button ref={ref} type="button">
+            More options
+          </button>
+        }
+        title={title}
+      />
+    );
+    const { rerender, unmount } = render(view('One'));
+    rerender(view('Two'));
+    expect(attached).toHaveBeenCalledOnce();
+    expect(attached).not.toHaveBeenCalledWith(null);
+    expect(detached).not.toHaveBeenCalled();
+    unmount();
+    expect(detached).toHaveBeenCalledOnce();
   });
 
   it('forwards the ref and native props', () => {

@@ -83,3 +83,10 @@
     display: none;
   }
 }
+
+@media (forced-colors: active) {
+  .skeleton {
+    background: GrayText;
+    forced-color-adjust: none;
+  }
+}

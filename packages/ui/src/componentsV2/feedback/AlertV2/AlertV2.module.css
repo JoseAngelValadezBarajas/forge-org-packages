@@ -135,3 +135,10 @@
   outline: var(--cf-v2-alert-focus-width) solid currentColor;
   outline-offset: calc(-1 * var(--cf-v2-alert-focus-width));
 }
+
+@media (forced-colors: active) {
+  .alert,
+  .icon {
+    border: thin solid CanvasText;
+  }
+}

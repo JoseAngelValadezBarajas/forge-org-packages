@@ -16,6 +16,24 @@ const tab = (name: string) => screen.getByRole('tab', { name });
 const press = (name: string, key: string) => fireEvent.keyDown(tab(name), { key });
 
 describe('TabsV2', () => {
+  it('reports a click on the shown tab when the controlled value fell back', () => {
+    const onValueChange = vi.fn();
+    const fallback = [
+      { id: 'one', label: 'One', content: 'Panel one' },
+      { id: 'two', label: 'Two', content: 'Panel two', disabled: true },
+    ];
+    render(<TabsV2 aria-label="Views" items={fallback} value="two" onValueChange={onValueChange} />);
+    fireEvent.click(screen.getByRole('tab', { name: 'One' }));
+    expect(onValueChange).toHaveBeenCalledExactlyOnceWith('one');
+  });
+
+  it('stays silent on a click on the tab already selected by default', () => {
+    const onValueChange = vi.fn();
+    render(<TabsV2 aria-label="Views" items={[{ id: 'one', label: 'One', content: 'Panel' }]} onValueChange={onValueChange} />);
+    fireEvent.click(screen.getByRole('tab', { name: 'One' }));
+    expect(onValueChange).not.toHaveBeenCalled();
+  });
+
   it('links a named tablist, tabs and panels', () => {
     render(<TabsV2 aria-label="Views" items={items} />);
     expect(screen.getByRole('tablist', { name: 'Views' })).toBeInTheDocument();

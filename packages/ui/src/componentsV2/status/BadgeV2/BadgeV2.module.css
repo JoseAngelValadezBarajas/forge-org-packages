@@ -85,3 +85,10 @@
   background: var(--cf-v2-surface-container);
   color: var(--badge-accent);
 }
+
+@media (forced-colors: active) {
+  .solid,
+  .subtle {
+    border: thin solid CanvasText;
+  }
+}

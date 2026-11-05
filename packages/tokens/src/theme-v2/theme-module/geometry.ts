@@ -295,4 +295,17 @@ export const geometry = {
     countFontSizeMd: '12px',
     countFontSizeLg: '14px',
   },
+  feedbackState: {
+    gap: '12px',
+    padding: '20px',
+    radius: '10px',
+    borderWidth: '1px',
+    markerSize: '24px',
+    contentGap: '8px',
+    titleFontSize: '16px',
+    actionsOffset: '4px',
+    spinnerWidth: '2px',
+    spinnerDuration: '800ms',
+    errorTint: '8%',
+  },
 } as const;

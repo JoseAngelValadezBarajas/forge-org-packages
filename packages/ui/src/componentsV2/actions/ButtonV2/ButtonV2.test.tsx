@@ -7,6 +7,13 @@ import { ButtonV2 } from './ButtonV2';
 afterEach(cleanup);
 
 describe('ButtonV2', () => {
+  it('keeps a consumer aria-disabled and aria-busy when it is not loading', () => {
+    render(<ButtonV2 aria-disabled="true" aria-busy="true">Soft disabled</ButtonV2>);
+    const button = screen.getByRole('button');
+    expect(button).toHaveAttribute('aria-disabled', 'true');
+    expect(button).toHaveAttribute('aria-busy', 'true');
+  });
+
   it('renders a native non-submitting button with primary md defaults', () => {
     render(<ButtonV2>Continue</ButtonV2>);
     const button = screen.getByRole('button', { name: 'Continue' });

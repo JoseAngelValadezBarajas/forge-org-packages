@@ -1,8 +1,10 @@
 import '@corefoundry-labs/forge-tokens/theme-v2/tokens.css';
 import { Close } from '@corefoundry-labs/forge-icons';
 import {
+  createContext,
   forwardRef,
   useCallback,
+  useContext,
   useEffect,
   useImperativeHandle,
   useLayoutEffect,
@@ -36,6 +38,7 @@ export type SnackbarStackV2Props = Omit<HTMLAttributes<HTMLDivElement>, 'role' |
 };
 
 const defaultDuration = 5000;
+const StackContext = createContext(false);
 
 export const SnackbarV2 = forwardRef<HTMLDivElement, SnackbarV2Props>(function SnackbarV2(
   {
@@ -48,7 +51,7 @@ export const SnackbarV2 = forwardRef<HTMLDivElement, SnackbarV2Props>(function S
     dismissLabel = 'Dismiss',
     duration = action != null || tone === 'error' ? null : defaultDuration,
     onDismiss,
-    role = tone === 'error' ? 'alert' : 'status',
+    role,
     className,
     onPointerEnter,
     onPointerLeave,
@@ -58,6 +61,8 @@ export const SnackbarV2 = forwardRef<HTMLDivElement, SnackbarV2Props>(function S
   },
   ref,
 ) {
+  const stacked = useContext(StackContext);
+  const liveRole = stacked ? undefined : 'status';
   const rootRef = useRef<HTMLDivElement>(null);
   const dismiss = useLatest(onDismiss);
   const timer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
@@ -97,12 +102,13 @@ export const SnackbarV2 = forwardRef<HTMLDivElement, SnackbarV2Props>(function S
 
   useEffect(() => {
     remaining.current = duration;
+    if (document.hidden) pause('hidden');
     run();
     return () => {
       clearTimeout(timer.current);
       timer.current = undefined;
     };
-  }, [duration, run]);
+  }, [duration, pause, run]);
 
   useEffect(() => {
     const sync = () => (document.hidden ? pause('hidden') : resume('hidden'));
@@ -133,7 +139,7 @@ export const SnackbarV2 = forwardRef<HTMLDivElement, SnackbarV2Props>(function S
     <div
       {...props}
       ref={rootRef}
-      role={role}
+      role={role ?? (tone === 'error' ? 'alert' : liveRole)}
       data-tone={tone}
       data-density={density}
       onPointerEnter={chain(onPointerEnter, () => pause('hover'))}
@@ -176,11 +182,13 @@ export const SnackbarStackV2 = forwardRef<HTMLDivElement, SnackbarStackV2Props>(
       ref={stackRef}
       role="region"
       aria-label={label}
+      aria-live="polite"
+      aria-relevant="additions"
       popover="manual"
       data-placement={placement}
       className={[styles.stack, styles[placement === 'bottom-end' ? 'end' : 'center'], className].filter(Boolean).join(' ')}
     >
-      {children}
+      <StackContext.Provider value={true}>{children}</StackContext.Provider>
     </div>
   );
 });

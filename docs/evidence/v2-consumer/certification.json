@@ -1,7 +1,7 @@
 {
   "version": "1.1.0",
   "installedFrom": "npm pack tarballs, no workspace links",
-  "production": "vite build + vite preview in Chromium",
+  "production": "vite build + vite preview in chromium",
   "typeChecks": [
     "strict consumer compiled",
     "icon-only ButtonV2 without aria-label rejected",
@@ -28,8 +28,9 @@
   "feedback": 52,
   "controls": 247,
   "display": 572,
-  "overlays": 339,
+  "overlays": 342,
   "status": 416,
+  "forcedColors": 10,
   "checks": 1846,
   "minimumText": 4.79,
   "minimumBoundary": 4.07,

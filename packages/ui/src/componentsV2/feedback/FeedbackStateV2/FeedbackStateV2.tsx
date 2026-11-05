@@ -1,3 +1,4 @@
+import '@corefoundry-labs/forge-tokens/theme-v2/tokens.css';
 import { forwardRef, useId, type HTMLAttributes, type ReactNode } from 'react';
 import styles from './FeedbackStateV2.module.css';
 

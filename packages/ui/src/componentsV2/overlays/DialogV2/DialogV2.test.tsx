@@ -1,6 +1,6 @@
 import { act, cleanup, fireEvent, render, screen } from '@testing-library/react';
 import '@testing-library/jest-dom/vitest';
-import { createRef, useRef, useState } from 'react';
+import { createRef, StrictMode, useRef, useState } from 'react';
 import { afterEach, beforeAll, describe, expect, it, vi } from 'vitest';
 import { DialogV2 } from './DialogV2';
 
@@ -90,8 +90,26 @@ describe('DialogV2', () => {
   it('syncs a native close, such as a dialog form', () => {
     const onOpenChange = vi.fn();
     render(<DialogV2 open onOpenChange={onOpenChange} title="Confirm" />);
-    fireEvent(screen.getByRole('dialog'), new Event('close'));
+    const dialog = screen.getByRole('dialog');
+    dialog.removeAttribute('open');
+    fireEvent(dialog, new Event('close'));
     expect(onOpenChange).toHaveBeenCalledExactlyOnceWith(false);
+  });
+
+  it('ignores a late close event from an earlier close once it is open again', async () => {
+    const close = vi.spyOn(HTMLDialogElement.prototype, 'close').mockImplementation(function close(this: HTMLDialogElement) {
+      this.removeAttribute('open');
+      queueMicrotask(() => this.dispatchEvent(new Event('close')));
+    });
+    const onOpenChange = vi.fn();
+    render(
+      <StrictMode>
+        <DialogV2 open onOpenChange={onOpenChange} title="Confirm" />
+      </StrictMode>,
+    );
+    await act(async () => {});
+    expect(onOpenChange).not.toHaveBeenCalled();
+    close.mockRestore();
   });
 
   it('locks page scroll while open and restores it', () => {

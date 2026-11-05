@@ -140,3 +140,17 @@
 .group-lg .count {
   font-size: var(--cf-v2-avatar-count-font-size-lg);
 }
+
+@media (forced-colors: active) {
+  .surface,
+  .count {
+    box-sizing: border-box;
+    border: thin solid CanvasText;
+  }
+
+  .status {
+    border-color: Canvas;
+    background: CanvasText;
+    forced-color-adjust: none;
+  }
+}

@@ -82,7 +82,8 @@ and actions belong in `PopoverV2`. The tooltip is linked with `aria-describedby`
 which keeps the trigger's accessible name and any description it already has.
 
 It opens on hover and on keyboard focus, and a pointer can move onto it without
-closing it. Escape closes it and leaves focus on the trigger, and pressing the
+closing it. Only one tooltip shows at a time, so opening one closes the previous
+one and Escape always reaches the visible tooltip. Escape closes it and leaves focus on the trigger, and pressing the
 trigger also closes it. Touch never opens a tooltip, so the information must not
 be essential. Give icon-only triggers an `aria-label`, because a tooltip is a
 description and not a name.
@@ -183,7 +184,12 @@ The engine requires `error` and `onSurface` to reach 4.5:1 on
 ## Verification
 
 Run `npm run check:v2-consumer` to certify the four components from packed
-tarballs across 13 theme scopes in Chromium. It checks real focus, Escape order,
-collision, clipping, and the menu to dialog flow, and runs axe on open overlays.
-Screen readers, other browsers, and physical Android devices are not covered and
-need manual review.
+tarballs across 13 theme scopes. It checks real focus, Escape order, collision,
+clipping, and the menu to dialog flow, and runs axe on open overlays. Set
+`V2_BROWSER` to `firefox` or `webkit` to use another engine, and CI runs all three.
+WebKit is not Safari itself, so Safari, screen readers, and physical Android
+devices still need manual review.
+
+Firefox warns that overlays are repositioned from a scroll listener, because an
+anchored overlay can lag slightly behind asynchronous panning. This is expected
+until CSS anchor positioning is available in every supported browser.

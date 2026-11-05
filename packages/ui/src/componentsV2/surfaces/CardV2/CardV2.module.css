@@ -75,3 +75,9 @@
     transition: none;
   }
 }
+
+@media (forced-colors: active) {
+  .card {
+    border: thin solid CanvasText;
+  }
+}

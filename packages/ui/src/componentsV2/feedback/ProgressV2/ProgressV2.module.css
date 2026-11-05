@@ -135,3 +135,27 @@
     animation: none;
   }
 }
+
+@media (forced-colors: active) {
+  .track {
+    border: thin solid CanvasText;
+    background: Canvas;
+    forced-color-adjust: none;
+  }
+
+  .fill {
+    background: Highlight;
+  }
+
+  .ring {
+    forced-color-adjust: none;
+  }
+
+  .ringTrack {
+    stroke: GrayText;
+  }
+
+  .ringArc {
+    stroke: Highlight;
+  }
+}

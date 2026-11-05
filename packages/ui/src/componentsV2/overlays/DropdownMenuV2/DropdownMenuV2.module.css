@@ -112,3 +112,11 @@
     min-height: var(--cf-v2-menu-touch-target);
   }
 }
+
+@media (forced-colors: active) {
+  .item:focus {
+    background: Highlight;
+    color: HighlightText;
+    forced-color-adjust: none;
+  }
+}

@@ -57,7 +57,7 @@ list, and table placeholders are compositions, shown in the component host.
 | `onDismiss` | `(reason: 'timeout' \| 'close') => void` | none |
 | `dismissible`, `dismissLabel` | close button | `true`, `Dismiss` |
 | `duration` | milliseconds, `null` keeps it open | see below |
-| `role` | ARIA role | `alert` for error, else `status` |
+| `role` | ARIA role | `alert` for error, else `status`, or none inside a stack |
 
 The parent owns the list and removes an item in `onDismiss`, so a snackbar never
 removes itself. There is no global store or queue, because Figma leaves that to a
@@ -74,8 +74,10 @@ it, focus returns to where it came from.
 `SnackbarStackV2` places snackbars at `bottom-center`, the default, or `bottom-end`.
 Like the [V2 overlays](overlays-v2.md), it renders in place and rises into the top
 layer, so it inherits its `ThemeScope` and needs the same browsers. Declare it
-inside the theme scope and render it from the start, so the region exists before
-the first message. A `DialogV2` opened later covers it and makes it inert, so
+inside the theme scope and render it from the start. It is a polite live region,
+and it must exist before the first message for that message to be announced.
+Inside it, routine snackbars have no role of their own, so they are not announced
+twice, and errors keep `role="alert"`. A `DialogV2` opened later covers it and makes it inert, so
 render a stack inside the dialog when a message must appear there. The stack adds
 no limit, so show few messages at once, and keep it clear of critical controls on
 small screens.
@@ -116,6 +118,12 @@ give the avatars an empty `alt` to avoid repeating them.
 
 The groups `progress`, `skeleton`, `snackbar`, and `avatar` live in the V2 geometry.
 
+## Forced colors
+
+In Windows High Contrast, V2 keeps state visible with system colors: the selected
+tab, the progress fill, skeletons, snackbar and status marks, and the highlighted
+menu item. Surfaces that rely on a background get a border.
+
 ## Differences from Figma
 
 - Progress labels use `onSurface`. Figma has fixed colors for a dark canvas, which
@@ -135,6 +143,7 @@ The groups `progress`, `skeleton`, `snackbar`, and `avatar` live in the V2 geome
 ## Verification
 
 Run `npm run check:v2-consumer` to certify these components from packed tarballs
-across 13 theme scopes in Chromium, including real timers, image failures, and the
-stack in the top layer. Live region announcements, other browsers, and physical
-devices are not covered and need manual review.
+across 13 theme scopes, including real timers, image failures, and the stack in the
+top layer. Set `V2_BROWSER` to `firefox` or `webkit` to use another engine, and CI
+runs all three. Live region announcements, Safari itself, and physical devices are
+not covered and need manual review.

@@ -47,8 +47,8 @@ export const ButtonV2 = forwardRef<HTMLButtonElement, ButtonV2Props>(function Bu
       {...props}
       ref={ref}
       type={type}
-      aria-busy={loading || undefined}
-      aria-disabled={loading || undefined}
+      aria-busy={loading || props['aria-busy']}
+      aria-disabled={loading || props['aria-disabled']}
       data-variant={variant}
       data-size={size}
       onClick={handleClick}
