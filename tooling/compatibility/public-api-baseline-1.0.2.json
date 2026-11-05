@@ -1,0 +1,89 @@
+{
+  "capturedAt": "2026-10-29",
+  "registry": "https://registry.npmjs.org",
+  "packages": {
+    "@corefoundry-labs/forge-tokens": {
+      "version": "1.0.2",
+      "tarball": "https://registry.npmjs.org/@corefoundry-labs/forge-tokens/-/forge-tokens-1.0.2.tgz",
+      "integrity": "sha512-ngcyHWgF4nXRroyFWeHjL39Kant7NYGZIR8485jmFHiDCPixLKHltg/SZMIjTpzWAbqop+MQmU/YTONOcxdpVw==",
+      "exports": {
+        "./tokens.css": {
+          "types": "./dist/tokens.css.d.ts",
+          "default": "./dist/tokens.css"
+        },
+        "./tokens.json": "./dist/tokens.json",
+        "./package.json": "./package.json"
+      },
+      "runtimeExports": [],
+      "typeExports": [],
+      "aliases": {},
+      "peerDependencies": {},
+      "dependencies": {}
+    },
+    "@corefoundry-labs/forge-icons": {
+      "version": "1.0.2",
+      "tarball": "https://registry.npmjs.org/@corefoundry-labs/forge-icons/-/forge-icons-1.0.2.tgz",
+      "integrity": "sha512-NdLJux7ozAQ25yQ/CUtJERVfFEucF6IDX3Rbo8LwDDovKB2+fLvtPu1QZeBg0EYAhd+ko2iWp1AAOPerS56dxA==",
+      "exports": {
+        ".": {
+          "types": "./dist/index.d.ts",
+          "import": "./dist/index.js"
+        },
+        "./package.json": "./package.json"
+      },
+      "runtimeExports": [
+        "Plus", "Close", "Chevron", "Check", "Minus", "Search", "Menu", "Edit", "Trash", "Download",
+        "Upload", "Filter", "ArrowLeft", "ArrowRight", "ArrowUp", "ArrowDown", "AlertTriangle", "Info",
+        "Clock", "Folder", "GitBranch", "Refresh", "ExternalLink", "Lock", "History", "CheckCircle",
+        "XCircle", "Bell", "ChevronDown", "ChevronRight", "GripVertical", "Link", "Eye", "Layers", "Settings"
+      ],
+      "typeExports": ["IconProps"],
+      "aliases": {},
+      "peerDependencies": { "react": "^19.0.0" },
+      "dependencies": {}
+    },
+    "@corefoundry-labs/forge-ui": {
+      "version": "1.0.2",
+      "tarball": "https://registry.npmjs.org/@corefoundry-labs/forge-ui/-/forge-ui-1.0.2.tgz",
+      "integrity": "sha512-RnX6+dL288hzJXrAjYW/EQ7z9Dk+HijZ/aF7EnsnAKd2kmrlddlVLD5/9IrIPpQctrplzlEsFF94nEnSoYQaTA==",
+      "exports": {
+        ".": {
+          "types": "./dist/index.d.ts",
+          "import": "./dist/index.js"
+        },
+        "./styles.css": {
+          "types": "./dist/styles.css.d.ts",
+          "default": "./dist/styles.css"
+        },
+        "./package.json": "./package.json"
+      },
+      "runtimeExports": [
+        "useSystemTheme", "Button", "IconButton", "TextInput", "Input", "Checkbox", "Select", "Textarea",
+        "FormField", "SearchField", "MultiSelect", "FilePicker", "FormActions", "Radio", "Switch", "Tabs",
+        "Breadcrumbs", "MenuItem", "StepperStep", "Card", "MetricCard", "StatusChip", "Badge", "Alert",
+        "StatePanel", "Progress", "Tooltip", "Skeleton", "Toast", "EmptyState", "LoadingState", "ErrorState",
+        "RecordRow", "KeyValueRow", "TableRow", "Table", "Dialog", "Popover", "SectionHeader", "Divider",
+        "CodeLabel"
+      ],
+      "typeExports": [
+        "SystemTheme", "ButtonProps", "ButtonSize", "IconButtonProps", "TextInputProps", "InputProps", "CheckboxProps",
+        "SelectProps", "TextareaProps", "FormFieldProps", "SearchFieldProps", "MultiSelectOption", "MultiSelectProps",
+        "FilePickerProps", "FilePickerState", "FormActionsProps", "FormActionsState", "RadioProps", "SwitchProps",
+        "TabsProps", "TabItem", "BreadcrumbsProps", "BreadcrumbItem", "MenuItemProps", "StepperStepProps", "CardProps",
+        "MetricCardProps", "StatusChipProps", "BadgeProps", "AlertProps", "StatePanelProps", "ProgressProps",
+        "TooltipProps", "SkeletonProps", "ToastProps", "EmptyStateProps", "LoadingStateProps", "ErrorStateProps",
+        "RecordRowProps", "KeyValueRowProps", "TableRowProps", "TableProps", "TableColumn", "DialogProps", "PopoverProps",
+        "SectionHeaderProps", "DividerProps", "CodeLabelProps"
+      ],
+      "aliases": {
+        "Input": "TextInput",
+        "InputProps": "TextInputProps"
+      },
+      "peerDependencies": { "react": "^19.0.0" },
+      "dependencies": {
+        "@corefoundry-labs/forge-icons": "1.0.2",
+        "@corefoundry-labs/forge-tokens": "1.0.2"
+      }
+    }
+  }
+}
