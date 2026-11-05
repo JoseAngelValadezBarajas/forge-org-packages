@@ -73,7 +73,8 @@ scoped color tokens without changing the existing V1 theme. Run
 are built on it.
 Run `npm run playground:ui` to review components against the engine, and
 `npm run check:v2-consumer` to certify the V2 packages from their packed
-tarballs in an external React project.
+tarballs in an external React project. Set `V2_BROWSER` to `firefox` or `webkit`
+to use another engine.
 
 ## Releases and publishing
 
