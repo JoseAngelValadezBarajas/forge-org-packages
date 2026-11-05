@@ -22,7 +22,8 @@
 }
 
 .elevated {
-  box-shadow: var(--cf-v2-card-shadow);
+  box-shadow: 0 var(--cf-v2-card-shadow-offset) var(--cf-v2-card-shadow-blur)
+    color-mix(in srgb, var(--cf-v2-shadow) calc(var(--cf-v2-card-shadow-opacity) * 100%), transparent);
 }
 
 .interactive {

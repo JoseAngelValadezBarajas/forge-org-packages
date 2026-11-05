@@ -1,15 +1,5 @@
 import type { SemanticRole } from '../theme-abstractions/index.js';
 
-export const tones = [0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 98, 99, 100] as const;
-
-export const roles: SemanticRole[] = [
-  'background', 'surface', 'surfaceRaised', 'surfaceContainer', 'surfaceVariant', 'onSurface', 'onSurfaceVariant',
-  'primary', 'onPrimary', 'primaryContainer', 'onPrimaryContainer', 'secondary', 'onSecondary', 'outline',
-  'outlineVariant', 'focusRing', 'selection', 'disabled', 'error', 'warning', 'success', 'info', 'actionPrimary',
-  'onActionPrimary', 'actionPrimaryHover', 'actionPrimaryPressed', 'onError', 'errorHover', 'errorPressed',
-  'surfaceContainerHover', 'surfaceContainerPressed', 'onSuccess', 'onWarning', 'onInfo',
-];
-
 export const contrastPairs: [SemanticRole, SemanticRole, number][] = [
   ['onSurface', 'surface', 4.5], ['onSurfaceVariant', 'surfaceVariant', 4.5], ['onPrimary', 'primary', 4.5],
   ['onPrimaryContainer', 'primaryContainer', 4.5], ['onSecondary', 'secondary', 4.5],
@@ -33,6 +23,17 @@ export const contrastPairs: [SemanticRole, SemanticRole, number][] = [
   ['success', 'surfaceContainer', 4.5], ['info', 'surfaceContainer', 4.5],
   ['error', 'surfaceContainerHover', 4.5], ['focusRing', 'surfaceContainer', 3],
   ['focusRing', 'surfaceContainerHover', 3],
+];
+
+export const highContrastPairs: [SemanticRole, SemanticRole, number][] = [
+  ['onSurface', 'surface', 7], ['onSurface', 'surfaceContainer', 7], ['onSurface', 'surfaceContainerHover', 7],
+  ['onSurface', 'surfaceContainerPressed', 7], ['onSurfaceVariant', 'surfaceVariant', 7],
+  ['onPrimaryContainer', 'primaryContainer', 7], ['onActionPrimary', 'actionPrimary', 7], ['onError', 'error', 7],
+  ['onSuccess', 'success', 7], ['onWarning', 'warning', 7], ['onInfo', 'info', 7],
+  ['actionPrimary', 'surfaceContainer', 7], ['error', 'surfaceContainer', 7], ['warning', 'surfaceContainer', 7],
+  ['success', 'surfaceContainer', 7], ['info', 'surfaceContainer', 7], ['focusRing', 'surfaceContainer', 7],
+  ['outline', 'surface', 4.5], ['outline', 'surfaceContainer', 4.5], ['outline', 'surfaceContainerHover', 4.5],
+  ['outline', 'surfaceContainerPressed', 4.5],
 ];
 
 export function normalizeColor(value: unknown, label: string): string {

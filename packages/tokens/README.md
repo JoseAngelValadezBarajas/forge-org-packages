@@ -1,20 +1,10 @@
 # @corefoundry-labs/forge-tokens
 
-The versioned Forge design-token contract. `tokens.json` is authoritative; `npm run generate:tokens` generates `src/tokens.css`, and package builds distribute that generated file. Never edit generated CSS directly.
+Design tokens for Forge. The package carries two independent systems: the V1 tokens and Theme Engine V2.
 
-The CSS contract is `data-theme="dark"` or `data-theme="light"`. Dark is the default on `:root` when no attribute is present. A nested element with either attribute starts an isolated semantic token scope. The package does not manage theme state or persistence.
+## V1 tokens
 
-Semantic variables include surfaces, text, borders, interactive states, focus,
-status, selection, overlays, and elevations. Foundations also provide spacing,
-radius, typography, motion, responsive values, and border widths. Consult
-[`token-reconciliation.md`](../../docs/design/token-reconciliation.md) for
-evidence and status for each historical drift. Light mode is not claimed as a
-human-approved canonical Figma mode. In particular, the intended variable
-status of `surfaceInteractive` and `surfaceTag` remains an open design decision.
-The generated CSS also exposes a small primitive palette (`--forge-palette-*`)
-sampled only from values already present in the current token source. These
-primitive samples are implementation foundations, not a claim that Figma
-defines those palette scales or names.
+`tokens.json` is authoritative, and it generates the CSS variables (`--forge-*`). They cover surfaces, text, borders, interactive states, focus, status, selection, overlays, elevations, spacing, radius, typography, motion, responsive values, and border widths. The generated `--forge-palette-*` values are implementation foundations sampled from the token source, not palette scales defined in Figma.
 
 ```css
 @import '@corefoundry-labs/forge-tokens/tokens.css';
@@ -26,11 +16,27 @@ defines those palette scales or names.
 }
 ```
 
-Set `data-theme="light"` on a host element to scope light tokens; omit the
-attribute for the default dark palette.
+Dark is the default on `:root`. Set `data-theme="light"` on a host element to scope light tokens.
 
-Build and validate with `npm run generate:tokens`, `npm run check:tokens`,
-`npm run build --workspace=@corefoundry-labs/forge-tokens`, and
-`npm test --workspace=@corefoundry-labs/forge-tokens`. Package consumers should import
-`@corefoundry-labs/forge-tokens/tokens.css`; applications must not depend on the package's
-source directory.
+## Theme Engine V2
+
+`@corefoundry-labs/forge-tokens/theme-v2` generates accessible color themes from brand seeds, and `theme-v2/tokens.css` ships the Forge preset as the default.
+
+```ts
+import { applyTheme, createTheme, presets } from '@corefoundry-labs/forge-tokens/theme-v2';
+
+applyTheme(element, createTheme({ ...presets.forge, mode: 'light' }));
+```
+
+Semantic roles such as `--cf-v2-surface` are public. Component tokens such as `--cf-v2-button-height-md` are internal, so do not depend on them. V2 follows `data-theme`, and `data-cf-theme-mode` overrides it with `light`, `dark`, or `high-contrast`. See the [Theme Engine V2 guide](../../docs/design-system/theme-engine-v2.md).
+
+## Development
+
+From the repository root:
+
+```bash
+npm run build --workspace=@corefoundry-labs/forge-tokens
+npm test --workspace=@corefoundry-labs/forge-tokens
+```
+
+The build regenerates the V1 CSS and the V2 stylesheet. Applications must import the package exports, not its source directory.
