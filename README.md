@@ -10,9 +10,9 @@ Repository: <https://github.com/JoseAngelValadezBarajas/forge-org-packages>
 
 | Package | Purpose | Latest |
 | --- | --- | --- |
-| [`@corefoundry-labs/forge-tokens`](https://www.npmjs.com/package/@corefoundry-labs/forge-tokens) | Semantic design tokens, themes, and CSS variables. | `1.0.2` |
-| [`@corefoundry-labs/forge-icons`](https://www.npmjs.com/package/@corefoundry-labs/forge-icons) | Typed, tree-shakeable React SVG icons. | `1.0.2` |
-| [`@corefoundry-labs/forge-ui`](https://www.npmjs.com/package/@corefoundry-labs/forge-ui) | Accessible React controls and reusable surfaces. | `1.0.2` |
+| [`@corefoundry-labs/forge-tokens`](https://www.npmjs.com/package/@corefoundry-labs/forge-tokens) | Semantic design tokens, themes, and CSS variables. | `1.1.0` |
+| [`@corefoundry-labs/forge-icons`](https://www.npmjs.com/package/@corefoundry-labs/forge-icons) | Typed, tree-shakeable React SVG icons. | `1.1.0` |
+| [`@corefoundry-labs/forge-ui`](https://www.npmjs.com/package/@corefoundry-labs/forge-ui) | Accessible React controls and reusable surfaces. | `1.1.0` |
 
 
 
