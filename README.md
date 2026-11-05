@@ -84,9 +84,10 @@ no long-lived npm token is stored in the repository.
 To publish a new version:
 
 1. Update the three package versions and the UI package dependency versions.
-2. Run `npm install`, `npm run quality`, and review the packed artifacts.
-3. Commit the version change.
-4. Create and push a matching tag, for example:
+2. Move the `Unreleased` notes in [`CHANGELOG.md`](CHANGELOG.md) under the new version.
+3. Run `npm install`, `npm run quality`, and review the packed artifacts.
+4. Commit the version change.
+5. Create and push a matching tag, for example:
 
    ```bash
    git tag packages-v1.0.3
