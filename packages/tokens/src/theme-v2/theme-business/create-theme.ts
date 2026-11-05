@@ -1,8 +1,10 @@
-import type { BrandColors, Theme, ThemeConfig } from '../theme-abstractions/index.js';
+import type { BrandColors, Theme, ThemeConfig, Tone } from '../theme-abstractions/index.js';
 import { contrastRatio } from './contrast.js';
 import { generatePalette } from './palette.js';
 import { normalizeColor } from './theme.helper.js';
 import { validateTheme } from './validate-theme.js';
+
+type StateTones = readonly [rest: Tone, hover: Tone, pressed: Tone];
 
 function foreground(background: string): string {
   return contrastRatio('#000000', background) >= contrastRatio('#ffffff', background) ? '#000000' : '#ffffff';
@@ -33,14 +35,20 @@ export function createTheme(config: ThemeConfig): Theme {
   const high = config.mode === 'high-contrast';
   const surface = palettes.neutral[dark ? (high ? 0 : 10) : 98];
   const surfaceVariant = palettes.neutralVariant[dark ? 30 : 90];
-  const primary = palettes.primary[dark ? (high ? 90 : 80) : 40];
+  const actionTones: StateTones = high ? [90, 85, 80] : dark ? [80, 75, 70] : [40, 35, 30];
+  const errorTones: StateTones = dark ? [80, 75, 70] : [40, 35, 30];
+  const containerTones: StateTones = dark ? [20, 25, 30] : [95, 90, 85];
+  const primary = palettes.primary[actionTones[0]];
+  const error = palettes.error[errorTones[0]];
   const primaryContainer = palettes.primary[dark ? 30 : 90];
   const secondary = palettes.secondary[dark ? 80 : 40];
   const roleValues: Theme['roles'] = {
     background: surface,
     surface,
     surfaceRaised: palettes.neutral[dark ? 15 : 100],
-    surfaceContainer: palettes.neutral[dark ? 20 : 95],
+    surfaceContainer: palettes.neutral[containerTones[0]],
+    surfaceContainerHover: palettes.neutral[containerTones[1]],
+    surfaceContainerPressed: palettes.neutral[containerTones[2]],
     surfaceVariant,
     onSurface: foreground(surface),
     onSurfaceVariant: foreground(surfaceVariant),
@@ -55,12 +63,17 @@ export function createTheme(config: ThemeConfig): Theme {
     focusRing: foreground(surface),
     selection: primaryContainer,
     disabled: palettes.neutral[dark ? 40 : 70],
-    error: palettes.error[dark ? 80 : 40],
+    error,
+    onError: foreground(error),
+    errorHover: palettes.error[errorTones[1]],
+    errorPressed: palettes.error[errorTones[2]],
     warning: palettes.warning[dark ? 80 : 40],
     success: palettes.success[dark ? 80 : 40],
     info: palettes.info[dark ? 80 : 40],
     actionPrimary: primary,
     onActionPrimary: foreground(primary),
+    actionPrimaryHover: palettes.primary[actionTones[1]],
+    actionPrimaryPressed: palettes.primary[actionTones[2]],
   };
   const theme: Theme = { name: config.name, mode: config.mode, colors, palettes, roles: roleValues };
   const result = validateTheme(theme);

@@ -1,11 +1,12 @@
 import type { Theme } from '../theme-abstractions/index.js';
 import { getThemeRoleDeclarations } from '../theme-business/validate-theme.js';
 
-function cssDeclarations(theme: Theme): [string, string][] {
-  return getThemeRoleDeclarations(theme).map(([role, value]) => [
-    `--cf-v2-${role.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)}`,
-    value,
-  ]);
+export function cssVariableName(token: string): string {
+  return `--cf-v2-${token.replace(/[A-Z]/g, (letter) => `-${letter.toLowerCase()}`)}`;
+}
+
+export function cssDeclarations(theme: Theme): [string, string][] {
+  return getThemeRoleDeclarations(theme).map(([role, value]) => [cssVariableName(role), value]);
 }
 
 export function generateThemeCss(theme: Theme, selector: string): string {
