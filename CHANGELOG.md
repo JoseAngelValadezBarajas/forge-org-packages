@@ -8,7 +8,9 @@ here. The three packages share one version. The format follows
 
 ## [Unreleased]
 
-Planned as 1.1.0. Every change is additive, and V1 exports, props, and appearance
+## [1.1.0] - 2026-11-05
+
+Every change is additive, and V1 exports, props, and appearance
 stay as published in 1.0.2. Consumers can adopt V2 one component at a time.
 
 ### Added
@@ -55,5 +57,6 @@ stay as published in 1.0.2. Consumers can adopt V2 one component at a time.
 
 - First release published to npm under the `@corefoundry-labs` scope.
 
-[Unreleased]: https://github.com/JoseAngelValadezBarajas/forge-org-packages/compare/packages-v1.0.2...HEAD
+[Unreleased]: https://github.com/JoseAngelValadezBarajas/forge-org-packages/compare/packages-v1.1.0...HEAD
+[1.1.0]: https://github.com/JoseAngelValadezBarajas/forge-org-packages/compare/packages-v1.0.2...packages-v1.1.0
 [1.0.2]: https://github.com/JoseAngelValadezBarajas/forge-org-packages/releases/tag/packages-v1.0.2
