@@ -26,7 +26,7 @@
   "scripts": {
     "build": "node scripts/build.mjs",
     "typecheck:consumer": "node ../../node_modules/typescript/bin/tsc --project tsconfig.consumer.json",
-    "test": "vitest run --config vitest.config.ts && npm run build && npm run typecheck:consumer && node --test scripts/package-exports.test.mjs"
+    "test": "vitest run --config vitest.config.ts && npm run build && npm run typecheck:consumer && node --test scripts/package-exports.test.mjs && node --test scripts/icon-catalog.browser.test.mjs"
   },
   "peerDependencies": {
     "react": "^19.0.0"

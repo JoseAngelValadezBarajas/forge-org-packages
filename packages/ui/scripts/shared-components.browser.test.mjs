@@ -9,8 +9,14 @@ import { createServer } from 'vite';
 const fixture = `
 import React from 'react';
 import { createRoot } from 'react-dom/client';
-import { Button, Card } from '/src/index.ts';
+import { Button, Card, FeedbackStateV2, ThemeScope } from '/src/index.ts';
+import { applyTheme, createTheme, presets } from '@corefoundry-labs/forge-tokens/theme-v2';
 const h = React.createElement;
+globalThis.setFeedbackTheme = (mode, primary) => {
+  const theme = createTheme({ ...presets.forge, mode, colors: { ...presets.forge.colors, primary } });
+  applyTheme(document.querySelector('main'), theme);
+  return theme.roles;
+};
 createRoot(document.getElementById('root')).render(h('main', null,
   ...['primary', 'secondary', 'ghost', 'danger'].flatMap(variant =>
     ['default', 'disabled', 'loading'].map(state => h(Button, {
@@ -24,6 +30,22 @@ createRoot(document.getElementById('root')).render(h('main', null,
   h('div', { style: { width: '100%', maxWidth: 300 } },
     h(Card, { 'data-testid': 'card' }, 'Reusable surface'),
     h(Card, { as: 'article', variant: 'elevated', 'data-testid': 'elevated-card' }, 'Elevated surface')),
+  ...[
+    ['loading', 'Loading projects'],
+    ['empty', 'No projects yet'],
+    ['error', 'Could not load projects'],
+    ['readOnly', 'Projects are read only'],
+  ].map(([state, title]) => h(FeedbackStateV2, {
+    key: state, state, title, description: 'Project state details.',
+    actions: state === 'error' ? h(Button, { size: 'small' }, 'Retry') : undefined,
+    'data-testid': 'feedback-' + state,
+  })),
+  h(ThemeScope, { theme: createTheme({ ...presets.autofund, mode: 'light' }), 'data-testid': 'theme-outer' },
+    h(FeedbackStateV2, { state: 'empty', title: 'Outer light scope', headingLevel: 2, 'data-testid': 'scope-outer-feedback' }),
+    h(ThemeScope, { theme: createTheme({ ...presets.formiai, mode: 'dark' }), 'data-testid': 'theme-inner' },
+      h(FeedbackStateV2, { state: 'empty', title: 'Inner dark scope', 'data-testid': 'scope-inner-feedback' }))),
+  h(FeedbackStateV2, { state: 'loading', title: 'Outer loading panel', description:
+    h(FeedbackStateV2, { state: 'empty', title: 'Nested empty panel', 'data-testid': 'nested-feedback' }) }),
 ));`;
 
 let server;
@@ -389,4 +411,73 @@ test('Button Dark primary pressed label meets 4.5:1 text contrast', async () => 
   });
   assert.ok(ratio >= 4.5, `Expected at least 4.5:1, received ${ratio.toFixed(2)}:1`);
   await page.mouse.up();
+});
+
+test('FeedbackStateV2 renders its four accessible states without horizontal overflow', async () => {
+  for (const [state, role, title] of [
+    ['loading', 'status', 'Loading projects'],
+    ['empty', 'region', 'No projects yet'],
+    ['error', 'alert', 'Could not load projects'],
+    ['readOnly', 'region', 'Projects are read only'],
+  ]) {
+    const panel = page.getByTestId(`feedback-${state}`);
+    assert.equal(await panel.getAttribute('role'), role);
+    assert.equal(await panel.getAttribute('aria-labelledby') !== null, true);
+    assert.equal(await panel.locator('h3').textContent(), title);
+  }
+  assert.equal(await page.getByTestId('feedback-loading').getAttribute('aria-busy'), null);
+  assert.equal(await page.getByTestId('feedback-error').getByRole('button', { name: 'Retry' }).count(), 1);
+  assert.equal(
+    await page.getByTestId('feedback-loading').locator('[data-feedback-spinner]').getAttribute('aria-hidden'),
+    'true',
+  );
+  await page.setViewportSize({ width: 320, height: 700 });
+  assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), true);
+});
+
+test('FeedbackStateV2 follows scoped dynamic themes while V1 keeps its existing colors', async () => {
+  const feedback = page.getByTestId('feedback-empty');
+  const button = page.getByTestId('primary-default');
+  const originalButton = await colors(button);
+  const baseline = await feedback.evaluate((element) => ({
+    background: getComputedStyle(element).backgroundColor,
+    surface: getComputedStyle(element).getPropertyValue('--forge-surface').trim(),
+  }));
+  const rgb = (hex) => `rgb(${[1, 3, 5].map((index) => parseInt(hex.slice(index, index + 2), 16)).join(', ')})`;
+  assert.equal(baseline.background, rgb(baseline.surface));
+
+  for (const [mode, primary] of [['light', '#3b5bdb'], ['dark', '#159b83']]) {
+    const roles = await page.evaluate(([themeMode, color]) => globalThis.setFeedbackTheme(themeMode, color), [mode, primary]);
+    assert.equal((await colors(feedback)).background, rgb(roles.surface));
+    assert.equal(await feedback.locator('h3').evaluate((element) => getComputedStyle(element).color), rgb(roles.onSurface));
+    assert.equal(await page.getByTestId('feedback-error').evaluate((element) => getComputedStyle(element).borderTopColor), rgb(roles.error));
+    assert.equal(await page.getByTestId('feedback-readOnly').evaluate((element) => getComputedStyle(element).borderTopColor), rgb(roles.warning));
+    assert.equal(await page.getByTestId('feedback-loading').locator('[data-feedback-spinner]').evaluate((element) => getComputedStyle(element).borderTopColor), rgb(roles.primary));
+    assert.deepEqual(await colors(button), originalButton);
+  }
+});
+
+test('ThemeScope resolves nested surfaces without leaking into the surrounding page', async () => {
+  const background = async (id) => page.getByTestId(id).evaluate((element) => getComputedStyle(element).backgroundColor);
+  const outer = await background('scope-outer-feedback');
+  const inner = await background('scope-inner-feedback');
+  assert.notEqual(outer, inner);
+  assert.equal(await page.getByTestId('theme-outer').evaluate((element) => getComputedStyle(element).colorScheme), 'light');
+  assert.equal(await page.getByTestId('theme-inner').evaluate((element) => getComputedStyle(element).colorScheme), 'dark');
+  assert.equal(await page.getByTestId('scope-outer-feedback').getByRole('heading', { level: 2 }).count(), 1);
+  assert.equal(await page.getByTestId('scope-outer-feedback').getByRole('heading').evaluate((element) => getComputedStyle(element).fontSize), '16px');
+  await page.evaluate(() => globalThis.setFeedbackTheme('high-contrast', '#778899'));
+  assert.equal(await background('scope-outer-feedback'), outer);
+  assert.equal(await background('scope-inner-feedback'), inner);
+  assert.equal(await page.getByTestId('feedback-loading').locator('[data-feedback-spinner]').evaluate((element) => getComputedStyle(element).animationName), 'none');
+});
+
+test('Nested FeedbackStateV2 without a marker keeps its text at the panel padding', async () => {
+  const offset = await page.getByTestId('nested-feedback').evaluate((panel) => {
+    const heading = panel.querySelector('h3');
+    const style = getComputedStyle(panel);
+    return heading.getBoundingClientRect().left - panel.getBoundingClientRect().left
+      - parseFloat(style.paddingLeft) - parseFloat(style.borderLeftWidth);
+  });
+  assert.ok(Math.abs(offset) < 1, `Unexpected nested content offset: ${offset}px`);
 });

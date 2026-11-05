@@ -13,4 +13,6 @@ Icons inherit `currentColor` and default to a decorative, `aria-hidden` SVG. Pas
 
 Build independently with `npm run build --workspace=@corefoundry-labs/forge-icons`; run contract tests with `npm test --workspace=@corefoundry-labs/forge-icons`.
 
+To browse the published icon exports locally, run `npm run playground:icons` from the repository root. The catalog reads the package's public exports and shows each icon with a copyable import example.
+
 The paths are original normalized interpretations informed by the canonical Figma masters listed in `docs/design/design-system-parity.json`. They are not claimed to be pixel-identical. Human visual review remains outstanding.

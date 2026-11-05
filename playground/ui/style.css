@@ -1,0 +1,142 @@
+:root {
+  color-scheme: dark;
+  font-family: Geist, Inter, ui-sans-serif, system-ui, sans-serif;
+  color: var(--forge-text-primary);
+  background: var(--forge-bg);
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  min-width: 320px;
+  margin: 0;
+}
+
+main {
+  width: min(1080px, 100%);
+  margin: 0 auto;
+  padding: 40px clamp(20px, 5vw, 64px) 64px;
+}
+
+header {
+  margin-bottom: 32px;
+}
+
+h1 {
+  margin: 8px 0;
+  font-size: clamp(30px, 5vw, 42px);
+}
+
+.eyebrow {
+  margin: 0 0 8px;
+  color: var(--forge-accent);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.intro {
+  max-width: 60ch;
+  margin: 0;
+  color: var(--forge-text-secondary);
+  line-height: 1.6;
+}
+
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: end;
+  gap: 16px;
+  margin-bottom: 24px;
+}
+
+.controls label {
+  display: grid;
+  gap: 6px;
+  color: var(--forge-text-secondary);
+  font-size: 13px;
+}
+
+.controls select,
+.controls input {
+  min-height: 40px;
+  padding: 6px 10px;
+  border: 1px solid var(--forge-border-strong);
+  border-radius: 6px;
+  background: var(--forge-surface-raised);
+  color: var(--forge-text-primary);
+  font: inherit;
+}
+
+.controls input[type='color'] {
+  width: 64px;
+}
+
+.theme-preview {
+  padding: clamp(16px, 3vw, 28px);
+  border: 1px solid var(--cf-v2-outline-variant, var(--forge-border-subtle));
+  border-radius: var(--forge-radius-md);
+  background: var(--cf-v2-background, var(--forge-bg));
+  color: var(--cf-v2-on-surface, var(--forge-text-primary));
+}
+
+.preview-note {
+  margin: 0 0 24px;
+  line-height: 1.5;
+}
+
+.comparison {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 24px;
+}
+
+.version {
+  display: grid;
+  align-content: start;
+  gap: 16px;
+  min-width: 0;
+}
+
+.version h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.version--v1 {
+  padding: 16px;
+  border: 1px solid var(--forge-border-subtle);
+  border-radius: var(--forge-radius-md);
+  background: var(--forge-bg);
+  color: var(--forge-text-primary);
+}
+
+.version--v1 .example .eyebrow {
+  color: var(--forge-text-muted);
+}
+
+.example {
+  display: grid;
+  align-content: start;
+  gap: 8px;
+  min-width: 0;
+}
+
+.example .eyebrow {
+  color: var(--cf-v2-on-surface, var(--forge-text-subtle));
+}
+
+@media (max-width: 640px) {
+  main {
+    padding-top: 28px;
+  }
+
+  .comparison {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

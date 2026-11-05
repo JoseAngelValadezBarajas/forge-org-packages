@@ -20,6 +20,8 @@
     "pack:check": "npm pack --workspace=@corefoundry-labs/forge-tokens --dry-run && npm pack --workspace=@corefoundry-labs/forge-icons --dry-run && npm pack --workspace=@corefoundry-labs/forge-ui --dry-run",
     "publish:packages": "node tooling/scripts/publish-packages.mjs",
     "playground:theme-v2": "vite playground/theme-v2 --host 127.0.0.1",
+    "playground:icons": "npm run build --workspace=@corefoundry-labs/forge-icons && vite playground/icons --host 127.0.0.1",
+    "playground:ui": "npm run build --workspace=@corefoundry-labs/forge-tokens && npm run build --workspace=@corefoundry-labs/forge-ui && vite playground/ui --host 127.0.0.1",
     "check:compatibility": "npm run build && node --test tooling/scripts/public-compatibility.test.mjs && node tooling/scripts/public-compatibility.mjs"
   },
   "devDependencies": {

@@ -76,6 +76,11 @@ export { LoadingState } from './components/feedback/LoadingState';
 export type { LoadingStateProps } from './components/feedback/LoadingState';
 export { ErrorState } from './components/feedback/ErrorState';
 export type { ErrorStateProps } from './components/feedback/ErrorState';
+export { FeedbackStateV2 } from './components/feedback/FeedbackStateV2';
+export type {
+  FeedbackStateV2Kind,
+  FeedbackStateV2Props,
+} from './components/feedback/FeedbackStateV2';
 
 // Data display
 export { RecordRow } from './components/data-display/RecordRow';
@@ -94,6 +99,8 @@ export { Popover } from './components/overlays/Popover';
 export type { PopoverProps } from './components/overlays/Popover';
 
 // Other shared compositions
+export { ThemeScope } from './components/layout/ThemeScope';
+export type { ThemeScopeProps, ThemeScopeTheme } from './components/layout/ThemeScope';
 export { SectionHeader } from './components/layout/SectionHeader';
 export type { SectionHeaderProps } from './components/layout/SectionHeader';
 export { Divider } from './components/layout/Divider';
