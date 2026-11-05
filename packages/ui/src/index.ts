@@ -80,6 +80,27 @@ export { Badge } from './components/status/Badge';
 export type { BadgeProps } from './components/status/Badge';
 
 // Feedback
+export { ProgressV2 } from './componentsV2/feedback/ProgressV2';
+export type { ProgressV2Props, ProgressV2Shape, ProgressV2Status } from './componentsV2/feedback/ProgressV2';
+export { SkeletonV2 } from './componentsV2/feedback/SkeletonV2';
+export type { SkeletonV2Animation, SkeletonV2Props, SkeletonV2Shape, SkeletonV2Size } from './componentsV2/feedback/SkeletonV2';
+export { SnackbarStackV2, SnackbarV2 } from './componentsV2/feedback/SnackbarV2';
+export type {
+  SnackbarStackV2Placement,
+  SnackbarStackV2Props,
+  SnackbarV2Density,
+  SnackbarV2DismissReason,
+  SnackbarV2Props,
+  SnackbarV2Tone,
+} from './componentsV2/feedback/SnackbarV2';
+export { AvatarGroupV2, AvatarV2 } from './componentsV2/data-display/AvatarV2';
+export type {
+  AvatarGroupV2Props,
+  AvatarV2Props,
+  AvatarV2Shape,
+  AvatarV2Size,
+  AvatarV2StatusTone,
+} from './componentsV2/data-display/AvatarV2';
 export { AlertV2 } from './componentsV2/feedback/AlertV2';
 export type { AlertV2Props, AlertV2Tone, AlertV2Variant } from './componentsV2/feedback/AlertV2';
 export { Alert } from './components/feedback/Alert';

@@ -380,6 +380,76 @@ test('V2 overlays open, follow the theme and stay in the viewport in the compone
   }
 });
 
+test('V2 status components render every state in the component host', async () => {
+  const server = await createServer({
+    configFile: false,
+    root: join(root, 'playground/ui'),
+    server: { host: '127.0.0.1', port: 0, strictPort: true },
+  });
+  let browser;
+  try {
+    await server.listen();
+    browser = await chromium.launch({ headless: true });
+    const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
+    const errors = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    page.on('console', (message) => {
+      if (message.type() === 'error') errors.push(message.text());
+    });
+    const open = async (name, testId) => {
+      await page.goto(`${server.resolvedUrls.local[0]}#/${name}`);
+      await page.getByRole('heading', { level: 1, name, exact: true }).waitFor();
+      await page.getByTestId(testId).waitFor();
+    };
+    const role = (name) => page.locator('.theme-preview').evaluate((element, token) => getComputedStyle(element).getPropertyValue(token).trim(), `--cf-v2-${name}`);
+    const style = (id, property) => page.getByTestId(id).evaluate((element, key) => getComputedStyle(element)[key], property);
+
+    await open('ProgressV2', 'progress-linear');
+    assert.equal(await page.getByTestId('progress-linear').getAttribute('aria-valuenow'), '68');
+    assert.equal(await page.getByTestId('progress-linear-indeterminate').getAttribute('aria-valuenow'), null);
+    assert.equal(await style('progress-circular', 'width'), '70px');
+    assert.equal(await page.getByTestId('progress-success').getAttribute('data-status'), 'success');
+    assert.equal(await page.getByTestId('progress-segments').getByRole('progressbar').count(), 5);
+
+    await open('SkeletonV2', 'skeleton-text-sm');
+    assert.equal(await style('skeleton-text-sm', 'backgroundColor'), rgb(await role('surface-container-hover')));
+    assert.equal(await style('skeleton-rectangle-md', 'width'), '220px');
+    assert.equal(await style('skeleton-circle-md', 'height'), '48px');
+    assert.equal(await style('skeleton-pulse', 'animationName'), 'none');
+
+    await open('SnackbarV2', 'snackbar-success-compact');
+    assert.equal(await style('snackbar-success-compact', 'backgroundColor'), rgb(await role('surface-container')));
+    assert.equal(await style('snackbar-success-detailed', 'width'), '384px');
+    const stack = page.getByTestId('snackbar-stack');
+    await page.getByTestId('snackbar-add-error').click();
+    const alert = stack.getByRole('alert');
+    await alert.waitFor();
+    assert.equal(await page.evaluate(() => document.activeElement?.dataset.testid), 'snackbar-add-error');
+    await page.getByTestId('snackbar-placement').click();
+    assert.equal(await stack.getAttribute('data-placement'), 'bottom-end');
+    await alert.getByRole('button', { name: 'Dismiss' }).click();
+    await alert.waitFor({ state: 'hidden' });
+
+    await open('AvatarV2', 'avatar-lg-initials');
+    assert.equal(await style('avatar-lg-initials', 'width'), '56px');
+    await page.waitForFunction(() => document.querySelector('[data-testid="avatar-lg-image"]').dataset.content === 'image');
+    await page.waitForFunction(() => !document.querySelector('[data-testid="avatar-lg-broken"] img'));
+    assert.equal(await page.getByTestId('avatar-lg-broken').getAttribute('data-content'), 'initials');
+    assert.equal(await page.getByRole('img', { name: 'Ada, Available' }).count(), 1);
+    assert.equal(await page.getByTestId('avatar-group-lg').getByRole('img', { name: '3 more' }).count(), 1);
+
+    await page.setViewportSize({ width: 375, height: 800 });
+    for (const [name, testId] of [['ProgressV2', 'progress-linear'], ['SkeletonV2', 'skeleton-text-sm'], ['SnackbarV2', 'snackbar-success-compact'], ['AvatarV2', 'avatar-lg-initials']]) {
+      await open(name, testId);
+      assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), true, name);
+    }
+    assert.deepEqual(errors, []);
+  } finally {
+    await browser?.close();
+    await server.close();
+  }
+});
+
 test('ButtonV2 follows the Theme Engine across geometry, states and presets', async () => {
   const server = await createServer({
     configFile: false,

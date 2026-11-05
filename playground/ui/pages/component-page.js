@@ -5,10 +5,12 @@ import { FeedbackComparison } from './feedback-comparison.js';
 import { AlertV2Host, BadgeV2Host, CardV2Host, TabsV2Host } from './display-v2.js';
 import { CheckboxV2Host, SelectV2Host, SwitchV2Host, TextInputV2Host } from './form-controls-v2.js';
 import { DialogV2Host, DropdownMenuV2Host, PopoverV2Host, TooltipV2Host } from './overlays-v2.js';
+import { AvatarV2Host, ProgressV2Host, SkeletonV2Host, SnackbarV2Host } from './status-v2.js';
 
 const h = React.createElement;
 const customPages = {
   AlertV2: AlertV2Host,
+  AvatarV2: AvatarV2Host,
   BadgeV2: BadgeV2Host,
   ButtonV2: ButtonV2Host,
   CardV2: CardV2Host,
@@ -17,7 +19,10 @@ const customPages = {
   DropdownMenuV2: DropdownMenuV2Host,
   FeedbackStateV2: FeedbackComparison,
   PopoverV2: PopoverV2Host,
+  ProgressV2: ProgressV2Host,
   SelectV2: SelectV2Host,
+  SkeletonV2: SkeletonV2Host,
+  SnackbarV2: SnackbarV2Host,
   SwitchV2: SwitchV2Host,
   TabsV2: TabsV2Host,
   TextInputV2: TextInputV2Host,

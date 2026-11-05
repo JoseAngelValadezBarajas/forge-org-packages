@@ -16,21 +16,30 @@
     "DialogV2 without Escape or footer rejected",
     "interactive TooltipV2 content rejected",
     "unnamed or unanchored PopoverV2 rejected",
-    "unlabeled DropdownMenuV2 item and missing trigger rejected"
+    "unlabeled DropdownMenuV2 item and missing trigger rejected",
+    "unnamed, valueless or contradictory ProgressV2 rejected",
+    "untitled SnackbarV2 rejected",
+    "SkeletonV2 with content rejected",
+    "AvatarV2 without alt or status label rejected",
+    "unnamed AvatarGroupV2 rejected"
   ],
   "scopes": 13,
   "states": 312,
   "feedback": 52,
   "controls": 247,
   "display": 572,
-  "overlays": 338,
-  "checks": 1664,
+  "overlays": 339,
+  "status": 416,
+  "checks": 1846,
   "minimumText": 4.79,
   "minimumBoundary": 4.07,
   "minimumFocus": 6.43,
   "axeViolations": 0,
-  "axeRulesPassed": 28,
-  "openAxeRuns": 9,
+  "axeRulesPassed": 31,
+  "openAxeRuns": 12,
   "axeIncomplete": [],
+  "axeExcluded": [
+    "ProgressV2 ring value: text over an SVG, contrast measured by this certification"
+  ],
   "result": "passed"
 }

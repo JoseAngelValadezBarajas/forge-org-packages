@@ -40,6 +40,9 @@ const groups = {
     ['StatusChip', 'Communicate state at a glance.', '<StatusChip tone="success">Ready</StatusChip>'],
   ],
   Feedback: [
+    ['ProgressV2', 'Linear or circular progress with status.', '<ProgressV2 label="Processing" value={68} />'],
+    ['SkeletonV2', 'Neutral loading shapes for composing placeholders.', '<SkeletonV2 shape="rectangle" size="md" animation="pulse" />'],
+    ['SnackbarV2', 'Transient feedback that never steals focus.', '<SnackbarV2 tone="success" title="Changes saved" duration={null} />'],
     ['AlertV2', 'Contextual feedback with tones, actions and dismiss.', '<AlertV2 tone="info" variant="soft" title="New version" description="Reload to get the latest changes." />'],
     ['Alert', 'Contextual information that stays in view.', '<Alert tone="info" heading="Preview workspace" message="Changes in this demo stay on this page." />'],
     ['StatePanel', 'A unified V1 panel for content states.', '<StatePanel kind="readOnly" title="View-only workspace" description="You can review every project." />'],
@@ -53,6 +56,7 @@ const groups = {
     ['FeedbackStateV2', 'Four content states using scoped semantic colors.', '<FeedbackStateV2 state="empty" title="No projects yet" description="Create your first project." headingLevel={3} />'],
   ],
   'Data display': [
+    ['AvatarV2', 'An identity visual with image, initials and glyph fallback.', '<AvatarV2 alt="Ada Lovelace" initials="AL" size="lg" />'],
     ['RecordRow', 'A record, its metadata, and its current state.', '<RecordRow title="Atlas" metadata="Updated just now" status={<StatusChip tone="success">Ready</StatusChip>} />', '', ['StatusChip']],
     ['KeyValueRow', 'Readable pairs of labels and values.', '<KeyValueRow label="Environment" value="Development" />'],
     ['TableRow', 'Semantic cells for your own table composition.', '<table><caption>Projects</caption><tbody><TableRow cells={["Atlas", "Ready"]} /></tbody></table>'],

@@ -120,7 +120,7 @@ async function writeConsumer(directory) {
     extends: './tsconfig.json',
     include: ['src/negative.tsx'],
   }, null, 2)}\n`);
-  await writeFile(join(directory, 'src', 'negative.tsx'), `import { AlertV2, BadgeV2, ButtonV2, CardV2, CheckboxV2, DialogV2, DropdownMenuV2, PopoverV2, SelectV2, SwitchV2, TabsV2, TextInputV2, TooltipV2 } from '@corefoundry-labs/forge-ui';
+  await writeFile(join(directory, 'src', 'negative.tsx'), `import { AlertV2, AvatarGroupV2, AvatarV2, BadgeV2, ButtonV2, CardV2, CheckboxV2, DialogV2, DropdownMenuV2, PopoverV2, ProgressV2, SelectV2, SkeletonV2, SnackbarV2, SwitchV2, TabsV2, TextInputV2, TooltipV2 } from '@corefoundry-labs/forge-ui';
 export const missingName = <ButtonV2 iconStart={<svg />} />;
 export const unnamedCheckbox = <CheckboxV2 />;
 export const unnamedSwitch = <SwitchV2 />;
@@ -140,10 +140,18 @@ export const unnamedPopover = <PopoverV2 trigger={<button />} />;
 export const unanchoredPopover = <PopoverV2 title="Floating" />;
 export const unlabeledMenuItem = <DropdownMenuV2 trigger={<button />} items={[{ id: 'edit' }]} />;
 export const menuWithoutTrigger = <DropdownMenuV2 items={[]} />;
+export const unnamedProgress = <ProgressV2 value={5} />;
+export const progressWithoutValue = <ProgressV2 label="Loading" />;
+export const contradictoryProgress = <ProgressV2 label="Loading" indeterminate value={5} />;
+export const untitledSnackbar = <SnackbarV2 />;
+export const skeletonWithContent = <SkeletonV2>Loading</SkeletonV2>;
+export const avatarWithoutAlt = <AvatarV2 initials="CF" />;
+export const unlabeledStatus = <AvatarV2 alt="Ada" statusTone="success" />;
+export const unnamedAvatarGroup = <AvatarGroupV2><AvatarV2 alt="Ada" /></AvatarGroupV2>;
 `);
   await writeFile(join(directory, 'src', 'main.tsx'), `import { useRef, useState, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { AlertV2, BadgeV2, Button, ButtonV2, CardV2, CheckboxV2, DialogV2, DropdownMenuV2, FeedbackStateV2, PopoverV2, SelectV2, SwitchV2, TabsV2, TextInputV2, ThemeScope, TooltipV2, type DialogV2Props, type DialogV2Size, type DropdownMenuV2Density, type DropdownMenuV2Item, type DropdownMenuV2Props, type PopoverV2Props, type PopoverV2Width, type TooltipV2Placement, type TooltipV2Props, type AlertV2Props, type AlertV2Tone, type AlertV2Variant, type BadgeV2Props, type BadgeV2Tone, type BadgeV2Variant, type CardV2Props, type TabsV2Item, type TabsV2Props, type ButtonV2Props, type ButtonV2Size, type ButtonV2Variant, type CheckboxV2Props, type SelectV2Props, type SwitchV2Props, type TextInputV2Props } from '@corefoundry-labs/forge-ui';
+import { AlertV2, AvatarGroupV2, AvatarV2, BadgeV2, Button, ButtonV2, CardV2, CheckboxV2, DialogV2, DropdownMenuV2, FeedbackStateV2, PopoverV2, ProgressV2, SelectV2, SkeletonV2, SnackbarStackV2, SnackbarV2, SwitchV2, TabsV2, TextInputV2, ThemeScope, TooltipV2, type AvatarV2Size, type ProgressV2Status, type SkeletonV2Shape, type SkeletonV2Size, type SnackbarStackV2Placement, type SnackbarV2Density, type SnackbarV2Tone, type DialogV2Props, type DialogV2Size, type DropdownMenuV2Density, type DropdownMenuV2Item, type DropdownMenuV2Props, type PopoverV2Props, type PopoverV2Width, type TooltipV2Placement, type TooltipV2Props, type AlertV2Props, type AlertV2Tone, type AlertV2Variant, type BadgeV2Props, type BadgeV2Tone, type BadgeV2Variant, type CardV2Props, type TabsV2Item, type TabsV2Props, type ButtonV2Props, type ButtonV2Size, type ButtonV2Variant, type CheckboxV2Props, type SelectV2Props, type SwitchV2Props, type TextInputV2Props } from '@corefoundry-labs/forge-ui';
 import { Search } from '@corefoundry-labs/forge-icons';
 import { createTheme, presets, type ThemeMode } from '@corefoundry-labs/forge-tokens/theme-v2';
 
@@ -276,6 +284,56 @@ function Overlays({ id }: { id: string }) {
   </div>;
 }
 
+const portrait = 'data:image/svg+xml,' + encodeURIComponent('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 8 8"><rect width="8" height="8" fill="#808080"/></svg>');
+const brokenImage = 'data:image/png;base64,AAAA';
+const snackTones: SnackbarV2Tone[] = ['neutral', 'info', 'success', 'warning', 'error'];
+const snackDensities: SnackbarV2Density[] = ['compact', 'detailed'];
+const skeletonShapes: SkeletonV2Shape[] = ['text', 'rectangle', 'circle'];
+const skeletonSizes: SkeletonV2Size[] = ['sm', 'md'];
+const avatarSizes: AvatarV2Size[] = ['sm', 'md', 'lg'];
+const progressStatuses: ProgressV2Status[] = ['normal', 'success', 'error'];
+
+function Status({ id }: { id: string }) {
+  const [items, setItems] = useState<{ key: number; tone: SnackbarV2Tone; duration?: number }[]>([]);
+  const [placement, setPlacement] = useState<SnackbarStackV2Placement>('bottom-center');
+  const add = (tone: SnackbarV2Tone, duration?: number) => setItems((list) => [...list, { key: Date.now() + list.length, tone, duration }]);
+  return <div data-testid={id + '-status-overlays'} style={{ display: 'grid', gap: 8, maxWidth: 660 }}>
+    {progressStatuses.map((status) => <ProgressV2 key={status} label={'Progress ' + status} value={68} status={status} data-testid={id + '-progress-' + status} />)}
+    <ProgressV2 label="Ongoing work" indeterminate data-testid={id + '-progress-moving'} />
+    <ProgressV2 shape="circular" label="Ring" value={68} data-testid={id + '-ring'} />
+    <ProgressV2 shape="circular" label="Moving ring" indeterminate data-testid={id + '-ring-moving'} />
+    {skeletonShapes.flatMap((shape) => skeletonSizes.map((size) => <SkeletonV2 key={shape + size} shape={shape} size={size} data-testid={id + '-skeleton-' + shape + '-' + size} />))}
+    <SkeletonV2 animation="pulse" data-testid={id + '-skeleton-pulse'} />
+    <SkeletonV2 animation="wave" data-testid={id + '-skeleton-wave'} />
+    {snackTones.flatMap((tone) => snackDensities.map((density) => <SnackbarV2 key={tone + density} tone={tone} density={density} role="note" duration={null} title="Notification" description={density === 'detailed' ? 'Additional context.' : undefined} onDismiss={() => undefined} data-testid={id + '-snack-' + tone + '-' + density} />))}
+    <div style={{ overflow: 'hidden', height: 40, display: 'flex', gap: 8 }}>
+      <ButtonV2 size="sm" variant="secondary" data-testid={id + '-snack-timed'} onClick={() => add('success', 600)}>Timed</ButtonV2>
+      <ButtonV2 size="sm" variant="secondary" data-testid={id + '-snack-error'} onClick={() => add('error')}>Error</ButtonV2>
+      <ButtonV2 size="sm" variant="secondary" data-testid={id + '-snack-place'} onClick={() => setPlacement('bottom-end')}>End</ButtonV2>
+      <SnackbarStackV2 aria-label={'Notifications ' + id} placement={placement} data-testid={id + '-stack'}>
+        {items.map((item) => <SnackbarV2 key={item.key} tone={item.tone} duration={item.duration} title={'Snack ' + item.tone} onDismiss={() => setItems((list) => list.filter((entry) => entry.key !== item.key))} />)}
+      </SnackbarStackV2>
+    </div>
+    {avatarSizes.map((size) => <div key={size} style={{ display: 'flex', gap: 8 }}>
+      <AvatarV2 size={size} alt={'Initials ' + size} initials="CF" data-testid={id + '-avatar-' + size + '-initials'} />
+      <AvatarV2 size={size} alt={'Image ' + size} src={portrait} initials="CF" data-testid={id + '-avatar-' + size + '-image'} />
+      <AvatarV2 size={size} alt={'Fallback ' + size} data-testid={id + '-avatar-' + size + '-fallback'} />
+      <AvatarV2 size={size} alt={'Broken ' + size} src={brokenImage} initials="CF" data-testid={id + '-avatar-' + size + '-broken'} />
+      <AvatarV2 size={size} alt={'Broken glyph ' + size} src={brokenImage} data-testid={id + '-avatar-' + size + '-glyph'} />
+    </div>)}
+    <AvatarV2 size="lg" alt="Ada" initials="AL" statusTone="success" statusLabel="Available" data-testid={id + '-avatar-status'} />
+    <AvatarV2 size="lg" shape="rounded" alt="Rounded" initials="CF" data-testid={id + '-avatar-rounded'} />
+    <AvatarV2 alt="" initials="CF" data-testid={id + '-avatar-decorative'} />
+    <AvatarGroupV2 aria-label={id + ' team'} size="lg" max={3} data-testid={id + '-avatar-group'}>
+      <AvatarV2 alt="One" initials="A" />
+      <AvatarV2 alt="Two" initials="B" />
+      <AvatarV2 alt="Three" initials="C" />
+      <AvatarV2 alt="Four" initials="D" />
+      <AvatarV2 alt="Five" initials="E" />
+    </AvatarGroupV2>
+  </div>;
+}
+
 function Scope({ id }: { id: string }) {
   return <>
     {variants.map((variant) => <Counter key={variant} id={id + '-' + variant} variant={variant}>{variant + ' action'}</Counter>)}
@@ -288,6 +346,7 @@ function Scope({ id }: { id: string }) {
     <Controls id={id} />
     <Display id={id} />
     <Overlays id={id} />
+    <Status id={id} />
   </>;
 }
 
@@ -1236,11 +1295,222 @@ async function certifyOverlays(page, id, roles, geometry, report) {
   await page.evaluate(() => window.scrollTo(0, 0));
 }
 
+async function certifyStatus(page, id, roles, geometry, report) {
+  const part = (name) => page.getByTestId(`${id}-${name}`);
+  const style = (locator, property, pseudo) => locator.evaluate((element, [key, target]) => getComputedStyle(element, target)[key], [property, pseudo]);
+  const isActive = (locator) => locator.evaluate((element) => document.activeElement === element);
+  const box = (locator) => locator.evaluate((element) => {
+    const { left, top, right, bottom, width, height } = element.getBoundingClientRect();
+    return { left, top, right, bottom, width, height };
+  });
+  const surface = rgb(roles.surface);
+  const container = rgb(roles.surfaceContainer);
+  const ratio = (key, minimum, foreground, background, label) => {
+    const value = contrast(foreground, background);
+    report[key] = Math.min(report[key], value);
+    assert.ok(value >= minimum, `${id} ${label} ${value.toFixed(2)}`);
+    report.checks += 1;
+  };
+
+  for (const [status, role] of [['normal', 'actionPrimary'], ['success', 'success'], ['error', 'error']]) {
+    const bar = part(`progress-${status}`);
+    const track = bar.locator('> div').last();
+    const fill = track.locator('> div');
+    assert.equal(await bar.getAttribute('role'), 'progressbar');
+    assert.equal(await page.getByTestId(id).getByRole('progressbar', { name: `Progress ${status}` }).count(), 1, `${id} progress name`);
+    assert.equal(await bar.getAttribute('aria-valuenow'), '68');
+    assert.equal(await bar.getAttribute('aria-valuemin'), '0');
+    assert.equal(await bar.getAttribute('aria-valuemax'), '100');
+    assert.equal(await style(fill, 'backgroundColor'), rgb(roles[role]), `${id} progress ${status} fill`);
+    assert.equal(await style(track, 'backgroundColor'), container, `${id} progress track`);
+    assert.equal(await style(track, 'height'), '8px');
+    assert.equal(await style(track, 'borderTopLeftRadius'), '4px');
+    const [trackBox, fillBox] = [await box(track), await box(fill)];
+    assert.ok(Math.abs(fillBox.width / trackBox.width - 0.68) < 0.01, `${id} progress ${status} width`);
+    ratio('minimumBoundary', 3, rgb(roles[role]), container, `progress ${status} fill`);
+    report.status += 1;
+  }
+  const normal = part('progress-normal');
+  assert.equal(await style(normal.locator('span').first(), 'fontSize'), '12px');
+  assert.equal(await style(normal.locator('span').first(), 'color'), rgb(roles.onSurface), `${id} progress label`);
+  assert.equal(await style(normal.locator('span').last(), 'fontSize'), '11px');
+  ratio('minimumText', 4.5, blend(rgb(roles.onSurface), surface, Number(geometry.progress.valueOpacity)), surface, 'progress value');
+  assert.equal(await style(part('ring').locator('span'), 'color'), rgb(roles.onSurface), `${id} ring value`);
+  ratio('minimumText', 4.5, rgb(roles.onSurface), surface, 'ring value, which axe cannot measure over the SVG');
+  const moving = part('progress-moving');
+  assert.equal(await moving.getAttribute('aria-valuenow'), null, `${id} indeterminate has no value`);
+  assert.equal(await moving.getAttribute('aria-valuemax'), null);
+  assert.equal(await moving.locator('[class*="moving"]').evaluate((element) => getComputedStyle(element).animationName), 'none', `${id} reduced motion stops the bar`);
+  const ring = part('ring');
+  assert.equal(await style(ring, 'width'), '70px');
+  assert.equal(await style(ring, 'height'), '70px');
+  assert.equal(await style(ring.locator('circle').first(), 'stroke'), container, `${id} ring track`);
+  assert.equal(await style(ring.locator('circle').last(), 'stroke'), rgb(roles.actionPrimary), `${id} ring arc`);
+  assert.equal(await style(ring.locator('circle').last(), 'strokeWidth'), '7px');
+  assert.equal(await ring.locator('circle').last().getAttribute('stroke-dasharray'), '68 100');
+  assert.equal(await style(ring.locator('span'), 'fontSize'), '16px');
+  assert.equal(await style(ring.locator('span'), 'fontWeight'), '700');
+  assert.equal(await ring.locator('span').textContent(), '68%');
+  assert.equal(await part('ring-moving').getAttribute('aria-valuenow'), null);
+  assert.equal(await part('ring-moving').locator('[class*="spin"]').evaluate((element) => getComputedStyle(element).animationName), 'none', `${id} reduced motion stops the ring`);
+  report.status += 2;
+
+  for (const [shape, size, width, height, radius] of [
+    ['text', 'sm', '140px', '10px', '5px'],
+    ['text', 'md', '200px', '12px', '6px'],
+    ['rectangle', 'sm', '145px', '64px', '9px'],
+    ['rectangle', 'md', '220px', '94px', '9px'],
+    ['circle', 'sm', '32px', '32px', '50%'],
+    ['circle', 'md', '48px', '48px', '50%'],
+  ]) {
+    const skeleton = part(`skeleton-${shape}-${size}`);
+    assert.equal(await style(skeleton, 'width'), width, `${id} skeleton ${shape} ${size} width`);
+    assert.equal(await style(skeleton, 'height'), height, `${id} skeleton ${shape} ${size} height`);
+    assert.equal(await style(skeleton, 'borderTopLeftRadius'), radius, `${id} skeleton ${shape} ${size} radius`);
+    assert.equal(await style(skeleton, 'backgroundColor'), rgb(roles.surfaceContainerHover), `${id} skeleton fill`);
+    assert.equal(await skeleton.getAttribute('aria-hidden'), 'true');
+    assert.equal(await skeleton.evaluate((element) => element.tabIndex), -1);
+    report.status += 1;
+  }
+  assert.equal(await style(part('skeleton-pulse'), 'animationName'), 'none', `${id} reduced motion stops pulse`);
+  assert.equal(await style(part('skeleton-wave'), 'animationName', '::after'), 'none', `${id} reduced motion stops wave`);
+
+  for (const [tone, role] of [['neutral', 'onSurface'], ['info', 'info'], ['success', 'success'], ['warning', 'warning'], ['error', 'error']]) {
+    for (const [density, width, height] of [['compact', '334px', '62px'], ['detailed', '384px', '88px']]) {
+      const snack = part(`snack-${tone}-${density}`);
+      assert.equal(await style(snack, 'backgroundColor'), container, `${id} snackbar fill`);
+      assert.equal(await style(snack, 'color'), rgb(roles.onSurface));
+      assert.equal(await style(snack, 'borderTopColor'), rgb(roles.outline));
+      assert.equal(await style(snack, 'borderTopLeftRadius'), '12px');
+      assert.equal(await style(snack, 'width'), width, `${id} snackbar ${density} width`);
+      assert.equal(await style(snack, 'minHeight'), height, `${id} snackbar ${density} height`);
+      assert.equal(await style(snack, 'paddingLeft'), '14px');
+      assert.equal(await style(snack, 'paddingRight'), '12px');
+      const indicator = snack.locator('> span').first();
+      assert.equal(await style(indicator, 'backgroundColor'), rgb(roles[role]), `${id} snackbar ${tone} indicator`);
+      assert.equal(await style(indicator, 'width'), '16px');
+      assert.equal(await indicator.getAttribute('aria-hidden'), 'true');
+      report.status += 1;
+    }
+    ratio('minimumBoundary', 3, rgb(roles[role]), container, `snackbar ${tone} indicator`);
+  }
+  const specimen = part('snack-info-detailed');
+  assert.equal(await style(specimen.getByText('Notification'), 'fontSize'), '13px');
+  assert.equal(await style(specimen.getByText('Notification'), 'fontWeight'), '700');
+  assert.equal(await style(specimen.getByText('Additional context.'), 'fontSize'), '11px');
+  ratio('minimumText', 4.5, blend(rgb(roles.onSurface), container, Number(geometry.snackbar.descriptionOpacity)), container, 'snackbar description');
+  assert.equal(await style(specimen.getByRole('button', { name: 'Dismiss' }), 'width'), '32px', `${id} dismiss target`);
+
+  const stack = part('stack');
+  const timed = part('snack-timed');
+  const failed = part('snack-error');
+  assert.equal(await stack.evaluate((element) => element.matches(':popover-open')), true, `${id} stack top layer`);
+  assert.equal(await stack.getAttribute('role'), 'region');
+
+  await timed.focus();
+  await page.keyboard.press('Enter');
+  const toast = stack.getByRole('status');
+  await toast.waitFor();
+  assert.equal(await isActive(timed), true, `${id} snackbar must not steal focus`);
+  assert.equal(await style(toast, 'backgroundColor'), container, `${id} stack inherits its theme scope`);
+  await toast.hover();
+  await page.waitForTimeout(800);
+  assert.equal(await toast.isVisible(), true, `${id} hover pauses the timer`);
+  assert.equal(await toast.getAttribute('data-paused'), 'true');
+  await page.mouse.move(0, 0);
+  await toast.waitFor({ state: 'hidden', timeout: 2000 });
+
+  await page.keyboard.press('Enter');
+  await toast.waitFor();
+  await page.keyboard.press('Tab');
+  await page.keyboard.press('Tab');
+  await page.keyboard.press('Tab');
+  const close = toast.getByRole('button', { name: 'Dismiss' });
+  assert.equal(await isActive(close), true, `${id} dismiss is reachable with Tab`);
+  await page.waitForTimeout(800);
+  assert.equal(await toast.isVisible(), true, `${id} focus pauses the timer`);
+  const focusStyle = await close.evaluate((element) => { const css = getComputedStyle(element); return [css.outlineStyle, css.outlineWidth, css.outlineColor]; });
+  assert.deepEqual(focusStyle, ['solid', '2px', rgb(roles.focusRing)], `${id} dismiss focus`);
+  await page.keyboard.press('Enter');
+  await toast.waitFor({ state: 'hidden' });
+  assert.equal(await page.evaluate(() => document.activeElement !== document.body), true, `${id} closing keeps focus in the page`);
+
+  await failed.focus();
+  await page.keyboard.press('Enter');
+  const alert = stack.getByRole('alert');
+  await alert.waitFor();
+  await timed.focus();
+  await page.keyboard.press('Enter');
+  await toast.waitFor();
+  await page.waitForTimeout(800);
+  if (id === 'default') await page.waitForTimeout(5300);
+  assert.equal(await alert.isVisible(), true, `${id} errors stay until dismissed`);
+  assert.equal(await toast.isVisible(), false, `${id} the timed one left on its own`);
+  const [alertBox, viewport] = [await box(alert), await page.evaluate(() => ({ width: document.documentElement.clientWidth, height: window.innerHeight }))];
+  assert.ok(Math.abs(viewport.height - 16 - alertBox.bottom) < 1, `${id} stack bottom gutter`);
+  assert.ok(Math.abs((alertBox.left + alertBox.right) / 2 - viewport.width / 2) < 1, `${id} stack centered`);
+  assert.equal(await alert.evaluate((element) => { const { left, top, width, height } = element.getBoundingClientRect(); return element.contains(document.elementFromPoint(left + width / 2, top + height / 2)); }), true, `${id} stack escapes overflow hidden`);
+  await part('snack-place').focus();
+  await page.keyboard.press('Enter');
+  assert.ok(Math.abs(viewport.width - 16 - (await box(alert)).right) < 1, `${id} stack end gutter`);
+  await alert.getByRole('button', { name: 'Dismiss' }).click();
+  await alert.waitFor({ state: 'hidden' });
+  report.status += 5;
+
+  for (const [size, width, font] of [['sm', '32px', '11px'], ['md', '40px', '13px'], ['lg', '56px', '17px']]) {
+    const initials = part(`avatar-${size}-initials`);
+    assert.equal(await style(initials, 'width'), width, `${id} avatar ${size}`);
+    assert.equal(await style(initials, 'height'), width);
+    assert.equal(await style(initials, 'fontSize'), font);
+    assert.equal(await style(initials, 'fontWeight'), '700');
+    const inner = initials.locator('> span').first();
+    assert.equal(await style(inner, 'backgroundColor'), rgb(roles.primaryContainer), `${id} avatar fill`);
+    assert.equal(await style(inner, 'color'), rgb(roles.onPrimaryContainer), `${id} avatar text`);
+    assert.equal(await style(inner, 'borderTopLeftRadius'), '50%');
+    const image = part(`avatar-${size}-image`);
+    await page.waitForFunction((target) => document.querySelector(`[data-testid="${target}"]`).dataset.content === 'image', `${id}-avatar-${size}-image`);
+    assert.equal(await style(image.locator('img'), 'objectFit'), 'cover', `${id} avatar crop`);
+    assert.equal(await style(image.locator('img'), 'opacity'), '1');
+    assert.equal(await image.locator('img').getAttribute('alt'), '', `${id} inner image stays decorative`);
+    assert.equal(await part(`avatar-${size}-fallback`).getAttribute('data-content'), 'fallback');
+    assert.equal(await part(`avatar-${size}-fallback`).locator('svg').count(), 1);
+    const broken = part(`avatar-${size}-broken`);
+    await page.waitForFunction((target) => !document.querySelector(`[data-testid="${target}"] img`), `${id}-avatar-${size}-broken`);
+    assert.equal(await broken.getAttribute('data-content'), 'initials', `${id} failed image shows initials`);
+    await page.waitForFunction((target) => !document.querySelector(`[data-testid="${target}"] img`), `${id}-avatar-${size}-glyph`);
+    assert.equal(await part(`avatar-${size}-glyph`).getAttribute('data-content'), 'fallback', `${id} failed image without initials shows the glyph`);
+    report.status += 1;
+  }
+  ratio('minimumText', 4.5, rgb(roles.onPrimaryContainer), rgb(roles.primaryContainer), 'avatar initials');
+  assert.equal(await page.getByTestId(id).getByRole('img', { name: 'Ada, Available' }).count(), 1, `${id} status is part of the name`);
+  const dot = part('avatar-status').locator('[data-status]');
+  assert.equal(await style(dot, 'backgroundColor'), rgb(roles.success), `${id} status dot`);
+  assert.equal(await style(dot, 'width'), '11px');
+  assert.equal(await style(dot, 'borderTopColor'), surface, `${id} status dot ring`);
+  ratio('minimumBoundary', 3, rgb(roles.success), surface, 'status dot');
+  assert.equal(await style(part('avatar-rounded').locator('> span').first(), 'borderTopLeftRadius'), '12px', `${id} rounded avatar`);
+  assert.equal(await part('avatar-decorative').getAttribute('aria-hidden'), 'true', `${id} decorative avatar`);
+  const group = part('avatar-group');
+  assert.equal(await page.getByTestId(id).getByRole('group', { name: `${id} team` }).count(), 1, `${id} group name`);
+  const members = group.locator('> *');
+  assert.equal(await members.count(), 4, `${id} group collapses to max plus a count`);
+  const [first, second] = [await box(members.nth(0)), await box(members.nth(1))];
+  assert.ok(Math.abs(first.right - second.left - 14) < 1, `${id} group overlap`);
+  assert.equal(await style(members.nth(1), 'outlineColor'), surface, `${id} group ring`);
+  const count = group.getByRole('img', { name: '2 more' });
+  assert.equal(await count.textContent(), '+2');
+  assert.equal(await style(count, 'backgroundColor'), rgb(roles.surfaceContainerHover), `${id} count fill`);
+  assert.equal(await style(count, 'fontSize'), '14px');
+  ratio('minimumText', 4.5, rgb(roles.onSurface), rgb(roles.surfaceContainerHover), 'avatar count');
+  report.status += 3;
+  await page.evaluate(() => window.scrollTo(0, 0));
+}
+
 async function certifyBrowser(url, directory, evidence) {
   const engine = await import(pathToFileURL(join(directory, 'node_modules/@corefoundry-labs/forge-tokens/dist/theme-v2/index.js')).href);
   const axeSource = readFileSync(join(directory, 'node_modules/axe-core/axe.min.js'), 'utf8');
   const browser = await chromium.launch({ headless: true });
-  const report = { scopes: 0, states: 0, feedback: 0, controls: 0, display: 0, overlays: 0, checks: 0, minimumText: Infinity, minimumBoundary: Infinity, minimumFocus: Infinity, axeViolations: 0, axeRulesPassed: 0 };
+  const report = { scopes: 0, states: 0, feedback: 0, controls: 0, display: 0, overlays: 0, status: 0, checks: 0, minimumText: Infinity, minimumBoundary: Infinity, minimumFocus: Infinity, axeViolations: 0, axeRulesPassed: 0 };
   try {
     const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, reducedMotion: 'reduce' });
     const page = await context.newPage();
@@ -1298,7 +1568,7 @@ async function certifyBrowser(url, directory, evidence) {
 
     const body = await page.evaluate(() => getComputedStyle(document.body).fontFamily);
     assert.equal(await style('size-md', 'fontFamily'), body, 'ButtonV2 must inherit the consumer font family');
-    for (const id of ['text-md', 'select-md', 'typed-card', 'typed-badge', 'typed-alert', 'typed-tabs']) assert.equal(await style(id, 'fontFamily'), body, `${id} must inherit the consumer font family`);
+    for (const id of ['text-md', 'select-md', 'typed-card', 'typed-badge', 'typed-alert', 'typed-tabs', 'default-progress-normal', 'default-snack-info-compact', 'default-avatar-md-initials']) assert.equal(await style(id, 'fontFamily'), body, `${id} must inherit the consumer font family`);
 
     assert.equal(await page.locator('html').evaluate((element) => getComputedStyle(element).colorScheme), 'light', 'V2 stylesheet must not override the V1 color scheme');
     assert.equal(await style('v1-button', 'backgroundColor'), rgb(await page.locator('html').evaluate((element) => getComputedStyle(element).getPropertyValue('--forge-accent').trim())), 'V1 Button color changed');
@@ -1307,6 +1577,7 @@ async function certifyBrowser(url, directory, evidence) {
     await certifyControls(page, 'default', engine.createTheme(engine.presets.forge).roles, engine.geometry, report);
     await certifyDisplay(page, 'default', engine.createTheme(engine.presets.forge).roles, engine.geometry, report);
     await certifyOverlays(page, 'default', engine.createTheme(engine.presets.forge).roles, engine.geometry, report);
+    await certifyStatus(page, 'default', engine.createTheme(engine.presets.forge).roles, engine.geometry, report);
     report.scopes += 1;
     for (const preset of presets) {
       for (const mode of modes) {
@@ -1315,6 +1586,7 @@ async function certifyBrowser(url, directory, evidence) {
         await certifyControls(page, `${preset}-${mode}`, roles, engine.geometry, report);
         await certifyDisplay(page, `${preset}-${mode}`, roles, engine.geometry, report);
         await certifyOverlays(page, `${preset}-${mode}`, roles, engine.geometry, report);
+        await certifyStatus(page, `${preset}-${mode}`, roles, engine.geometry, report);
         report.scopes += 1;
       }
     }
@@ -1338,9 +1610,19 @@ async function certifyBrowser(url, directory, evidence) {
         await page.getByTestId(`${scope}-${panel}`).waitFor({ state: 'hidden' });
         report.openAxeRuns = (report.openAxeRuns ?? 0) + 1;
       }
+      await page.getByTestId(`${scope}-snack-error`).focus();
+      await page.keyboard.press('Enter');
+      const stack = page.getByTestId(`${scope}-stack`);
+      await stack.getByRole('alert').waitFor();
+      const result = await openAxe(`${scope}-stack`);
+      assert.deepEqual(result.violations, [], `axe found violations in the ${scope} stack`);
+      assert.deepEqual(result.incomplete, [], `axe could not resolve the ${scope} stack`);
+      await stack.getByRole('button', { name: 'Dismiss' }).click();
+      await stack.getByRole('alert').waitFor({ state: 'hidden' });
+      report.openAxeRuns += 1;
     }
     const axe = await page.evaluate(async () => {
-      const result = await window.axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'] } });
+      const result = await window.axe.run({ exclude: [['[data-shape="circular"] > span']] }, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'] } });
       return {
         passes: result.passes.map((rule) => rule.id),
         incomplete: result.incomplete.map((rule) => ({
@@ -1354,6 +1636,7 @@ async function certifyBrowser(url, directory, evidence) {
     report.axeViolations = axe.violations.length;
     report.axeRulesPassed = axe.passes.length;
     report.axeIncomplete = axe.incomplete;
+    report.axeExcluded = ['ProgressV2 ring value: text over an SVG, contrast measured by this certification'];
     assert.deepEqual(axe.violations, [], 'axe found WCAG violations');
     assert.deepEqual(axe.incomplete, [], 'axe could not resolve every rule');
     assert.ok(axe.passes.includes('color-contrast'), 'axe must evaluate color contrast');
@@ -1368,6 +1651,13 @@ async function certifyBrowser(url, directory, evidence) {
     assert.equal(await inside('size-dialog-lg'), true, 'a large dialog keeps its gutters at 375px');
     await page.keyboard.press('Escape');
     await page.getByTestId('size-dialog-lg').waitFor({ state: 'hidden' });
+    await page.getByTestId('default-snack-error').focus();
+    await page.keyboard.press('Enter');
+    const narrow = page.getByTestId('default-stack').getByRole('alert');
+    await narrow.waitFor();
+    assert.equal(await narrow.evaluate((element) => { const { left, right } = element.getBoundingClientRect(); return left >= 16 && right <= document.documentElement.clientWidth - 16; }), true, 'a snackbar keeps its gutters at 375px');
+    await narrow.getByRole('button', { name: 'Dismiss' }).click();
+    await narrow.waitFor({ state: 'hidden' });
     for (const id of ['width-regular', 'density-comfortable']) {
       await page.getByTestId(`${id}-trigger`).click();
       await page.getByTestId(id).waitFor();
@@ -1390,6 +1680,12 @@ async function certifyBrowser(url, directory, evidence) {
     await animated.goto(url);
     await animated.getByTestId('default-primary-loading').waitFor();
     assert.notEqual(await animated.getByTestId('default-primary-loading').locator('[data-button-spinner]').evaluate((element) => getComputedStyle(element).animationName), 'none', 'spinner must animate by default');
+    const motionName = (id, selector, pseudo) => animated.getByTestId(id).evaluate((element, [target, part]) => getComputedStyle(target ? element.querySelector(target) : element, part).animationName, [selector, pseudo]);
+    assert.notEqual(await motionName('default-progress-moving', '[class*="moving"]'), 'none', 'indeterminate bar must animate by default');
+    assert.notEqual(await motionName('default-ring-moving', '[class*="spin"]'), 'none', 'indeterminate ring must animate by default');
+    assert.notEqual(await motionName('default-skeleton-pulse'), 'none', 'pulse must animate when requested');
+    assert.notEqual(await motionName('default-skeleton-wave', undefined, '::after'), 'none', 'wave must animate when requested');
+    assert.equal(await motionName('default-skeleton-text-sm'), 'none', 'skeleton motion is opt-in');
   } finally {
     await browser.close();
   }
@@ -1411,7 +1707,7 @@ export async function runV2ConsumerCertification({ evidence = false } = {}) {
     run(process.execPath, [tsc, '--project', 'tsconfig.json'], consumer);
     const negative = spawnSync(process.execPath, [tsc, '--project', 'tsconfig.negative.json'], { cwd: consumer, encoding: 'utf8' });
     assert.notEqual(negative.status, 0, 'the negative consumer must not compile');
-    for (const line of [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]) {
+    for (const line of [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28]) {
       assert.ok(`${negative.stdout}${negative.stderr}`.includes(`negative.tsx(${line},`), `negative.tsx line ${line} must be rejected`);
     }
 
@@ -1426,7 +1722,7 @@ export async function runV2ConsumerCertification({ evidence = false } = {}) {
       version,
       installedFrom: 'npm pack tarballs, no workspace links',
       production: 'vite build + vite preview in Chromium',
-      typeChecks: ['strict consumer compiled', 'icon-only ButtonV2 without aria-label rejected', 'unnamed CheckboxV2 and SwitchV2 rejected', 'numeric TextInputV2 size rejected', 'SelectV2 multiple rejected', 'static CardV2 with onClick, disabled, href or as button rejected', 'empty AlertV2 rejected', 'unnamed TabsV2 rejected', 'unknown BadgeV2 tone rejected', 'untitled DialogV2 rejected', 'DialogV2 without Escape or footer rejected', 'interactive TooltipV2 content rejected', 'unnamed or unanchored PopoverV2 rejected', 'unlabeled DropdownMenuV2 item and missing trigger rejected'],
+      typeChecks: ['strict consumer compiled', 'icon-only ButtonV2 without aria-label rejected', 'unnamed CheckboxV2 and SwitchV2 rejected', 'numeric TextInputV2 size rejected', 'SelectV2 multiple rejected', 'static CardV2 with onClick, disabled, href or as button rejected', 'empty AlertV2 rejected', 'unnamed TabsV2 rejected', 'unknown BadgeV2 tone rejected', 'untitled DialogV2 rejected', 'DialogV2 without Escape or footer rejected', 'interactive TooltipV2 content rejected', 'unnamed or unanchored PopoverV2 rejected', 'unlabeled DropdownMenuV2 item and missing trigger rejected', 'unnamed, valueless or contradictory ProgressV2 rejected', 'untitled SnackbarV2 rejected', 'SkeletonV2 with content rejected', 'AvatarV2 without alt or status label rejected', 'unnamed AvatarGroupV2 rejected'],
       ...report,
       minimumText: Number(report.minimumText.toFixed(2)),
       minimumBoundary: Number(report.minimumBoundary.toFixed(2)),

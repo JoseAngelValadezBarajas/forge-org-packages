@@ -45,7 +45,7 @@ export function chain<E>(...handlers: (((event: E) => void) | undefined)[]) {
   };
 }
 
-function useLatest<T>(value: T) {
+export function useLatest<T>(value: T) {
   const latest = useRef(value);
   useLayoutEffect(() => {
     latest.current = value;

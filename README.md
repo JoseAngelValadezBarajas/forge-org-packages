@@ -67,8 +67,10 @@ scoped color tokens without changing the existing V1 theme. Run
 
 [`ButtonV2`](docs/design-system/button-v2.md), the
 [V2 form controls](docs/design-system/form-controls-v2.md), the
-[V2 display components](docs/design-system/display-components-v2.md), and the
-[V2 overlays](docs/design-system/overlays-v2.md) are built on it.
+[V2 display components](docs/design-system/display-components-v2.md), the
+[V2 overlays](docs/design-system/overlays-v2.md), and the
+[V2 feedback and identity components](docs/design-system/feedback-identity-v2.md)
+are built on it.
 Run `npm run playground:ui` to review components against the engine, and
 `npm run check:v2-consumer` to certify the V2 packages from their packed
 tarballs in an external React project.

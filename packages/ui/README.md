@@ -74,6 +74,19 @@ import { ButtonV2, DialogV2, DropdownMenuV2, PopoverV2, TooltipV2 } from '@coref
 <DropdownMenuV2 trigger={<ButtonV2>More actions</ButtonV2>} items={[{ id: 'edit', label: 'Edit', onSelect: edit }]} />;
 ```
 
+`ProgressV2`, `SkeletonV2`, `SnackbarV2`, and `AvatarV2` cover loading, transient feedback, and identity. A snackbar never takes focus, and the parent owns the list.
+
+```tsx
+import { AvatarV2, ProgressV2, SkeletonV2, SnackbarStackV2, SnackbarV2 } from '@corefoundry-labs/forge-ui';
+
+<ProgressV2 label="Uploading" value={68} />;
+<SkeletonV2 shape="rectangle" size="md" animation="pulse" />;
+<SnackbarStackV2>
+  {items.map((item) => <SnackbarV2 key={item.id} tone="success" title={item.title} onDismiss={() => remove(item.id)} />)}
+</SnackbarStackV2>;
+<AvatarV2 alt="Ada Lovelace" src={photo} initials="AL" size="lg" />;
+```
+
 Preview the V2 components, the V1 components, and `FeedbackStateV2` locally with `npm run playground:ui` from the repository root. The host lets you change the preset, mode, and primary seed within the preview. The preview documents package rendering; it is not a human Figma certification.
 
 Build and test this package independently from the repository root with `npm run build --workspace=@corefoundry-labs/forge-ui` and `npm test --workspace=@corefoundry-labs/forge-ui`.

@@ -221,6 +221,7 @@ body {
 
 .button-section {
   display: grid;
+  grid-template-columns: minmax(0, 1fr);
   gap: 12px;
   min-width: 0;
 }
@@ -563,4 +564,48 @@ body {
   padding: 12px;
   border: 1px dashed var(--cf-v2-outline);
   border-radius: 8px;
+}
+
+.status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(240px, 100%), 1fr));
+  gap: 20px;
+  align-items: start;
+}
+
+.skeleton-card,
+.skeleton-rows {
+  display: grid;
+  gap: 12px;
+  min-width: 0;
+}
+
+.skeleton-row {
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  min-width: 0;
+}
+
+.skeleton-lines {
+  display: grid;
+  gap: 9px;
+  min-width: 0;
+}
+
+.segmented {
+  display: grid;
+  gap: 10px;
+}
+
+.segmented-track {
+  display: flex;
+  gap: 8px;
+}
+
+.avatar-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
 }
