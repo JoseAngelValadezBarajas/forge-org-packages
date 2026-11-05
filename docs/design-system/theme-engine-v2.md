@@ -133,6 +133,16 @@ A fill keeps one foreground across its states. `validateTheme` enforces:
 Disabled and focus treatments are not part of these roles. Focus keeps using
 `focusRing`, and loading reuses the rest roles with `aria-busy`.
 
+## Status roles
+
+`success`, `warning`, and `info` have the foregrounds `onSuccess`, `onWarning`, and
+`onInfo`. `validateTheme` enforces:
+
+- **Text on status fills:** each foreground reaches 4.5:1 on its fill.
+- **Tones as text:** `actionPrimary`, `error`, `warning`, `success`, and `info`
+  reach 4.5:1 on `surfaceContainer`, and `actionPrimary` also on
+  `surfaceContainerHover`.
+
 ## Component geometry
 
 Geometry is theme-independent, so it is not a theme role. It belongs to V2 and
@@ -141,8 +151,10 @@ stays out of the V1 `tokens.css` and `tokens.json`. The `geometry` export of
 `@corefoundry-labs/forge-tokens/theme-v2/tokens.css` distributes it on `:root` as
 `--cf-v2-button-*` variables, plus `--cf-v2-field-*`, `--cf-v2-select-*`,
 `--cf-v2-selection-*`, `--cf-v2-checkbox-*`, and `--cf-v2-switch-*` for the
-[form controls](form-controls-v2.md). The table under Default theme lists the
-button variables.
+[form controls](form-controls-v2.md), and `--cf-v2-card-*`, `--cf-v2-badge-*`,
+`--cf-v2-tabs-*`, and `--cf-v2-alert-*` for the
+[display components](display-components-v2.md). The table under Default theme
+lists the button variables.
 
 ## Default theme
 

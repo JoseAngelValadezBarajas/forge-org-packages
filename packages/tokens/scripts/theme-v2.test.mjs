@@ -62,6 +62,19 @@ function assertInteractionContract(theme, label) {
   }
 }
 
+test('status roles carry a foreground and read as text on neutral containers', () => {
+  for (const preset of Object.values(presets)) for (const mode of ['light', 'dark', 'high-contrast']) {
+    const { roles } = createTheme({ ...preset, mode });
+    const label = `${preset.name} ${mode}`;
+    for (const [fill, on] of [['success', 'onSuccess'], ['warning', 'onWarning'], ['info', 'onInfo']]) {
+      assert.ok(contrastRatio(roles[on], roles[fill]) >= 4.5, `${label}: ${on} on ${fill}`);
+    }
+    for (const tone of ['actionPrimary', 'error', 'warning', 'success', 'info']) {
+      assert.ok(contrastRatio(roles[tone], roles.surfaceContainer) >= 4.5, `${label}: ${tone} on surfaceContainer`);
+    }
+  }
+});
+
 test('interaction roles keep their contrast contract in every preset and mode', () => {
   for (const preset of Object.values(presets)) for (const mode of ['light', 'dark', 'high-contrast']) {
     assertInteractionContract(createTheme({ ...preset, mode }), `${preset.name} ${mode}`);
@@ -105,6 +118,7 @@ test('the validator rejects interaction roles that break the contract', () => {
     return validateTheme(theme);
   };
   assert.match(broken('onError', (roles) => roles.error).errors.join(' '), /onError on error/);
+  assert.match(broken('onInfo', (roles) => roles.info).errors.join(' '), /onInfo on info/);
   assert.match(broken('actionPrimaryHover', (roles) => roles.actionPrimary).errors.join(' '), /actionPrimaryHover on actionPrimary/);
   assert.match(broken('surfaceContainerPressed', (roles) => roles.onSurface).errors.join(' '), /onSurface on surfaceContainerPressed/);
   assert.match(broken('errorPressed', () => '').errors.join(' '), /errorPressed/);
@@ -146,7 +160,7 @@ test('V2 geometry matches the ButtonV2 contract and ships in its own stylesheet'
   for (const [name, value] of [['height-sm', '32px'], ['height-md', '40px'], ['height-lg', '48px'], ['padding-sm', '12px'], ['padding-md', '16px'], ['padding-lg', '20px'], ['radius', '10px'], ['gap', '8px'], ['font-size-sm', '12px'], ['font-size-md', '14px'], ['font-size-lg', '16px'], ['font-weight', '500'], ['icon-size', '16px'], ['focus-width', '2px'], ['focus-offset', '3px'], ['border-width', '1px'], ['spinner-width', '2px'], ['spinner-duration', '800ms'], ['transition-duration', '120ms'], ['disabled-opacity', '0.7'], ['disabled-content-opacity', '0.68']]) {
     assert.ok(css.includes(`--cf-v2-button-${name}: ${value};`), name);
   }
-  for (const [name, value] of [['field-height-sm', '32px'], ['field-height-md', '40px'], ['field-height-lg', '48px'], ['field-padding', '12px'], ['field-radius', '10px'], ['field-gap', '8px'], ['field-state-border-width', '2px'], ['select-icon-size', '16px'], ['selection-target-size', '44px'], ['checkbox-size', '20px'], ['checkbox-radius', '5px'], ['switch-width', '44px'], ['switch-height', '26px'], ['switch-thumb-size', '18px'], ['switch-thumb-offset-on', '22px']]) {
+  for (const [name, value] of [['field-height-sm', '32px'], ['field-height-md', '40px'], ['field-height-lg', '48px'], ['field-padding', '12px'], ['field-radius', '10px'], ['field-gap', '8px'], ['field-state-border-width', '2px'], ['select-icon-size', '16px'], ['selection-target-size', '44px'], ['checkbox-size', '20px'], ['checkbox-radius', '5px'], ['switch-width', '44px'], ['switch-height', '26px'], ['switch-thumb-size', '18px'], ['switch-thumb-offset-on', '22px'], ['card-padding', '20px'], ['card-radius', '14px'], ['card-gap', '12px'], ['badge-padding', '10px'], ['badge-radius', '999px'], ['badge-height-md', '30px'], ['tabs-gap', '8px'], ['tabs-height-md', '44px'], ['tabs-indicator-height', '3px'], ['alert-padding', '16px'], ['alert-radius', '12px'], ['alert-icon-size', '26px']]) {
     assert.ok(css.includes(`--cf-v2-${name}: ${value};`), name);
   }
   const manifest = JSON.parse(await readFile(resolve(packageRoot, 'package.json'), 'utf8'));

@@ -51,6 +51,18 @@ import { CheckboxV2, SelectV2, SwitchV2, TextInputV2 } from '@corefoundry-labs/f
 <SwitchV2 checked={enabled} onChange={toggle}>Notifications</SwitchV2>;
 ```
 
+`CardV2`, `BadgeV2`, `TabsV2`, and `AlertV2` are the V2 display components. Only an interactive `CardV2` is an action, and `TabsV2` requires an accessible name.
+
+```tsx
+import { AlertV2, BadgeV2, CardV2, TabsV2 } from '@corefoundry-labs/forge-ui';
+
+<CardV2 variant="outlined" header="Atlas" footer="Updated today">A home for your next idea.</CardV2>;
+<CardV2 variant="interactive" header="Open Atlas" onClick={open} />;
+<BadgeV2 tone="success" variant="subtle" size="md">Completed</BadgeV2>;
+<TabsV2 aria-label="Project views" items={items} value={view} onValueChange={setView} />;
+<AlertV2 tone="error" title="Could not save" description="Try again." onDismiss={close} />;
+```
+
 Preview the V2 components, the V1 components, and `FeedbackStateV2` locally with `npm run playground:ui` from the repository root. The host lets you change the preset, mode, and primary seed within the preview. The preview documents package rendering; it is not a human Figma certification.
 
 Build and test this package independently from the repository root with `npm run build --workspace=@corefoundry-labs/forge-ui` and `npm test --workspace=@corefoundry-labs/forge-ui`.

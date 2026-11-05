@@ -2,15 +2,20 @@ import React from 'react';
 import { Demo } from '../demos.js';
 import { ButtonV2Host } from './button-v2.js';
 import { FeedbackComparison } from './feedback-comparison.js';
+import { AlertV2Host, BadgeV2Host, CardV2Host, TabsV2Host } from './display-v2.js';
 import { CheckboxV2Host, SelectV2Host, SwitchV2Host, TextInputV2Host } from './form-controls-v2.js';
 
 const h = React.createElement;
 const customPages = {
+  AlertV2: AlertV2Host,
+  BadgeV2: BadgeV2Host,
   ButtonV2: ButtonV2Host,
+  CardV2: CardV2Host,
   CheckboxV2: CheckboxV2Host,
   FeedbackStateV2: FeedbackComparison,
   SelectV2: SelectV2Host,
   SwitchV2: SwitchV2Host,
+  TabsV2: TabsV2Host,
   TextInputV2: TextInputV2Host,
 };
 

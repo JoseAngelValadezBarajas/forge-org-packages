@@ -62,7 +62,7 @@ function packArchives(directory) {
   for (const file of ['dist/theme-v2/tokens.css', 'dist/theme-v2/tokens.css.d.ts', 'dist/theme-v2/index.js']) {
     assert.ok(contents['@corefoundry-labs/forge-tokens'].files.includes(file), `tokens tarball is missing ${file}`);
   }
-  const components = [['actions', 'ButtonV2'], ...['TextInputV2', 'SelectV2', 'CheckboxV2', 'SwitchV2'].map((name) => ['forms', name])];
+  const components = [['actions', 'ButtonV2'], ...['TextInputV2', 'SelectV2', 'CheckboxV2', 'SwitchV2'].map((name) => ['forms', name]), ['surfaces', 'CardV2'], ['status', 'BadgeV2'], ['navigation', 'TabsV2'], ['feedback', 'AlertV2']];
   for (const [group, name] of components) {
     for (const extension of ['js', 'd.ts', 'module.css']) {
       const file = `dist/componentsV2/${group}/${name}/${name}.${extension}`;
@@ -120,16 +120,23 @@ async function writeConsumer(directory) {
     extends: './tsconfig.json',
     include: ['src/negative.tsx'],
   }, null, 2)}\n`);
-  await writeFile(join(directory, 'src', 'negative.tsx'), `import { ButtonV2, CheckboxV2, SelectV2, SwitchV2, TextInputV2 } from '@corefoundry-labs/forge-ui';
+  await writeFile(join(directory, 'src', 'negative.tsx'), `import { AlertV2, BadgeV2, ButtonV2, CardV2, CheckboxV2, SelectV2, SwitchV2, TabsV2, TextInputV2 } from '@corefoundry-labs/forge-ui';
 export const missingName = <ButtonV2 iconStart={<svg />} />;
 export const unnamedCheckbox = <CheckboxV2 />;
 export const unnamedSwitch = <SwitchV2 />;
 export const nativeInputSize = <TextInputV2 size={20} />;
 export const multipleSelect = <SelectV2 multiple />;
+export const clickableStaticCard = <CardV2 onClick={() => undefined}>Body</CardV2>;
+export const buttonWithoutInteractive = <CardV2 as="button">Body</CardV2>;
+export const emptyAlert = <AlertV2 />;
+export const unnamedTabs = <TabsV2 items={[]} />;
+export const unknownBadgeTone = <BadgeV2 tone="danger">Label</BadgeV2>;
+export const disabledStaticCard = <CardV2 disabled>Body</CardV2>;
+export const linkedStaticCard = <CardV2 href="#card">Body</CardV2>;
 `);
   await writeFile(join(directory, 'src', 'main.tsx'), `import { useState, type ReactNode } from 'react';
 import { createRoot } from 'react-dom/client';
-import { Button, ButtonV2, CheckboxV2, FeedbackStateV2, SelectV2, SwitchV2, TextInputV2, ThemeScope, type ButtonV2Props, type ButtonV2Size, type ButtonV2Variant, type CheckboxV2Props, type SelectV2Props, type SwitchV2Props, type TextInputV2Props } from '@corefoundry-labs/forge-ui';
+import { AlertV2, BadgeV2, Button, ButtonV2, CardV2, CheckboxV2, FeedbackStateV2, SelectV2, SwitchV2, TabsV2, TextInputV2, ThemeScope, type AlertV2Props, type AlertV2Tone, type AlertV2Variant, type BadgeV2Props, type BadgeV2Tone, type BadgeV2Variant, type CardV2Props, type TabsV2Item, type TabsV2Props, type ButtonV2Props, type ButtonV2Size, type ButtonV2Variant, type CheckboxV2Props, type SelectV2Props, type SwitchV2Props, type TextInputV2Props } from '@corefoundry-labs/forge-ui';
 import { Search } from '@corefoundry-labs/forge-icons';
 import { createTheme, presets, type ThemeMode } from '@corefoundry-labs/forge-tokens/theme-v2';
 
@@ -175,6 +182,38 @@ function Controls({ id }: { id: string }) {
   </div>;
 }
 
+const badgeTones: BadgeV2Tone[] = ['neutral', 'primary', 'success', 'warning', 'error', 'info'];
+const badgeVariants: BadgeV2Variant[] = ['solid', 'subtle', 'outline'];
+const alertTones: AlertV2Tone[] = ['info', 'success', 'warning', 'error', 'neutral'];
+const alertVariants: AlertV2Variant[] = ['soft', 'solid', 'outline'];
+const cardProps: CardV2Props = { variant: 'outlined', header: 'Typed card' };
+const badgeProps: BadgeV2Props = { tone: 'info', children: 'Typed badge' };
+const alertProps: AlertV2Props = { tone: 'info', role: 'note', title: 'Typed alert' };
+const tabItems: TabsV2Item[] = [
+  { id: 'one', label: 'One', content: 'Panel one' },
+  { id: 'two', label: 'Two', content: 'Panel two', disabled: true },
+  { id: 'three', label: 'Three', content: 'Panel three' },
+  { id: 'four', label: 'Four', content: 'Panel four' },
+];
+const tabsProps: TabsV2Props = { 'aria-label': 'Typed tabs', items: tabItems, size: 'sm' };
+
+function Display({ id }: { id: string }) {
+  const [clicks, setClicks] = useState(0);
+  const [open, setOpen] = useState(true);
+  return <div style={{ display: 'grid', gap: 8, maxWidth: 660 }}>
+    {(['default', 'outlined', 'elevated'] as const).map((variant) => <CardV2 key={variant} variant={variant} header="Title" footer="Footer" data-testid={id + '-card-' + variant}>Body</CardV2>)}
+    <CardV2 variant="interactive" header="Open" footer="Footer" data-testid={id + '-card-button'} data-count={clicks} onClick={() => setClicks(clicks + 1)}>Body</CardV2>
+    <CardV2 variant="interactive" header="Locked" disabled data-testid={id + '-card-disabled'} data-count={clicks} onClick={() => setClicks(clicks + 1)}>Body</CardV2>
+    <CardV2 variant="interactive" as="a" href="#card" header="Link" data-testid={id + '-card-link'}>Body</CardV2>
+    {badgeTones.flatMap((tone) => badgeVariants.map((variant) => <BadgeV2 key={tone + variant} tone={tone} variant={variant} data-testid={id + '-badge-' + tone + '-' + variant}>{tone}</BadgeV2>))}
+    <TabsV2 aria-label={id + ' tabs'} items={tabItems} data-testid={id + '-tabs'} />
+    <TabsV2 aria-label={id + ' pill tabs'} items={tabItems} variant="pill" size="sm" data-testid={id + '-tabs-pill'} />
+    <TabsV2 aria-label={id + ' manual tabs'} items={tabItems} activation="manual" data-testid={id + '-tabs-manual'} />
+    {alertTones.flatMap((tone) => alertVariants.map((variant) => <AlertV2 key={tone + variant} tone={tone} variant={variant} title="Notice" description="Useful information." data-testid={id + '-alert-' + tone + '-' + variant} />))}
+    {open && <AlertV2 tone="warning" variant="solid" title="Dismissible" onDismiss={() => setOpen(false)} data-testid={id + '-alert-dismiss'} />}
+  </div>;
+}
+
 function Scope({ id }: { id: string }) {
   return <>
     {variants.map((variant) => <Counter key={variant} id={id + '-' + variant} variant={variant}>{variant + ' action'}</Counter>)}
@@ -185,6 +224,7 @@ function Scope({ id }: { id: string }) {
     <FeedbackStateV2 data-testid={id + '-error-state'} state="error" title={id + ' error'} description="It failed." headingLevel={2} />
     <FeedbackStateV2 data-testid={id + '-readonly-state'} state="readOnly" title={id + ' read only'} description="View only." headingLevel={2} />
     <Controls id={id} />
+    <Display id={id} />
   </>;
 }
 
@@ -200,6 +240,13 @@ function App() {
     <section aria-label="default" data-testid="default" style={{ background: 'var(--cf-v2-surface)', color: 'var(--cf-v2-on-surface)', padding: 16 }}>
       <CheckboxV2 {...checkboxProps} data-testid="typed-checkbox" />
       <SwitchV2 {...switchProps} data-testid="typed-switch" />
+      <CardV2 {...cardProps} data-testid="typed-card" />
+      <BadgeV2 {...badgeProps} data-testid="typed-badge" />
+      <AlertV2 {...alertProps} data-testid="typed-alert" />
+      <TabsV2 {...tabsProps} data-testid="typed-tabs" />
+      <BadgeV2 size="sm" data-testid="badge-sm">Small</BadgeV2>
+      <BadgeV2 size="md" data-testid="badge-md">Medium</BadgeV2>
+      <span style={{ display: 'inline-flex', width: 80 }}><BadgeV2 data-testid="badge-long">A very long status label that truncates</BadgeV2></span>
       <Scope id="default" />
     </section>
     {Object.entries(presets).flatMap(([key, preset]) => modes.map((mode) => (
@@ -325,7 +372,7 @@ async function certifyScope(page, id, roles, report) {
   report.minimumFocus = Math.min(report.minimumFocus, ring);
   assert.ok(ring >= 3, `${id} focus ring ${ring.toFixed(2)}`);
 
-  const order = await page.getByTestId(id).evaluate((element) => [...element.querySelectorAll('button')].filter((node) => node.tabIndex >= 0 && !node.disabled).length);
+  const order = await page.getByTestId(id).evaluate((element) => [...element.querySelectorAll('button[data-size]')].filter((node) => node.tabIndex >= 0 && !node.disabled).length);
   assert.equal(order, 8, `${id} focusable buttons`);
 
   for (const [state, role] of [['loading-state', 'status'], ['empty-state', 'region'], ['error-state', 'alert'], ['readonly-state', 'region']]) {
@@ -538,11 +585,230 @@ async function certifyControls(page, id, roles, geometry, report) {
   report.controls += 5;
 }
 
+async function certifyDisplay(page, id, roles, geometry, report) {
+  const part = (name) => page.getByTestId(`${id}-${name}`);
+  const style = (locator, property) => locator.evaluate((element, key) => getComputedStyle(element)[key], property);
+  const surface = rgb(roles.surface);
+  const ratio = (key, minimum, foreground, background, label) => {
+    const value = contrast(foreground, background);
+    report[key] = Math.min(report[key], value);
+    assert.ok(value >= minimum, `${id} ${label} ${value.toFixed(2)}`);
+    report.checks += 1;
+  };
+  const leave = async () => {
+    await page.mouse.up();
+    await page.mouse.move(0, 0);
+  };
+  const focusRing = async (locator, label, color = rgb(roles.focusRing)) => {
+    assert.equal(await style(locator, 'outlineStyle'), 'solid', `${id} ${label} focus style`);
+    assert.equal(await style(locator, 'outlineWidth'), '2px', `${id} ${label} focus width`);
+    assert.equal(await style(locator, 'outlineOffset'), '-2px', `${id} ${label} focus offset`);
+    assert.equal(await style(locator, 'outlineColor'), color, `${id} ${label} focus color`);
+  };
+  const isActive = (locator) => locator.evaluate((element) => document.activeElement === element);
+  const tabInto = async (locator) => {
+    await locator.focus();
+    await page.keyboard.press('Shift+Tab');
+    await page.keyboard.press('Tab');
+    assert.equal(await isActive(locator), true, `${id} tab order`);
+  };
+
+  for (const [variant, fill] of [['default', 'surfaceContainer'], ['outlined', 'surface'], ['elevated', 'surfaceContainer']]) {
+    const card = part(`card-${variant}`);
+    assert.equal(await style(card, 'backgroundColor'), rgb(roles[fill]), `${id} card ${variant}`);
+    assert.equal(await style(card, 'borderTopLeftRadius'), '14px');
+    assert.equal(await style(card, 'paddingTop'), '20px');
+    assert.equal(await style(card, 'rowGap'), '12px');
+    assert.equal(await card.getAttribute('role'), null, `${id} static card role`);
+    assert.equal(await card.evaluate((element) => element.tabIndex), -1, `${id} static card must not be focusable`);
+    await card.hover();
+    assert.equal(await style(card, 'backgroundColor'), rgb(roles[fill]), `${id} static card hover`);
+    await leave();
+    const opacity = Number(geometry.card.bodyOpacity);
+    ratio('minimumText', 4.5, blend(rgb(roles.onSurface), rgb(roles[fill]), opacity), rgb(roles[fill]), `card body on ${fill}`);
+    ratio('minimumText', 4.5, rgb(roles.actionPrimary), rgb(roles[fill]), `card footer on ${fill}`);
+    report.display += 1;
+  }
+  assert.equal(await style(part('card-outlined'), 'borderTopColor'), rgb(roles.outline), `${id} card border`);
+  assert.notEqual(await style(part('card-elevated'), 'boxShadow'), 'none', `${id} card shadow`);
+  assert.equal(await style(part('card-default'), 'boxShadow'), 'none', `${id} default card shadow`);
+  assert.equal(await style(part('card-default').locator('> div').last(), 'color'), rgb(roles.actionPrimary), `${id} card footer`);
+
+  const action = part('card-button');
+  assert.equal(await action.evaluate((element) => element.tagName), 'BUTTON');
+  assert.equal(await action.getAttribute('type'), 'button');
+  assert.equal(await page.getByTestId(id).getByRole('button', { name: 'Open Body Footer' }).count(), 1, `${id} interactive card name`);
+  assert.equal(await style(action, 'backgroundColor'), rgb(roles.surfaceContainer), `${id} interactive rest`);
+  assert.equal(await style(action, 'borderTopColor'), rgb(roles.outline));
+  await action.hover();
+  assert.equal(await style(action, 'backgroundColor'), rgb(roles.surfaceContainerHover), `${id} interactive hover`);
+  await leave();
+  ratio('minimumText', 4.5, rgb(roles.actionPrimary), rgb(roles.surfaceContainerHover), 'card footer on hover');
+  await tabInto(action);
+  await focusRing(action, 'card');
+  const before = Number(await action.getAttribute('data-count'));
+  await page.keyboard.press('Enter');
+  await page.keyboard.press('Space');
+  assert.equal(Number(await action.getAttribute('data-count')), before + 2, `${id} card keyboard`);
+  const locked = part('card-disabled');
+  assert.equal(await locked.isDisabled(), true);
+  assert.equal(await style(locked, 'backgroundColor'), rgb(roles.disabled), `${id} card disabled`);
+  assert.equal(await style(locked, 'opacity'), geometry.card.disabledOpacity);
+  const count = await locked.getAttribute('data-count');
+  await locked.click({ force: true });
+  assert.equal(await locked.getAttribute('data-count'), count, `${id} card disabled click`);
+  const link = part('card-link');
+  assert.equal(await link.evaluate((element) => element.tagName), 'A');
+  assert.equal(await link.getAttribute('href'), '#card');
+  assert.equal(await style(link, 'textDecorationLine'), 'none');
+  await link.focus();
+  report.display += 3;
+
+  for (const [tone, fill, on, accent, border] of [
+    ['neutral', 'surfaceContainer', 'onSurface', 'onSurface', 'outline'],
+    ['primary', 'actionPrimary', 'onActionPrimary', 'actionPrimary', 'actionPrimary'],
+    ['success', 'success', 'onSuccess', 'success', 'success'],
+    ['warning', 'warning', 'onWarning', 'warning', 'warning'],
+    ['error', 'error', 'onError', 'error', 'error'],
+    ['info', 'info', 'onInfo', 'info', 'info'],
+  ]) {
+    const solid = part(`badge-${tone}-solid`);
+    assert.equal(await style(solid, 'backgroundColor'), rgb(roles[fill]), `${id} ${tone} solid fill`);
+    assert.equal(await style(solid, 'color'), rgb(roles[on]), `${id} ${tone} solid text`);
+    ratio('minimumText', 4.5, rgb(roles[on]), rgb(roles[fill]), `${tone} solid badge`);
+    for (const variant of ['subtle', 'outline']) {
+      const badge = part(`badge-${tone}-${variant}`);
+      assert.equal(await style(badge, 'backgroundColor'), rgb(roles.surfaceContainer), `${id} ${tone} ${variant} fill`);
+      assert.equal(await style(badge, 'color'), rgb(roles[accent]), `${id} ${tone} ${variant} text`);
+    }
+    ratio('minimumText', 4.5, rgb(roles[accent]), rgb(roles.surfaceContainer), `${tone} subtle badge`);
+    const outlined = part(`badge-${tone}-outline`);
+    assert.equal(await style(outlined, 'borderTopColor'), rgb(roles[border]), `${id} ${tone} outline border`);
+    assert.equal(await style(outlined, 'borderTopWidth'), '1px');
+    ratio('minimumBoundary', 3, rgb(roles[border]), rgb(roles.surfaceContainer), `${tone} badge outline`);
+    assert.equal(await solid.evaluate((element) => element.tabIndex), -1, `${id} badge must not be focusable`);
+    report.display += 3;
+  }
+
+  const tabs = part('tabs');
+  const tab = (root, name) => root.getByRole('tab', { name, exact: true });
+  const panel = (root) => root.getByRole('tabpanel');
+  assert.equal(await tabs.getByRole('tablist', { name: `${id} tabs` }).count(), 1, `${id} tablist name`);
+  const one = tab(tabs, 'One');
+  const three = tab(tabs, 'Three');
+  const four = tab(tabs, 'Four');
+  assert.equal(await one.getAttribute('aria-selected'), 'true');
+  assert.equal(await style(one, 'color'), rgb(roles.actionPrimary), `${id} selected tab`);
+  assert.equal(await style(one.locator('span').last(), 'backgroundColor'), rgb(roles.actionPrimary), `${id} indicator`);
+  assert.equal(await style(one.locator('span').last(), 'height'), '3px');
+  assert.equal(await style(one, 'height'), '44px');
+  assert.equal(await style(three, 'color'), rgb(roles.onSurface), `${id} unselected tab`);
+  ratio('minimumText', 4.5, rgb(roles.actionPrimary), surface, 'selected tab');
+  assert.equal(await style(tabs, 'backgroundColor'), surface, `${id} tabs surface`);
+  assert.equal(await style(panel(tabs), 'backgroundColor'), rgb(roles.surfaceContainer), `${id} panel`);
+  assert.equal(await one.getAttribute('aria-controls'), await panel(tabs).getAttribute('id'), `${id} aria-controls`);
+  assert.equal(await panel(tabs).getAttribute('aria-labelledby'), await one.getAttribute('id'), `${id} aria-labelledby`);
+  await three.hover();
+  assert.equal(await style(three, 'backgroundColor'), rgb(roles.surfaceContainerHover), `${id} tab hover`);
+  await leave();
+  ratio('minimumText', 4.5, rgb(roles.onSurface), rgb(roles.surfaceContainerHover), 'tab hover');
+  assert.equal(await style(tab(tabs, 'Two'), 'opacity'), geometry.tabs.disabledOpacity, `${id} disabled tab`);
+  assert.equal(await tab(tabs, 'Two').isDisabled(), true);
+
+  await tabInto(one);
+  await focusRing(one, 'tab');
+  await page.keyboard.press('ArrowRight');
+  assert.equal(await isActive(three), true, `${id} ArrowRight skips disabled`);
+  assert.equal(await three.getAttribute('aria-selected'), 'true', `${id} automatic activation`);
+  assert.match(await panel(tabs).textContent(), /Panel three/, `${id} panel follows`);
+  assert.deepEqual(await tabs.getByRole('tab', { includeHidden: true }).evaluateAll((nodes) => nodes.map((node) => node.tabIndex)), [-1, -1, 0, -1], `${id} roving tabindex`);
+  await page.keyboard.press('End');
+  assert.equal(await isActive(four), true, `${id} End`);
+  await page.keyboard.press('ArrowRight');
+  assert.equal(await isActive(one), true, `${id} wrap`);
+  await page.keyboard.press('ArrowLeft');
+  assert.equal(await isActive(four), true, `${id} wrap back`);
+  await page.keyboard.press('Home');
+  assert.equal(await isActive(one), true, `${id} Home`);
+  await page.keyboard.press('Tab');
+  assert.equal(await isActive(panel(tabs)), true, `${id} Tab reaches the panel`);
+  await focusRing(panel(tabs), 'panel');
+
+  const pill = part('tabs-pill');
+  const pillOne = tab(pill, 'One');
+  assert.equal(await style(pillOne, 'backgroundColor'), rgb(roles.surfaceContainer), `${id} pill selected`);
+  assert.equal(await style(pillOne, 'color'), rgb(roles.actionPrimary), `${id} pill text`);
+  assert.equal(await style(pillOne, 'borderTopLeftRadius'), '10px');
+  assert.equal(await style(pillOne, 'height'), '36px');
+  assert.equal(await pillOne.locator('span').count(), 1, `${id} pill has no indicator`);
+  ratio('minimumText', 4.5, rgb(roles.actionPrimary), rgb(roles.surfaceContainer), 'pill tab');
+
+  const manual = part('tabs-manual');
+  const manualOne = tab(manual, 'One');
+  const manualThree = tab(manual, 'Three');
+  await manualOne.focus();
+  await page.keyboard.press('ArrowRight');
+  assert.equal(await isActive(manualThree), true, `${id} manual focus`);
+  assert.equal(await manualOne.getAttribute('aria-selected'), 'true', `${id} manual keeps selection`);
+  await page.keyboard.press('Enter');
+  assert.equal(await manualThree.getAttribute('aria-selected'), 'true', `${id} manual Enter`);
+  await page.keyboard.press('ArrowLeft');
+  await page.keyboard.press('Space');
+  assert.equal(await manualOne.getAttribute('aria-selected'), 'true', `${id} manual Space`);
+  await page.keyboard.press('ArrowRight');
+  await page.keyboard.press('Tab');
+  assert.equal(await manualOne.getAttribute('tabindex'), '0', `${id} tab stop returns to the selected tab`);
+  report.display += 4;
+
+  const descriptionOpacity = Number(geometry.alert.descriptionOpacity);
+  for (const [tone, fill, on, border] of [
+    ['info', 'info', 'onInfo', 'info'],
+    ['success', 'success', 'onSuccess', 'success'],
+    ['warning', 'warning', 'onWarning', 'warning'],
+    ['error', 'error', 'onError', 'error'],
+    ['neutral', 'surfaceContainer', 'onSurface', 'outline'],
+  ]) {
+    for (const [variant, background, text] of [['soft', 'surfaceContainer', 'onSurface'], ['solid', fill, on], ['outline', 'surface', 'onSurface']]) {
+      const alert = part(`alert-${tone}-${variant}`);
+      const icon = alert.locator('> span').first();
+      const [iconFill, iconText] = variant === 'solid' ? [on, fill] : [fill, on];
+      assert.equal(await alert.getAttribute('role'), tone === 'error' ? 'alert' : 'status', `${id} ${tone} role`);
+      assert.equal(await style(alert, 'backgroundColor'), rgb(roles[background]), `${id} ${tone} ${variant} fill`);
+      assert.equal(await style(alert, 'color'), rgb(roles[text]), `${id} ${tone} ${variant} text`);
+      assert.equal(await style(icon, 'backgroundColor'), rgb(roles[iconFill]), `${id} ${tone} ${variant} icon`);
+      assert.equal(await style(icon, 'color'), rgb(roles[iconText]), `${id} ${tone} ${variant} glyph`);
+      assert.equal(await icon.getAttribute('aria-hidden'), 'true');
+      ratio('minimumText', 4.5, rgb(roles[text]), rgb(roles[background]), `${tone} ${variant} title`);
+      ratio('minimumText', 4.5, blend(rgb(roles[text]), rgb(roles[background]), descriptionOpacity), rgb(roles[background]), `${tone} ${variant} description`);
+      ratio('minimumBoundary', 3, rgb(roles[iconText]), rgb(roles[iconFill]), `${tone} ${variant} glyph`);
+      report.display += 1;
+    }
+    const outlined = part(`alert-${tone}-outline`);
+    assert.equal(await style(outlined, 'borderTopColor'), rgb(roles[border]), `${id} ${tone} border`);
+    ratio('minimumBoundary', 3, rgb(roles[border]), surface, `${tone} alert border`);
+  }
+  const alert = part('alert-info-soft');
+  assert.equal(await style(alert, 'borderTopLeftRadius'), '12px');
+  assert.equal(await style(alert, 'paddingTop'), '16px');
+  assert.equal(await style(alert.locator('> span').first(), 'width'), '26px');
+
+  const dismissible = part('alert-dismiss');
+  const close = dismissible.getByRole('button', { name: 'Close', exact: true });
+  assert.equal(await style(close, 'width'), '32px', `${id} dismiss target`);
+  assert.equal(await style(close, 'color'), rgb(roles.onWarning), `${id} dismiss color`);
+  await tabInto(close);
+  await focusRing(close, 'dismiss', rgb(roles.onWarning));
+  ratio('minimumFocus', 3, rgb(roles.onWarning), rgb(roles.warning), 'dismiss focus on solid');
+  await page.keyboard.press('Enter');
+  assert.equal(await dismissible.count(), 0, `${id} dismiss removes the alert`);
+  report.display += 1;
+}
+
 async function certifyBrowser(url, directory, evidence) {
   const engine = await import(pathToFileURL(join(directory, 'node_modules/@corefoundry-labs/forge-tokens/dist/theme-v2/index.js')).href);
   const axeSource = readFileSync(join(directory, 'node_modules/axe-core/axe.min.js'), 'utf8');
   const browser = await chromium.launch({ headless: true });
-  const report = { scopes: 0, states: 0, feedback: 0, controls: 0, checks: 0, minimumText: Infinity, minimumBoundary: Infinity, minimumFocus: Infinity, axeViolations: 0, axeRulesPassed: 0 };
+  const report = { scopes: 0, states: 0, feedback: 0, controls: 0, display: 0, checks: 0, minimumText: Infinity, minimumBoundary: Infinity, minimumFocus: Infinity, axeViolations: 0, axeRulesPassed: 0 };
   try {
     const context = await browser.newContext({ viewport: { width: 1280, height: 900 }, reducedMotion: 'reduce' });
     const page = await context.newPage();
@@ -564,6 +830,12 @@ async function certifyBrowser(url, directory, evidence) {
       assert.equal(await page.getByTestId(`icon-${size}`).locator('svg').evaluate((element) => getComputedStyle(element).width), '16px');
     }
     assert.equal(await page.getByTestId('typed').getAttribute('type'), 'button');
+    assert.equal(await style('badge-sm', 'height'), '24px');
+    assert.equal(await style('badge-sm', 'fontSize'), '11px');
+    assert.equal(await style('badge-md', 'height'), '30px');
+    assert.equal(await style('badge-md', 'fontSize'), '12px');
+    assert.equal(await style('badge-md', 'borderTopLeftRadius'), '999px');
+    assert.equal(await page.getByTestId('badge-long').evaluate((element) => { const label = element.firstElementChild; return label.scrollWidth > label.clientWidth && element.getBoundingClientRect().width <= 80; }), true, 'a long badge must truncate inside its container');
     for (const [size, height] of Object.entries(sizes)) {
       for (const name of ['text', 'select']) {
         assert.equal(await style(`${name}-${size}`, 'height'), height, `${name} ${size} height`);
@@ -574,19 +846,21 @@ async function certifyBrowser(url, directory, evidence) {
 
     const body = await page.evaluate(() => getComputedStyle(document.body).fontFamily);
     assert.equal(await style('size-md', 'fontFamily'), body, 'ButtonV2 must inherit the consumer font family');
-    for (const id of ['text-md', 'select-md']) assert.equal(await style(id, 'fontFamily'), body, `${id} must inherit the consumer font family`);
+    for (const id of ['text-md', 'select-md', 'typed-card', 'typed-badge', 'typed-alert', 'typed-tabs']) assert.equal(await style(id, 'fontFamily'), body, `${id} must inherit the consumer font family`);
 
     assert.equal(await page.locator('html').evaluate((element) => getComputedStyle(element).colorScheme), 'light', 'V2 stylesheet must not override the V1 color scheme');
     assert.equal(await style('v1-button', 'backgroundColor'), rgb(await page.locator('html').evaluate((element) => getComputedStyle(element).getPropertyValue('--forge-accent').trim())), 'V1 Button color changed');
 
     await certifyScope(page, 'default', engine.createTheme(engine.presets.forge).roles, report);
     await certifyControls(page, 'default', engine.createTheme(engine.presets.forge).roles, engine.geometry, report);
+    await certifyDisplay(page, 'default', engine.createTheme(engine.presets.forge).roles, engine.geometry, report);
     report.scopes += 1;
     for (const preset of presets) {
       for (const mode of modes) {
         const { roles } = engine.createTheme({ ...engine.presets[preset], mode });
         await certifyScope(page, `${preset}-${mode}`, roles, report);
         await certifyControls(page, `${preset}-${mode}`, roles, engine.geometry, report);
+        await certifyDisplay(page, `${preset}-${mode}`, roles, engine.geometry, report);
         report.scopes += 1;
       }
     }
@@ -598,7 +872,11 @@ async function certifyBrowser(url, directory, evidence) {
       const result = await window.axe.run(document, { runOnly: { type: 'tag', values: ['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa', 'wcag22aa'] } });
       return {
         passes: result.passes.map((rule) => rule.id),
-        incomplete: result.incomplete.map((rule) => ({ id: rule.id, nodes: rule.nodes.length, sample: rule.nodes[0]?.target.join(' ') })),
+        incomplete: result.incomplete.map((rule) => ({
+          id: rule.id,
+          nodes: rule.nodes.length,
+          reasons: Object.entries(Object.groupBy(rule.nodes, (node) => node.any[0]?.data?.messageKey ?? 'unknown')).map(([reason, nodes]) => `${reason}: ${nodes.length} (${nodes[0].target.join(' ')} "${nodes[0].html.slice(0, 80)}")`),
+        })),
         violations: result.violations.map((violation) => ({ id: violation.id, nodes: violation.nodes.map((node) => `${node.target.join(' ')} ${node.failureSummary ?? ''}`.slice(0, 220)) })),
       };
     });
@@ -646,7 +924,7 @@ export async function runV2ConsumerCertification({ evidence = false } = {}) {
     run(process.execPath, [tsc, '--project', 'tsconfig.json'], consumer);
     const negative = spawnSync(process.execPath, [tsc, '--project', 'tsconfig.negative.json'], { cwd: consumer, encoding: 'utf8' });
     assert.notEqual(negative.status, 0, 'the negative consumer must not compile');
-    for (const line of [2, 3, 4, 5, 6]) {
+    for (const line of [2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13]) {
       assert.ok(`${negative.stdout}${negative.stderr}`.includes(`negative.tsx(${line},`), `negative.tsx line ${line} must be rejected`);
     }
 
@@ -661,7 +939,7 @@ export async function runV2ConsumerCertification({ evidence = false } = {}) {
       version,
       installedFrom: 'npm pack tarballs, no workspace links',
       production: 'vite build + vite preview in Chromium',
-      typeChecks: ['strict consumer compiled', 'icon-only ButtonV2 without aria-label rejected', 'unnamed CheckboxV2 and SwitchV2 rejected', 'numeric TextInputV2 size rejected', 'SelectV2 multiple rejected'],
+      typeChecks: ['strict consumer compiled', 'icon-only ButtonV2 without aria-label rejected', 'unnamed CheckboxV2 and SwitchV2 rejected', 'numeric TextInputV2 size rejected', 'SelectV2 multiple rejected', 'static CardV2 with onClick, disabled, href or as button rejected', 'empty AlertV2 rejected', 'unnamed TabsV2 rejected', 'unknown BadgeV2 tone rejected'],
       ...report,
       minimumText: Number(report.minimumText.toFixed(2)),
       minimumBoundary: Number(report.minimumBoundary.toFixed(2)),

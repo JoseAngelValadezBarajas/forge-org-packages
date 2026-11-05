@@ -23,20 +23,24 @@ const groups = {
     ['FormActions', 'Consistent save and cancel actions.', '<FormActions onSave={() => setMessage("Saved locally")} onCancel={() => setMessage("Changes discarded")} />', 'const [message, setMessage] = useState("");'],
   ],
   Navigation: [
+    ['TabsV2', 'An accessible tablist with panels, driven by Theme Engine roles.', '<TabsV2 aria-label="Project views" value={view} onValueChange={setView} items={[{id:"overview",label:"Overview",content:"Project overview"},{id:"activity",label:"Activity",content:"No recent activity"}]} />', 'const [view, setView] = useState("overview");'],
     ['Tabs', 'Keyboard-friendly views in the same context.', '<Tabs label="Project views" tabs={[{id:"overview",label:"Overview",content:"Project overview"},{id:"activity",label:"Activity",content:"No recent activity"}]} />'],
     ['Breadcrumbs', 'A readable path through your workspace.', '<Breadcrumbs items={[{label:"Library",href:"#catalog"},{label:"Components"}]} />'],
     ['MenuItem', 'Selection and actions inside a menu.', '<div role="menu" aria-label="Project menu"><MenuItem selected={selected} onSelect={() => setSelected(!selected)}>Pin project</MenuItem></div>', 'const [selected, setSelected] = useState(false);'],
     ['StepperStep', 'Show progress through a short workflow.', '<ol><StepperStep index={1} label="Details" state="complete" /><StepperStep index={2} label="Review" state="current" /></ol>'],
   ],
   Surfaces: [
+    ['CardV2', 'A layout surface with slots and an optional interactive style.', '<CardV2 variant="outlined" header="Atlas workspace" footer="Updated today">A home for your next idea.</CardV2>'],
     ['Card', 'A calm container for related content.', '<Card variant="elevated"><h3>Atlas workspace</h3><p>A home for your next idea.</p></Card>'],
     ['MetricCard', 'A number with enough context to mean something.', '<MetricCard label="Active projects" value="24" detail="Across 3 workspaces" />'],
   ],
   Status: [
+    ['BadgeV2', 'A compact status, category or count label.', '<BadgeV2 tone="success" variant="subtle" size="md">Completed</BadgeV2>'],
     ['Badge', 'Small labels for count and classification.', '<Badge tone="accent">Design system</Badge>'],
     ['StatusChip', 'Communicate state at a glance.', '<StatusChip tone="success">Ready</StatusChip>'],
   ],
   Feedback: [
+    ['AlertV2', 'Contextual feedback with tones, actions and dismiss.', '<AlertV2 tone="info" variant="soft" title="New version" description="Reload to get the latest changes." />'],
     ['Alert', 'Contextual information that stays in view.', '<Alert tone="info" heading="Preview workspace" message="Changes in this demo stay on this page." />'],
     ['StatePanel', 'A unified V1 panel for content states.', '<StatePanel kind="readOnly" title="View-only workspace" description="You can review every project." />'],
     ['Progress', 'Make a measurable operation understandable.', '<Progress label="Demo progress" value={progress} max={100} />', 'const [progress, setProgress] = useState(40);'],

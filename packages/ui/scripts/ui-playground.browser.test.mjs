@@ -205,6 +205,84 @@ test('V2 form controls render every state in the component host and follow the t
   }
 });
 
+test('V2 display components render every state in the component host', async () => {
+  const server = await createServer({
+    configFile: false,
+    root: join(root, 'playground/ui'),
+    server: { host: '127.0.0.1', port: 0, strictPort: true },
+  });
+  let browser;
+  try {
+    await server.listen();
+    browser = await chromium.launch({ headless: true });
+    const page = await browser.newPage({ viewport: { width: 1440, height: 900 }, reducedMotion: 'reduce' });
+    const errors = [];
+    page.on('pageerror', (error) => errors.push(error.message));
+    page.on('console', (message) => {
+      if (message.type() === 'error') errors.push(message.text());
+    });
+    const open = async (name, testId) => {
+      await page.goto(`${server.resolvedUrls.local[0]}#/${name}`);
+      await page.getByRole('heading', { level: 1, name, exact: true }).waitFor();
+      await page.getByTestId(testId).waitFor();
+    };
+    const role = (name) => page.locator('.theme-preview').evaluate((element, token) => getComputedStyle(element).getPropertyValue(token).trim(), `--cf-v2-${name}`);
+    const style = (id, property) => page.getByTestId(id).evaluate((element, key) => getComputedStyle(element)[key], property);
+
+    await open('CardV2', 'card-default');
+    assert.equal(await style('card-default', 'backgroundColor'), rgb(await role('surface-container')));
+    assert.equal(await style('card-outlined', 'backgroundColor'), rgb(await role('surface')));
+    assert.notEqual(await style('card-elevated', 'boxShadow'), 'none');
+    await page.getByTestId('card-button').click();
+    assert.equal(await page.getByTestId('card-button').getAttribute('data-count'), '1');
+    assert.equal(await page.getByTestId('card-disabled').isDisabled(), true);
+    assert.equal(await page.getByTestId('card-link').evaluate((element) => element.tagName), 'A');
+    assert.equal(await page.getByTestId('matrix-formiai-dark').locator('[data-variant="outlined"]').count(), 1);
+
+    await open('BadgeV2', 'badge-primary-solid');
+    assert.equal(await style('badge-primary-solid', 'backgroundColor'), rgb(await role('action-primary')));
+    assert.equal(await style('badge-success-solid', 'color'), rgb(await role('on-success')));
+    assert.equal(await style('badge-info-outline', 'borderTopColor'), rgb(await role('info')));
+    assert.equal(await style('badge-sm', 'height'), '24px');
+    assert.equal(await style('badge-md', 'height'), '30px');
+    assert.equal(await page.getByTestId('badge-long').evaluate((element) => element.firstElementChild.scrollWidth > element.firstElementChild.clientWidth), true);
+
+    await open('TabsV2', 'tabs-underline-md');
+    const tabs = page.getByTestId('tabs-underline-md');
+    await tabs.getByRole('tab', { name: 'Overview' }).focus();
+    await page.keyboard.press('ArrowRight');
+    assert.equal(await tabs.getByRole('tab', { name: 'Activity' }).getAttribute('aria-selected'), 'true');
+    await page.keyboard.press('ArrowRight');
+    assert.equal(await tabs.getByRole('tab', { name: 'Settings' }).getAttribute('aria-selected'), 'true');
+    await page.getByTestId('tabs-controlled').getByRole('tab', { name: 'Overview' }).click();
+    assert.equal(await page.getByTestId('tabs-value').textContent(), 'Selected: overview');
+    const manual = page.getByTestId('tabs-manual');
+    await manual.getByRole('tab', { name: 'Overview' }).focus();
+    await page.keyboard.press('ArrowRight');
+    assert.equal(await manual.getByRole('tab', { name: 'Overview' }).getAttribute('aria-selected'), 'true');
+    await page.keyboard.press('Enter');
+    assert.equal(await manual.getByRole('tab', { name: 'Activity' }).getAttribute('aria-selected'), 'true');
+
+    await open('AlertV2', 'alert-info-soft');
+    assert.equal(await style('alert-info-solid', 'backgroundColor'), rgb(await role('info')));
+    assert.equal(await style('alert-success-solid', 'color'), rgb(await role('on-success')));
+    assert.equal(await style('alert-error-outline', 'borderTopColor'), rgb(await role('error')));
+    await page.getByTestId('alert-dismissible').getByRole('button', { name: 'Close' }).click();
+    await page.getByTestId('alert-restore').click();
+    await page.getByTestId('alert-dismissible').waitFor();
+
+    await page.setViewportSize({ width: 375, height: 800 });
+    for (const [name, testId] of [['CardV2', 'card-default'], ['BadgeV2', 'badge-primary-solid'], ['TabsV2', 'tabs-underline-md'], ['AlertV2', 'alert-info-soft']]) {
+      await open(name, testId);
+      assert.equal(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth), true, name);
+    }
+    assert.deepEqual(errors, []);
+  } finally {
+    await browser?.close();
+    await server.close();
+  }
+});
+
 test('ButtonV2 follows the Theme Engine across geometry, states and presets', async () => {
   const server = await createServer({
     configFile: false,

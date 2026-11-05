@@ -7,7 +7,7 @@ export const roles: SemanticRole[] = [
   'primary', 'onPrimary', 'primaryContainer', 'onPrimaryContainer', 'secondary', 'onSecondary', 'outline',
   'outlineVariant', 'focusRing', 'selection', 'disabled', 'error', 'warning', 'success', 'info', 'actionPrimary',
   'onActionPrimary', 'actionPrimaryHover', 'actionPrimaryPressed', 'onError', 'errorHover', 'errorPressed',
-  'surfaceContainerHover', 'surfaceContainerPressed',
+  'surfaceContainerHover', 'surfaceContainerPressed', 'onSuccess', 'onWarning', 'onInfo',
 ];
 
 export const contrastPairs: [SemanticRole, SemanticRole, number][] = [
@@ -27,6 +27,10 @@ export const contrastPairs: [SemanticRole, SemanticRole, number][] = [
   ['actionPrimaryHover', 'actionPrimary', 1.1], ['actionPrimaryPressed', 'actionPrimaryHover', 1.1],
   ['errorHover', 'error', 1.1], ['errorPressed', 'errorHover', 1.1],
   ['surfaceContainerHover', 'surfaceContainer', 1.1], ['surfaceContainerPressed', 'surfaceContainerHover', 1.1],
+  ['onSuccess', 'success', 4.5], ['onWarning', 'warning', 4.5], ['onInfo', 'info', 4.5],
+  ['actionPrimary', 'surfaceContainer', 4.5], ['actionPrimary', 'surfaceContainerHover', 4.5],
+  ['error', 'surfaceContainer', 4.5], ['warning', 'surfaceContainer', 4.5],
+  ['success', 'surfaceContainer', 4.5], ['info', 'surfaceContainer', 4.5],
 ];
 
 export function normalizeColor(value: unknown, label: string): string {

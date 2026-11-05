@@ -54,6 +54,8 @@ export { Switch } from './components/forms/Switch';
 export type { SwitchProps } from './components/forms/Switch';
 
 // Navigation
+export { TabsV2 } from './componentsV2/navigation/TabsV2';
+export type { TabsV2Activation, TabsV2Item, TabsV2Props, TabsV2Size, TabsV2Variant } from './componentsV2/navigation/TabsV2';
 export { Tabs } from './components/navigation/Tabs';
 export type { TabsProps, TabItem } from './components/navigation/Tabs';
 export { Breadcrumbs } from './components/navigation/Breadcrumbs';
@@ -64,16 +66,22 @@ export { StepperStep } from './components/navigation/StepperStep';
 export type { StepperStepProps } from './components/navigation/StepperStep';
 
 // Surfaces and status
+export { CardV2 } from './componentsV2/surfaces/CardV2';
+export type { CardV2Props, CardV2Variant } from './componentsV2/surfaces/CardV2';
 export { Card } from './components/surfaces/Card';
 export type { CardProps } from './components/surfaces/Card';
 export { MetricCard } from './components/surfaces/MetricCard';
 export type { MetricCardProps } from './components/surfaces/MetricCard';
 export { StatusChip } from './components/status/StatusChip';
 export type { StatusChipProps } from './components/status/StatusChip';
+export { BadgeV2 } from './componentsV2/status/BadgeV2';
+export type { BadgeV2Props, BadgeV2Size, BadgeV2Tone, BadgeV2Variant } from './componentsV2/status/BadgeV2';
 export { Badge } from './components/status/Badge';
 export type { BadgeProps } from './components/status/Badge';
 
 // Feedback
+export { AlertV2 } from './componentsV2/feedback/AlertV2';
+export type { AlertV2Props, AlertV2Tone, AlertV2Variant } from './componentsV2/feedback/AlertV2';
 export { Alert } from './components/feedback/Alert';
 export type { AlertProps } from './components/feedback/Alert';
 export { StatePanel } from './components/feedback/StatePanel';

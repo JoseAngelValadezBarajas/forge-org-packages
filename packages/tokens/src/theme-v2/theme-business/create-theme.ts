@@ -42,6 +42,9 @@ export function createTheme(config: ThemeConfig): Theme {
   const error = palettes.error[errorTones[0]];
   const primaryContainer = palettes.primary[dark ? 30 : 90];
   const secondary = palettes.secondary[dark ? 80 : 40];
+  const warning = palettes.warning[dark ? 80 : 40];
+  const success = palettes.success[dark ? 80 : 40];
+  const info = palettes.info[dark ? 80 : 40];
   const roleValues: Theme['roles'] = {
     background: surface,
     surface,
@@ -67,9 +70,12 @@ export function createTheme(config: ThemeConfig): Theme {
     onError: foreground(error),
     errorHover: palettes.error[errorTones[1]],
     errorPressed: palettes.error[errorTones[2]],
-    warning: palettes.warning[dark ? 80 : 40],
-    success: palettes.success[dark ? 80 : 40],
-    info: palettes.info[dark ? 80 : 40],
+    warning,
+    onWarning: foreground(warning),
+    success,
+    onSuccess: foreground(success),
+    info,
+    onInfo: foreground(info),
     actionPrimary: primary,
     onActionPrimary: foreground(primary),
     actionPrimaryHover: palettes.primary[actionTones[1]],
