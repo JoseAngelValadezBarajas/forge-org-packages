@@ -166,3 +166,21 @@ export { Divider } from './components/layout/Divider';
 export type { DividerProps } from './components/layout/Divider';
 export { CodeLabel } from './components/layout/CodeLabel';
 export type { CodeLabelProps } from './components/layout/CodeLabel';
+
+// Annotation workspace foundations (V2)
+export { KbdV2 } from './componentsV2/data-display/KbdV2';
+export type { KbdV2Props, KbdV2Size } from './componentsV2/data-display/KbdV2';
+export { ToggleButtonV2 } from './componentsV2/actions/ToggleButtonV2';
+export type { ToggleButtonV2Props, ToggleButtonV2Size } from './componentsV2/actions/ToggleButtonV2';
+export { ToolbarSeparatorV2, ToolbarV2 } from './componentsV2/actions/ToolbarV2';
+export type { ToolbarSeparatorV2Props, ToolbarV2Orientation, ToolbarV2Props } from './componentsV2/actions/ToolbarV2';
+export { TableV2 } from './componentsV2/data-display/TableV2';
+export type { TableV2Align, TableV2Column, TableV2Density, TableV2Props } from './componentsV2/data-display/TableV2';
+export { StatisticV2 } from './componentsV2/data-display/StatisticV2';
+export type {
+  StatisticV2Props,
+  StatisticV2Trend,
+  StatisticV2TrendDirection,
+  StatisticV2TrendIntent,
+  StatisticV2Variant,
+} from './componentsV2/data-display/StatisticV2';

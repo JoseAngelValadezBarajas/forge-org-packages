@@ -1,0 +1,68 @@
+.statistic {
+  display: flex;
+  flex-direction: column;
+  gap: var(--cf-v2-statistic-gap);
+  box-sizing: border-box;
+  margin: 0;
+  color: var(--cf-v2-on-surface);
+  font-family: inherit;
+}
+
+.card {
+  padding: var(--cf-v2-statistic-card-padding);
+  border: var(--cf-v2-statistic-card-border-width) solid var(--cf-v2-outline-variant);
+  border-radius: var(--cf-v2-statistic-card-radius);
+  background: var(--cf-v2-surface-container);
+}
+
+.label {
+  font-size: var(--cf-v2-statistic-label-font-size);
+  font-weight: var(--cf-v2-statistic-label-font-weight);
+}
+
+.value {
+  display: flex;
+  align-items: baseline;
+  gap: var(--cf-v2-statistic-unit-gap);
+  margin: 0;
+}
+
+.number {
+  font-size: var(--cf-v2-statistic-value-font-size);
+  font-weight: var(--cf-v2-statistic-value-font-weight);
+  line-height: normal;
+}
+
+.unit {
+  font-size: var(--cf-v2-statistic-unit-font-size);
+}
+
+.trend {
+  display: flex;
+  align-items: baseline;
+  gap: var(--cf-v2-statistic-trend-gap);
+  margin: 0;
+  font-size: var(--cf-v2-statistic-trend-font-size);
+  font-weight: var(--cf-v2-statistic-trend-font-weight);
+}
+
+.arrow {
+  color: var(--cf-v2-on-surface);
+}
+
+.trend[data-intent='positive'] .arrow {
+  color: var(--cf-v2-success);
+}
+
+.trend[data-intent='negative'] .arrow {
+  color: var(--cf-v2-error);
+}
+
+.hidden {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}

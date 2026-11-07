@@ -1,0 +1,29 @@
+.kbd {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  box-sizing: border-box;
+  border: var(--cf-v2-kbd-border-width) solid var(--cf-v2-outline-variant);
+  border-radius: var(--cf-v2-kbd-radius);
+  background: var(--cf-v2-surface-container);
+  box-shadow: 0 var(--cf-v2-kbd-depth) 0 var(--cf-v2-outline-variant);
+  color: var(--cf-v2-on-surface);
+  font-family: inherit;
+  font-weight: var(--cf-v2-kbd-font-weight);
+  line-height: normal;
+  white-space: nowrap;
+}
+
+.sm {
+  min-width: var(--cf-v2-kbd-min-width-sm);
+  height: var(--cf-v2-kbd-height-sm);
+  padding-inline: var(--cf-v2-kbd-padding-sm);
+  font-size: var(--cf-v2-kbd-font-size-sm);
+}
+
+.md {
+  min-width: var(--cf-v2-kbd-min-width-md);
+  height: var(--cf-v2-kbd-height-md);
+  padding-inline: var(--cf-v2-kbd-padding-md);
+  font-size: var(--cf-v2-kbd-font-size-md);
+}

@@ -50,6 +50,7 @@ export function createTheme(config: ThemeConfig): Theme {
     background: surface,
     surface,
     surfaceRaised: palettes.neutral[high ? 5 : dark ? 15 : 100],
+    surfaceSunken: palettes.neutral[high ? 0 : dark ? 5 : 95],
     surfaceContainer: palettes.neutral[containerTones[0]],
     surfaceContainerHover: palettes.neutral[containerTones[1]],
     surfaceContainerPressed: palettes.neutral[containerTones[2]],

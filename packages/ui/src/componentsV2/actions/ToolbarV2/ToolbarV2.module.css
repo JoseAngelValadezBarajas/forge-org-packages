@@ -1,0 +1,46 @@
+.toolbar {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--cf-v2-toolbar-gap);
+  box-sizing: border-box;
+  padding: var(--cf-v2-toolbar-padding);
+  border: var(--cf-v2-toolbar-border-width) solid var(--cf-v2-outline-variant);
+  border-radius: var(--cf-v2-toolbar-radius);
+  background: var(--cf-v2-surface-raised);
+  color: var(--cf-v2-on-surface);
+}
+
+.horizontal {
+  flex-direction: row;
+}
+
+.vertical {
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.separator {
+  flex: none;
+  align-self: stretch;
+  background: var(--cf-v2-outline-variant);
+}
+
+.horizontal > .separator {
+  width: var(--cf-v2-toolbar-separator-thickness);
+  margin-block: var(--cf-v2-toolbar-separator-inset);
+}
+
+.vertical > .separator {
+  height: var(--cf-v2-toolbar-separator-thickness);
+  margin-inline: var(--cf-v2-toolbar-separator-inset);
+}
+
+@media (forced-colors: active) {
+  .toolbar {
+    border-color: CanvasText;
+  }
+
+  .separator {
+    background: CanvasText;
+  }
+}

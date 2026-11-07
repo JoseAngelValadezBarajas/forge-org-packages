@@ -1,0 +1,92 @@
+.toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--cf-v2-button-gap);
+  box-sizing: border-box;
+  max-width: 100%;
+  margin: 0;
+  border: var(--cf-v2-button-border-width) solid var(--cf-v2-outline-variant);
+  border-radius: var(--cf-v2-button-radius);
+  background: var(--cf-v2-surface-container);
+  color: var(--cf-v2-on-surface);
+  font-family: inherit;
+  font-weight: var(--cf-v2-button-font-weight);
+  line-height: normal;
+  white-space: nowrap;
+  cursor: pointer;
+  transition:
+    background-color var(--cf-v2-button-transition-duration) ease,
+    border-color var(--cf-v2-button-transition-duration) ease;
+}
+
+.sm {
+  height: var(--cf-v2-button-height-sm);
+  padding-inline: var(--cf-v2-button-padding-sm);
+  font-size: var(--cf-v2-button-font-size-sm);
+}
+
+.md {
+  height: var(--cf-v2-button-height-md);
+  padding-inline: var(--cf-v2-button-padding-md);
+  font-size: var(--cf-v2-button-font-size-md);
+}
+
+.lg {
+  height: var(--cf-v2-button-height-lg);
+  padding-inline: var(--cf-v2-button-padding-lg);
+  font-size: var(--cf-v2-button-font-size-lg);
+}
+
+.iconOnly {
+  padding-inline: 0;
+  aspect-ratio: 1;
+}
+
+.label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.icon {
+  display: inline-flex;
+  flex: none;
+}
+
+.icon svg {
+  width: var(--cf-v2-button-icon-size);
+  height: var(--cf-v2-button-icon-size);
+}
+
+.toggle:hover:not(:disabled) {
+  background: var(--cf-v2-surface-container-hover);
+}
+
+.toggle:active:not(:disabled) {
+  background: var(--cf-v2-surface-container-pressed);
+}
+
+.toggle[aria-pressed='true'] {
+  border-color: var(--cf-v2-primary);
+  background: var(--cf-v2-primary-container);
+  color: var(--cf-v2-on-primary-container);
+}
+
+.toggle:focus-visible {
+  outline: var(--cf-v2-button-focus-width) solid var(--cf-v2-focus-ring);
+  outline-offset: var(--cf-v2-button-focus-offset);
+}
+
+.toggle:disabled {
+  opacity: var(--cf-v2-button-disabled-opacity);
+  cursor: not-allowed;
+}
+
+@media (forced-colors: active) {
+  .toggle[aria-pressed='true'] {
+    border-color: Highlight;
+    background: Highlight;
+    color: HighlightText;
+  }
+}

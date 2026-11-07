@@ -2,7 +2,7 @@
   "name": "@corefoundry-labs/forge-ui",
   "description": "Accessible React components with stable V1 APIs, scoped dynamic themes, and independent V2 components.",
   "private": false,
-  "version": "1.1.0",
+  "version": "1.2.0",
   "repository": {
     "type": "git",
     "url": "https://github.com/JoseAngelValadezBarajas/forge-org-packages.git",
@@ -42,8 +42,8 @@
     "test": "npm run build --workspace=@corefoundry-labs/forge-tokens && vitest run --config vitest.config.ts && npm run build && node scripts/css-distribution.test.mjs && node scripts/component-architecture.test.mjs && node --test scripts/shared-components.browser.test.mjs && node --test scripts/ui-playground.browser.test.mjs"
   },
   "dependencies": {
-    "@corefoundry-labs/forge-icons": "1.1.0",
-    "@corefoundry-labs/forge-tokens": "1.1.0"
+    "@corefoundry-labs/forge-icons": "1.2.0",
+    "@corefoundry-labs/forge-tokens": "1.2.0"
   },
   "peerDependencies": {
     "react": "^19.0.0"
