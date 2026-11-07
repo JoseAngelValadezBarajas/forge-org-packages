@@ -58,3 +58,12 @@ export { Star } from './icons/Star/index.js';
 export { HelpCircle } from './icons/HelpCircle/index.js';
 export { LogOut } from './icons/LogOut/index.js';
 export { EyeOff } from './icons/EyeOff/index.js';
+
+export { Pointer } from './icons/Pointer/index.js';
+export { Hand } from './icons/Hand/index.js';
+export { ZoomIn } from './icons/ZoomIn/index.js';
+export { ZoomOut } from './icons/ZoomOut/index.js';
+export { BoxPlus } from './icons/BoxPlus/index.js';
+export { Tag } from './icons/Tag/index.js';
+export { Undo } from './icons/Undo/index.js';
+export { Maximize } from './icons/Maximize/index.js';

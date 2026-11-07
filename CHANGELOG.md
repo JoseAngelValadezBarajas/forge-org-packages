@@ -8,6 +8,30 @@ here. The three packages share one version. The format follows
 
 ## [Unreleased]
 
+## [1.2.0] - 2026-11-07
+
+Every change is additive. Existing exports, props, roles, and appearance stay as
+published in 1.1.0.
+
+### Added
+
+- `forge-tokens`: the `surfaceSunken` role, a surface darker than `background` in
+  dark and high contrast and slightly below it in light, for work areas such as
+  canvases and media viewers. `onSurface`, `outline`, and `focusRing` keep their
+  contrast against it, and `validateTheme` checks it.
+- `forge-tokens`: V2 geometry for `kbd`, `toolbar`, `table`, and `statistic`.
+- `forge-ui`: `KbdV2`, a keyboard key for shortcut hints.
+- `forge-ui`: `ToggleButtonV2`, a button with an on/off state exposed as
+  `aria-pressed`, controlled or uncontrolled.
+- `forge-ui`: `ToolbarV2` and `ToolbarSeparatorV2`, a group of controls that is one
+  tab stop with arrow-key, Home, and End navigation, horizontal or vertical.
+- `forge-ui`: `TableV2`, a semantic data table with captions, row headers,
+  column widths, density, an empty state, and a current row.
+- `forge-ui`: `StatisticV2`, a number with its label, unit, and optional trend, in
+  `plain`, `card`, and `trend` styles.
+- `forge-icons`: `Pointer`, `Hand`, `ZoomIn`, `ZoomOut`, `BoxPlus`, `Tag`, `Undo`,
+  and `Maximize`.
+
 ## [1.1.0] - 2026-11-05
 
 Every change is additive, and V1 exports, props, and appearance
@@ -57,6 +81,7 @@ stay as published in 1.0.2. Consumers can adopt V2 one component at a time.
 
 - First release published to npm under the `@corefoundry-labs` scope.
 
-[Unreleased]: https://github.com/JoseAngelValadezBarajas/forge-org-packages/compare/packages-v1.1.0...HEAD
+[Unreleased]: https://github.com/JoseAngelValadezBarajas/forge-org-packages/compare/packages-v1.2.0...HEAD
+[1.2.0]: https://github.com/JoseAngelValadezBarajas/forge-org-packages/compare/packages-v1.1.0...packages-v1.2.0
 [1.1.0]: https://github.com/JoseAngelValadezBarajas/forge-org-packages/compare/packages-v1.0.2...packages-v1.1.0
 [1.0.2]: https://github.com/JoseAngelValadezBarajas/forge-org-packages/releases/tag/packages-v1.0.2

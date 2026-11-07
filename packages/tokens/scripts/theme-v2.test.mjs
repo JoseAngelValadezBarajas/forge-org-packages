@@ -256,7 +256,7 @@ test('the public role names stay stable', () => {
     'errorPressed', 'focusRing', 'info', 'onActionPrimary', 'onError', 'onInfo', 'onPrimary', 'onPrimaryContainer',
     'onSecondary', 'onSuccess', 'onSurface', 'onSurfaceVariant', 'onWarning', 'outline', 'outlineVariant', 'primary',
     'primaryContainer', 'scrim', 'secondary', 'selection', 'shadow', 'success', 'surface', 'surfaceContainer',
-    'surfaceContainerHover', 'surfaceContainerPressed', 'surfaceRaised', 'surfaceVariant', 'warning',
+    'surfaceContainerHover', 'surfaceContainerPressed', 'surfaceRaised', 'surfaceSunken', 'surfaceVariant', 'warning',
   ]);
 });
 
@@ -275,3 +275,24 @@ test('themes can be applied to separate scopes without a document', () => {
   applyTheme({ style: second }, createTheme(presets.formiai));
   assert.notEqual(first.map.get('--cf-v2-primary'), second.map.get('--cf-v2-primary'));
 });
+
+test('surfaceSunken sits below the page and keeps its contrast in every preset and mode', () => {
+  for (const preset of Object.values(presets)) {
+    for (const mode of ['light', 'dark', 'high-contrast']) {
+      const theme = createTheme({ ...preset, mode });
+      const { surface, surfaceSunken, onSurface, outline, focusRing } = theme.roles;
+      assert.match(surfaceSunken, /^#[0-9a-f]{6}$/);
+      assert.ok(contrastRatio(onSurface, surfaceSunken) >= 4.5, `${preset.name} ${mode}: text`);
+      assert.ok(contrastRatio(outline, surfaceSunken) >= 3, `${preset.name} ${mode}: outline`);
+      assert.ok(contrastRatio(focusRing, surfaceSunken) >= 3, `${preset.name} ${mode}: focus`);
+      if (mode !== 'light') assert.ok(luminance(surfaceSunken) <= luminance(surface), `${preset.name} ${mode}: not darker`);
+    }
+  }
+  assert.match(generateThemeCss(createTheme(presets.formiai), '.x'), /--cf-v2-surface-sunken: #[0-9a-f]{6};/);
+});
+
+function luminance(hex) {
+  const [r, g, b] = [1, 3, 5].map((index) => parseInt(hex.slice(index, index + 2), 16) / 255);
+  const lin = (value) => (value <= 0.03928 ? value / 12.92 : ((value + 0.055) / 1.055) ** 2.4);
+  return 0.2126 * lin(r) + 0.7152 * lin(g) + 0.0722 * lin(b);
+}

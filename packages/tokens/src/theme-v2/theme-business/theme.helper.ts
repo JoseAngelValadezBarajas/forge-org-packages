@@ -23,6 +23,7 @@ export const contrastPairs: [SemanticRole, SemanticRole, number][] = [
   ['success', 'surfaceContainer', 4.5], ['info', 'surfaceContainer', 4.5],
   ['error', 'surfaceContainerHover', 4.5], ['focusRing', 'surfaceContainer', 3],
   ['focusRing', 'surfaceContainerHover', 3],
+  ['onSurface', 'surfaceSunken', 4.5], ['outline', 'surfaceSunken', 3], ['focusRing', 'surfaceSunken', 3],
 ];
 
 export const highContrastPairs: [SemanticRole, SemanticRole, number][] = [

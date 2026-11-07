@@ -1,0 +1,92 @@
+.frame {
+  overflow-x: auto;
+  border: var(--cf-v2-table-border-width) solid var(--cf-v2-outline-variant);
+  border-radius: var(--cf-v2-table-radius);
+  background: var(--cf-v2-surface-raised);
+}
+
+.table {
+  width: 100%;
+  border-collapse: collapse;
+  color: var(--cf-v2-on-surface);
+  font-family: inherit;
+  font-size: var(--cf-v2-table-body-font-size);
+  table-layout: fixed;
+}
+
+.caption {
+  padding: var(--cf-v2-table-caption-padding);
+  font-size: var(--cf-v2-table-caption-font-size);
+  text-align: start;
+}
+
+.hidden {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+  padding: 0;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+.header {
+  padding: var(--cf-v2-table-header-padding-block) var(--cf-v2-table-cell-padding-inline);
+  background: var(--cf-v2-surface-container);
+  font-size: var(--cf-v2-table-header-font-size);
+  font-weight: var(--cf-v2-table-header-font-weight);
+  letter-spacing: var(--cf-v2-table-header-letter-spacing);
+  text-align: start;
+  text-transform: uppercase;
+}
+
+.cell {
+  padding-inline: var(--cf-v2-table-cell-padding-inline);
+  font-weight: inherit;
+  text-align: start;
+  vertical-align: middle;
+}
+
+.comfortable .cell {
+  padding-block: var(--cf-v2-table-cell-padding-block-comfortable);
+}
+
+.compact .cell {
+  padding-block: var(--cf-v2-table-cell-padding-block-compact);
+}
+
+.row {
+  border-top: var(--cf-v2-table-row-divider-width) solid var(--cf-v2-outline-variant);
+  transition: background-color var(--cf-v2-table-transition-duration) ease;
+}
+
+.row:hover {
+  background: var(--cf-v2-surface-container-hover);
+}
+
+.row[aria-current='true'] {
+  background: var(--cf-v2-selection);
+}
+
+[data-align='center'] {
+  text-align: center;
+}
+
+[data-align='end'] {
+  text-align: end;
+}
+
+.empty {
+  padding: var(--cf-v2-table-cell-padding-inline);
+}
+
+@media (forced-colors: active) {
+  .frame,
+  .row {
+    border-color: CanvasText;
+  }
+
+  .row[aria-current='true'] {
+    outline: var(--cf-v2-table-row-divider-width) solid Highlight;
+  }
+}

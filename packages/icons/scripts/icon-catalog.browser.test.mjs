@@ -24,9 +24,9 @@ test('icon catalog renders public exports, filters icons, and copies import snip
 
     await page.goto(server.resolvedUrls.local[0]);
     await page.getByRole('heading', { name: 'Icon catalog' }).waitFor();
-    assert.equal(await page.locator('[data-icon-card]').count(), 59);
-    assert.equal(await page.locator('[data-icon-card] svg[data-icon]').count(), 59);
-    for (const name of ['Calendar', 'User', 'FileText', 'MoreHorizontal', 'Home', 'Users', 'UserPlus', 'Mail', 'Phone', 'CalendarDays', 'File', 'FilePlus', 'Copy', 'Share', 'MoreVertical', 'ChevronUp', 'PanelLeft', 'PanelRight', 'SlidersHorizontal', 'Archive', 'Star', 'HelpCircle', 'LogOut', 'EyeOff']) {
+    assert.equal(await page.locator('[data-icon-card]').count(), 67);
+    assert.equal(await page.locator('[data-icon-card] svg[data-icon]').count(), 67);
+    for (const name of ['Calendar', 'User', 'FileText', 'MoreHorizontal', 'Home', 'Users', 'UserPlus', 'Mail', 'Phone', 'CalendarDays', 'File', 'FilePlus', 'Copy', 'Share', 'MoreVertical', 'ChevronUp', 'PanelLeft', 'PanelRight', 'SlidersHorizontal', 'Archive', 'Star', 'HelpCircle', 'LogOut', 'EyeOff', 'Pointer', 'Hand', 'ZoomIn', 'ZoomOut', 'BoxPlus', 'Tag', 'Undo', 'Maximize']) {
       assert.equal(await page.locator(`[data-icon-card][data-icon-name="${name}"]`).count(), 1);
     }
     assert.equal(await page.locator('[data-icon-card]').first().getAttribute('data-icon-name'), 'AlertTriangle');

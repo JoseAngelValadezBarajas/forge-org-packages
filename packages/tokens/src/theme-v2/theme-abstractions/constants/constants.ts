@@ -7,7 +7,7 @@ export type ThemeMode = (typeof themeModes)[number];
 export const paletteNames = ['primary', 'secondary', 'neutral', 'neutralVariant', 'tertiary', 'error', 'warning', 'success', 'info'] as const;
 
 export const semanticRoles = [
-  'background', 'surface', 'surfaceRaised', 'surfaceContainer', 'surfaceContainerHover', 'surfaceContainerPressed',
+  'background', 'surface', 'surfaceRaised', 'surfaceSunken', 'surfaceContainer', 'surfaceContainerHover', 'surfaceContainerPressed',
   'surfaceVariant', 'onSurface', 'onSurfaceVariant', 'primary', 'onPrimary', 'primaryContainer', 'onPrimaryContainer',
   'secondary', 'onSecondary', 'outline', 'outlineVariant', 'focusRing', 'selection', 'disabled', 'scrim', 'shadow',
   'error', 'onError', 'errorHover', 'errorPressed', 'warning', 'onWarning', 'success', 'onSuccess', 'info', 'onInfo',
